@@ -50,7 +50,7 @@ label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bot
 .pillbar{display:flex;gap:8px;flex-wrap:wrap}.pillbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:700;font-size:12px}.pillbtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .table-wrap{overflow:auto;margin-top:12px}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:11px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}.table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
 .footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
-.hero-quote{font-family:Georgia,"Times New Roman",serif;font-size:26px;line-height:1.35;margin:0}.four-pillars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}@media(min-width:720px){.four-pillars{grid-template-columns:repeat(4,1fr)}}.pillar{background:var(--surface2);border-radius:15px;padding:14px}.pillar b{display:block;margin-bottom:4px;font-size:13px}.pillar span{font-size:12px;color:var(--muted)}
+.reminder-card{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;background:#eef2ef;border:1px solid #dce5df;border-radius:16px;color:#405149;font-size:13px;line-height:1.55}.reminder-card strong{display:block;color:var(--text);margin-bottom:2px}.reminder-icon{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#dfe8e2;font-size:14px;font-weight:800}
 .empty{font-size:13px;color:var(--muted);padding:8px 0}.right{text-align:right}.mono{font-variant-numeric:tabular-nums}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.muted-link{color:var(--muted);text-decoration:underline;font-size:12px;background:none;border:0;padding:0}.tag{display:inline-block;background:#efe8da;color:#6a5b42;font-size:10px;font-weight:800;padding:5px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
 </style>
 </head>
@@ -82,14 +82,16 @@ label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bot
         <div class="card quarter"><h3>Gold savings</h3><div class="value mono" id="homeGoldGrams">0.0000g</div><div class="small">Total grams recorded</div></div>
         <div class="card quarter"><h3>Gold value</h3><div class="value mono" id="homeGoldValue">B$0.00</div><div class="small">Estimated from your reference price</div></div>
         <div class="card quarter"><h3>Total debt</h3><div class="value mono" id="homeDebt">B$0.00</div><div class="small">Current remaining balances</div></div>
-        <div class="card half">
+        <div class="card">
           <div class="kpi"><div><h3>Total hybrid savings</h3><div class="value" id="homeHybrid">B$0.00</div></div><span class="chip">cash + gold</span></div>
           <div class="progress"><span id="hybridBar"></span></div>
           <div class="small" id="hybridRatioText">Add cash and gold data to see your hybrid saving ratio.</div>
         </div>
-        <div class="card half">
-          <p class="hero-quote">Cash for access. Gold for long-term value. Debt reduction for financial freedom.</p>
-          <div class="four-pillars"><div class="pillar"><b>Budget</b><span>Give every dollar a purpose.</span></div><div class="pillar"><b>Cash</b><span>Keep money accessible.</span></div><div class="pillar"><b>Gold</b><span>Build long-term savings.</span></div><div class="pillar"><b>Debt</b><span>Track the journey down.</span></div></div>
+        <div class="card" style="padding:0;background:transparent;border:0;box-shadow:none">
+          <div class="reminder-card">
+            <div class="reminder-icon">i</div>
+            <div><strong>A simple reminder</strong>Keep enough cash accessible for short-term needs and emergencies, use gold for longer-term saving, and continue reducing debt consistently.</div>
+          </div>
         </div>
       </div>
     </section>
