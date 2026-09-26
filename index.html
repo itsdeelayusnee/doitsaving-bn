@@ -97,14 +97,29 @@ label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bot
     </section>
 
     <section class="section" id="budget">
-      <div class="section-head"><div class="eyebrow">Plan before spending</div><h2>Monthly budget</h2><p>Track your income, spending and hybrid savings. Debt stays in its own tab and is included here automatically from your recorded minimum payments.</p></div>
+      <div class="section-head"><div class="eyebrow">Build your own rule</div><h2>Custom budget</h2><p>There is no fixed formula here. Choose the percentages that fit your own income, priorities and saving goals, then adjust them until the total reaches 100%.</p></div>
       <div class="grid">
-        <div class="card half"><h3>Income</h3><div class="form-row two"><div><label>Salary / main income</label><input class="field budget" id="incomeMain" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Side / other income</label><input class="field budget" id="incomeOther" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="inline-total"><span>Total income</span><strong id="budgetIncome">B$0.00</strong></div></div>
-        <div class="card half"><h3>Monthly expenses</h3><div class="form-row two"><div><label>Needs / essentials</label><input class="field budget" id="expNeeds" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Wants / lifestyle</label><input class="field budget" id="expWants" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="inline-total"><span>Total expenses</span><strong id="budgetExpenses">B$0.00</strong></div></div>
-        <div class="card two-third"><h3>Savings allocation</h3><div class="form-row two"><div><label>Cash savings</label><input class="field budget" id="allocCash" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Gold savings</label><input class="field budget" id="allocGold" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="inline-total"><span>Total savings</span><strong id="budgetAllocated">B$0.00</strong></div><div class="inline-total"><span>Money remaining after expenses, debt & savings</span><strong id="budgetRemaining">B$0.00</strong></div></div>
-        <div class="card third"><h3>Saving rate</h3><div class="value" id="budgetSaveRate">0%</div><div class="small">Cash + gold as a percentage of total income.</div><div class="progress"><span id="budgetRateBar"></span></div><div class="divider"></div><div class="inline-total"><span>10% starting target</span><strong id="budgetTenTarget">B$0.00</strong></div><div class="small" id="budgetTenStatus">Start by aiming to save at least 10% of income if your budget allows.</div></div>
-        <div class="card"><div class="kpi"><div><h3>Debt commitments</h3><div class="small">Pulled automatically from the minimum monthly payments in your Debt tab.</div></div><div class="right"><div class="value" style="font-size:1.35rem" id="budgetDebtCommitments">B$0.00</div><button class="muted-link" id="goDebtFromBudget">Manage in Debt →</button></div></div></div>
-        <div class="card"><div class="notice">A simple starting point is to put at least 10% of income toward savings when possible. How you split that between cash and gold depends on your short-term needs, emergency fund and longer-term goals.</div></div>
+        <div class="card half"><h3>Monthly income</h3><div class="form-row two"><div><label>Salary / main income</label><input class="field budget" id="incomeMain" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Side / other income</label><input class="field budget" id="incomeOther" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="inline-total"><span>Total income</span><strong id="budgetIncome">B$0.00</strong></div></div>
+        <div class="card half"><h3>Your budget rule</h3><div class="value" id="budgetRuleTotal">0%</div><div class="small" id="budgetRuleStatus">Allocate your income across the categories below.</div><div class="progress"><span id="budgetRuleBar"></span></div></div>
+
+        <div class="card"><h3>Choose your percentages</h3><div class="form-row three">
+          <div><label>Needs / essentials (%)</label><input class="field budgetPct" id="pctNeeds" type="number" min="0" max="100" step="1" placeholder="0"></div>
+          <div><label>Wants / lifestyle (%)</label><input class="field budgetPct" id="pctWants" type="number" min="0" max="100" step="1" placeholder="0"></div>
+          <div><label>Cash savings (%)</label><input class="field budgetPct" id="pctCash" type="number" min="0" max="100" step="1" placeholder="0"></div>
+        </div><div class="form-row two">
+          <div><label>Gold savings (%)</label><input class="field budgetPct" id="pctGold" type="number" min="0" max="100" step="1" placeholder="0"></div>
+          <div><label>Other / flexible (%)</label><input class="field budgetPct" id="pctOther" type="number" min="0" max="100" step="1" placeholder="0"></div>
+        </div></div>
+
+        <div class="card"><h3>What your rule looks like in B$</h3><div class="table-wrap"><table class="table"><thead><tr><th>Category</th><th>Your %</th><th>Monthly amount</th></tr></thead><tbody>
+          <tr><td><strong>Needs / essentials</strong></td><td id="ruleNeedsPct">0%</td><td id="ruleNeedsAmt">B$0.00</td></tr>
+          <tr><td><strong>Wants / lifestyle</strong></td><td id="ruleWantsPct">0%</td><td id="ruleWantsAmt">B$0.00</td></tr>
+          <tr><td><strong>Cash savings</strong></td><td id="ruleCashPct">0%</td><td id="ruleCashAmt">B$0.00</td></tr>
+          <tr><td><strong>Gold savings</strong></td><td id="ruleGoldPct">0%</td><td id="ruleGoldAmt">B$0.00</td></tr>
+          <tr><td><strong>Other / flexible</strong></td><td id="ruleOtherPct">0%</td><td id="ruleOtherAmt">B$0.00</td></tr>
+        </tbody></table></div><div class="divider"></div><div class="inline-total"><span>Hybrid savings allocation</span><strong id="budgetHybridAllocation">B$0.00</strong></div><div class="inline-total"><span>Hybrid saving rate</span><strong id="budgetHybridRate">0%</strong></div></div>
+
+        <div class="card"><div class="notice"><strong>No one-size-fits-all rule.</strong> Use this as a planning tool, not a fixed formula. Your allocation can change as your income, commitments and goals change. Debt planning stays separate in the Debt tab.</div></div>
       </div>
     </section>
 
@@ -168,12 +183,27 @@ function save(){localStorage.setItem('doitsavingState',JSON.stringify(state));re
 
 // tabs
 [...document.querySelectorAll('.tab')].forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));$(b.dataset.tab).classList.add('active');document.getElementById('content').scrollIntoView({behavior:'smooth',block:'start'})});
-$('goDebtFromBudget').onclick=()=>{let b=document.querySelector('.tab[data-tab="debt"]');b.click()};
 
 // budget
-const budgetIds=['incomeMain','incomeOther','expNeeds','expWants','allocCash','allocGold'];
+const budgetIds=['incomeMain','incomeOther','pctNeeds','pctWants','pctCash','pctGold','pctOther'];
 budgetIds.forEach(id=>{ $(id).value=state.budget[id]??''; $(id).addEventListener('input',()=>{state.budget[id]=num($(id).value);localStorage.setItem('doitsavingState',JSON.stringify(state));renderBudget();renderHome()})});
-function renderBudget(){let income=num(state.budget.incomeMain)+num(state.budget.incomeOther), exp=num(state.budget.expNeeds)+num(state.budget.expWants), savings=num(state.budget.allocCash)+num(state.budget.allocGold), debtCommit=state.debts.reduce((a,d)=>a+num(d.min),0), rem=income-exp-debtCommit-savings, rate=income?(savings/income*100):0, ten=income*0.10;$('budgetIncome').textContent=money(income);$('budgetExpenses').textContent=money(exp);$('budgetAllocated').textContent=money(savings);$('budgetRemaining').textContent=money(rem);$('budgetSaveRate').textContent=pct(rate);$('budgetRateBar').style.width=Math.min(100,rate)+'%';$('budgetTenTarget').textContent=money(ten);$('budgetDebtCommitments').textContent=money(debtCommit);$('budgetTenStatus').textContent=!income?'Enter your income to see the 10% starting target.':rate>=10?'You have reached the 10% starting savings target.':`${money(Math.max(0,ten-savings))} more would bring savings to 10% of income.`}
+function renderBudget(){
+  let income=num(state.budget.incomeMain)+num(state.budget.incomeOther);
+  let parts={needs:num(state.budget.pctNeeds),wants:num(state.budget.pctWants),cash:num(state.budget.pctCash),gold:num(state.budget.pctGold),other:num(state.budget.pctOther)};
+  let total=Object.values(parts).reduce((a,b)=>a+b,0);
+  let amount=k=>income*parts[k]/100;
+  $('budgetIncome').textContent=money(income);
+  $('budgetRuleTotal').textContent=total.toFixed(0)+'%';
+  $('budgetRuleBar').style.width=Math.min(100,total)+'%';
+  $('budgetRuleStatus').textContent=total===100?'Your custom rule is fully allocated.':total<100?`${(100-total).toFixed(0)}% is still unallocated.`:`Reduce the rule by ${(total-100).toFixed(0)}% to return to 100%.`;
+  $('ruleNeedsPct').textContent=parts.needs.toFixed(0)+'%'; $('ruleNeedsAmt').textContent=money(amount('needs'));
+  $('ruleWantsPct').textContent=parts.wants.toFixed(0)+'%'; $('ruleWantsAmt').textContent=money(amount('wants'));
+  $('ruleCashPct').textContent=parts.cash.toFixed(0)+'%'; $('ruleCashAmt').textContent=money(amount('cash'));
+  $('ruleGoldPct').textContent=parts.gold.toFixed(0)+'%'; $('ruleGoldAmt').textContent=money(amount('gold'));
+  $('ruleOtherPct').textContent=parts.other.toFixed(0)+'%'; $('ruleOtherAmt').textContent=money(amount('other'));
+  $('budgetHybridAllocation').textContent=money(amount('cash')+amount('gold'));
+  $('budgetHybridRate').textContent=(parts.cash+parts.gold).toFixed(0)+'%';
+}
 
 // cash
 $('addCash').onclick=()=>{let name=$('cashName').value.trim(),target=num($('cashTarget').value),saved=num($('cashSaved').value);if(!name||!target)return;state.cashGoals.push({id:Date.now(),name,target,saved,type:$('cashType').value});$('cashName').value='';$('cashTarget').value='';$('cashSaved').value='';save()};
