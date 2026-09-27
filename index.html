@@ -302,10 +302,29 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
             <div><h2>Hybrid Plan</h2><p>Choose a budget guide for your savings.</p></div>
             <button class="action-btn" id="changeRuleBtn">Change Rule</button>
           </div>
-          <div class="split-3">
-            <div class="compact-card"><div class="label">Current Rule</div><div class="metric-mid" id="ruleName">50 / 30 / 20</div></div>
-            <div class="compact-card"><div class="label">Suggested Savings</div><div class="metric-mid goldish" id="suggestedSavings">B$0.00</div></div>
-            <div class="compact-card"><div class="label">Cash / Gold Example</div><div class="metric-mid" id="suggestedSplit">B$0.00 / B$0.00</div></div>
+          <div class="split-2">
+            <div class="compact-card">
+              <div class="label">Current Rule</div>
+              <div class="metric-mid" id="ruleName">50 / 30 / 20</div>
+            </div>
+            <div class="compact-card">
+              <div class="label">Suggested Savings</div>
+              <div class="metric-mid goldish" id="suggestedSavings">B$0.00</div>
+            </div>
+          </div>
+
+          <div class="compact-card" style="margin-top:12px">
+            <div class="label">Suggested Hybrid Split</div>
+            <div class="split-2" style="margin-top:10px">
+              <div>
+                <div class="subtext">Cash · 60%</div>
+                <div class="metric-mid" id="suggestedCash">B$0.00</div>
+              </div>
+              <div>
+                <div class="subtext">Gold · 40%</div>
+                <div class="metric-mid" id="suggestedGold">B$0.00</div>
+              </div>
+            </div>
           </div>
           <div class="small-note">The split uses a 60% cash and 40% gold example for planning only. You can adjust based on your own needs.</div>
 
@@ -476,7 +495,10 @@ function render(){
   $('transactionList').innerHTML = transactionItems || `<div class="empty">No ${state.transactionView==='income'?'income':'expenses'} recorded yet.</div>`;
 
   const budget=currentBudgetRule(), suggested=incomeTotal*budget[2]/100, suggestedCash=suggested*.60, suggestedGold=suggested*.40;
-  $('ruleName').textContent=budget[3]; $('suggestedSavings').textContent=money(suggested); $('suggestedSplit').textContent=`${money(suggestedCash)} / ${money(suggestedGold)}`;
+  $('ruleName').textContent=budget[3];
+  $('suggestedSavings').textContent=money(suggested);
+  $('suggestedCash').textContent=money(suggestedCash);
+  $('suggestedGold').textContent=money(suggestedGold);
   $('savingsCash').textContent=money(cashTotal); $('savingsGold').textContent=money(goldTotal); $('savingsHybrid').textContent=money(hybridTotal);
   $('goalList').innerHTML=state.goals.length ? state.goals.map((g,i)=>{ const pct=g.target>0?Math.max(0,Math.min(100,(g.saved/g.target)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)}${g.targetDate ? ' · Target ' + esc(g.targetDate) : ''}</div></div><div class="goal-name" style="color:var(--gold)">${pct.toFixed(0)}%</div></div><div class="progress"><span style="width:${pct}%"></span></div><div class="goal-meta">${money(Math.max(0,g.target-g.saved))} remaining</div><div class="goal-actions"><button class="text-btn text-green" onclick="openAddMoneyGoal(${i})">+ Add Money</button><button class="text-btn text-muted" onclick="openEditGoal(${i})">Edit</button><button class="text-btn text-red" onclick="removeGoal(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No saving goals yet.</div>';
   $('savingList').innerHTML=savings.length ? [...savings].reverse().map((x,rev)=>activityMarkup(x,x.type,savings.length-1-rev,'removeSaving')).join('') : '<div class="empty">No savings activity yet.</div>';
