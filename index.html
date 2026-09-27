@@ -337,16 +337,40 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="card-foot" id="suggestRule">Based on selected rule and recorded income</div>
     </div>
 
-    <div class="section-head"><div><h2>Record actual savings</h2><p>Keep cash and gold separate, but see them together.</p></div></div>
+    <div class="section-head"><div><h2>Add saving</h2><p>Enter it once and let the system update everything automatically.</p></div></div>
     <div class="form-card">
       <div class="form-grid">
-        <div class="field"><label>Type</label><select id="savingType"><option value="cash">Cash saving</option><option value="gold">Gold saving</option></select></div>
-        <div class="field"><label>Amount (B$)</label><input id="savingAmount" type="number" min="0" step="0.01"></div>
+        <div class="field">
+          <label>Type</label>
+          <select id="savingType">
+            <option value="cash">Cash saving</option>
+            <option value="gold">Gold saving</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Amount (B$)</label>
+          <input id="savingAmount" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
       </div>
+
       <div class="form-grid">
-        <div class="field"><label>Name</label><input id="savingName" placeholder="Emergency Fund / Gold Top Up"></div>
-        <div class="field"><label>Date</label><input id="savingDate" type="date"></div>
+        <div class="field">
+          <label>Destination</label>
+          <select id="savingDestination">
+            <option value="general">General Savings</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input id="savingDate" type="date">
+        </div>
       </div>
+
+      <div class="field">
+        <label>Name / note</label>
+        <input id="savingName" placeholder="e.g. Emergency Fund Top Up">
+      </div>
+
       <button class="primary" id="addSaving">Add saving</button>
     </div>
 
@@ -356,7 +380,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="card"><div class="card-label">Hybrid Total</div><div class="card-value" id="hybridSavedTotal">B$0.00</div></div>
     </div>
 
-    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Add future savings using Top Up instead of replacing your total.</p></div></div>
+    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Use Top Up to open the same saving form with this goal selected.</p></div></div>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Goal name</label><input id="goalName" placeholder="Travel Fund"></div>
@@ -467,6 +491,24 @@ function activityHTML(item,kind,index,withDelete=true){
 
 window.removeSaving=function(index){
   if(index<0 || index>=state.savings.length)return;
+  const txn=state.savings[index];
+
+  if(txn && txn.destination && String(txn.destination).startsWith('goal:')){
+    const gi=Number(String(txn.destination).split(':')[1]);
+    const goal=state.goals[gi];
+    if(goal){
+      goal.saved=Math.max(0,(+goal.saved||0)-(+txn.amount||0));
+      if(Array.isArray(goal.history)){
+        const hi=goal.history.findIndex(h =>
+          h.savingTxn &&
+          Math.abs((+h.amount||0)-(+txn.amount||0))<0.00001 &&
+          (h.date||'')===(txn.date||'')
+        );
+        if(hi>-1)goal.history.splice(hi,1);
+      }
+    }
+  }
+
   state.savings.splice(index,1);
   persist();
   render();
@@ -484,6 +526,16 @@ window.removeRecord=function(kind,index){
   persist();render();
 }
 
+
+
+function refreshSavingDestinations(){
+  const select=$('savingDestination');
+  if(!select)return;
+  const current=select.value;
+  select.innerHTML='<option value="general">General Savings</option>'+
+    state.goals.map((g,i)=>`<option value="goal:${i}">${esc(g.name)}</option>`).join('');
+  if([...select.options].some(o=>o.value===current))select.value=current;
+}
 
 function refreshSweepDestinations(){
   const select=$('sweepDestination');
@@ -569,7 +621,7 @@ function render(){
     ? savingsHistory.map(s=>`<div class="history-item">
         <div>
           <div class="history-title">${esc(s.name||'Saving')}</div>
-          <div class="history-meta">${esc(s.type==='gold'?'Gold Saving':'Cash Saving')} · ${esc(s.date||'')}</div>
+          <div class="history-meta">${esc(s.type==='gold'?'Gold Saving':'Cash Saving')} · ${esc(s.destination&&String(s.destination).startsWith('goal:') && state.goals[Number(String(s.destination).split(':')[1])] ? state.goals[Number(String(s.destination).split(':')[1])].name : 'General Savings')} · ${esc(s.date||'')}</div>
         </div>
         <div>
           <div class="history-amount">+${money(s.amount)}</div>
@@ -578,6 +630,7 @@ function render(){
       </div>`).join('')
     : '<div class="empty">No saving records yet.</div>';
 
+  refreshSavingDestinations();
   refreshSweepDestinations();
 
   $('debtTotal').textContent=money(debt);$('debtMinimums').textContent=money(mins);$('debtCount').textContent=state.debts.length;
@@ -622,10 +675,47 @@ $('addExpense').addEventListener('click',()=>{
   $('expenseName').value='';$('expenseAmount').value='';persist();render();
 });
 $('addSaving').addEventListener('click',()=>{
-  const amount=+$('savingAmount').value||0;if(amount<=0)return;
+  const amount=+$('savingAmount').value||0;
+  if(amount<=0)return;
+
   const type=$('savingType').value;
-  state.savings.push({type,name:$('savingName').value.trim()||(type==='cash'?'Cash Saving':'Gold Saving'),amount,category:type==='cash'?'Cash Saving':'Gold Saving',date:$('savingDate').value||today()});
-  $('savingName').value='';$('savingAmount').value='';persist();render();
+  const destination=$('savingDestination').value;
+  const date=$('savingDate').value||today();
+  const customName=$('savingName').value.trim();
+
+  let goalIndex=null;
+  let destinationName='General Savings';
+
+  if(destination.startsWith('goal:')){
+    goalIndex=Number(destination.split(':')[1]);
+    if(state.goals[goalIndex]){
+      destinationName=state.goals[goalIndex].name;
+      state.goals[goalIndex].saved=(+state.goals[goalIndex].saved||0)+amount;
+      if(!Array.isArray(state.goals[goalIndex].history))state.goals[goalIndex].history=[];
+      state.goals[goalIndex].history.push({
+        amount,
+        date,
+        label:customName || (type==='cash'?'Cash Top Up':'Gold Top Up'),
+        savingTxn:true
+      });
+    }
+  }
+
+  state.savings.push({
+    type,
+    name:customName || (destination==='general' ? (type==='cash'?'Cash Saving':'Gold Saving') : destinationName),
+    amount,
+    category:type==='cash'?'Cash Saving':'Gold Saving',
+    date,
+    destination,
+    goalIndex
+  });
+
+  $('savingAmount').value='';
+  $('savingName').value='';
+  $('savingDestination').value='general';
+  persist();
+  render();
 });
 $('toggleStartingBalance').addEventListener('click',()=>{
   const wrap=$('startingBalanceWrap');
@@ -651,16 +741,15 @@ $('addGoal').addEventListener('click',()=>{
   render();
 });
 window.topUpGoal=function(i){
-  const current=state.goals[i];
-  const v=prompt(`Add a new top-up for ${current.name}`, '0');
-  if(v===null)return;
-  const n=+v;
-  if(isNaN(n)||n<=0)return;
-  current.saved=(+current.saved||0)+n;
-  if(!Array.isArray(current.history))current.history=[];
-  current.history.push({amount:n,date:today(),label:'Top Up'});
-  persist();
-  render();
+  const goal=state.goals[i];
+  if(!goal)return;
+  document.querySelectorAll('.dock button').forEach(b=>b.classList.toggle('active',b.dataset.page==='savings'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='savings'));
+  refreshSavingDestinations();
+  $('savingDestination').value='goal:'+i;
+  $('savingName').value=goal.name+' Top Up';
+  $('savingAmount').focus();
+  window.scrollTo({top:$('savingAmount').getBoundingClientRect().top + window.scrollY - 140,behavior:'smooth'});
 }
 
 window.editGoal=function(i){
@@ -680,7 +769,19 @@ window.editGoal=function(i){
 window.removeGoalTopup=function(goalIndex,historyIndex){
   const goal=state.goals[goalIndex];
   if(!goal || !Array.isArray(goal.history) || !goal.history[historyIndex])return;
-  const amount=+goal.history[historyIndex].amount||0;
+
+  const h=goal.history[historyIndex];
+  const amount=+h.amount||0;
+
+  if(h.savingTxn){
+    const txnIndex=state.savings.findIndex(s =>
+      String(s.destination)==='goal:'+goalIndex &&
+      Math.abs((+s.amount||0)-amount)<0.00001 &&
+      (s.date||'')===(h.date||'')
+    );
+    if(txnIndex>-1)state.savings.splice(txnIndex,1);
+  }
+
   goal.saved=Math.max(0,(+goal.saved||0)-amount);
   goal.history.splice(historyIndex,1);
   persist();
@@ -717,31 +818,36 @@ $('sweepRemaining').addEventListener('click',()=>{
   if(remaining<=0)return;
 
   const destination=$('sweepDestination').value;
+  let type='cash';
+  let goalIndex=null;
+  let name='Payday Leftover Sweep';
 
-  if(destination==='cash'){
-    state.savings.push({
-      type:'cash',
-      name:'Payday Leftover Sweep',
-      amount:remaining,
-      category:'Cash Saving',
-      date:today()
-    });
-  } else if(destination==='gold'){
-    state.savings.push({
-      type:'gold',
-      name:'Payday Leftover Sweep',
-      amount:remaining,
-      category:'Gold Saving',
-      date:today()
-    });
-  } else if(destination.startsWith('goal:')){
-    const index=Number(destination.split(':')[1]);
-    if(state.goals[index]){
-      state.goals[index].saved=(+state.goals[index].saved||0)+remaining;
-      if(!Array.isArray(state.goals[index].history))state.goals[index].history=[];
-      state.goals[index].history.push({amount:remaining,date:today(),label:'Payday Leftover Sweep'});
+  if(destination==='gold')type='gold';
+
+  if(destination.startsWith('goal:')){
+    goalIndex=Number(destination.split(':')[1]);
+    if(state.goals[goalIndex]){
+      state.goals[goalIndex].saved=(+state.goals[goalIndex].saved||0)+remaining;
+      if(!Array.isArray(state.goals[goalIndex].history))state.goals[goalIndex].history=[];
+      state.goals[goalIndex].history.push({
+        amount:remaining,
+        date:today(),
+        label:'Payday Leftover Sweep',
+        savingTxn:true
+      });
+      name=state.goals[goalIndex].name+' · Payday Leftover Sweep';
     }
   }
+
+  state.savings.push({
+    type,
+    name,
+    amount:remaining,
+    category:type==='cash'?'Cash Saving':'Gold Saving',
+    date:today(),
+    destination,
+    goalIndex
+  });
 
   persist();
   render();
