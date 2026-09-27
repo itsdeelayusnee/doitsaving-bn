@@ -7,7 +7,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Hybrid Finance">
 <meta name="application-name" content="Hybrid Finance">
 <meta name="theme-color" content="#0f141a">
@@ -1204,6 +1204,121 @@ button,
   }
   .page.active{
     scroll-margin-top:0!important;
+  }
+}
+</style>
+
+
+<style>
+/* iPhone / installed-web-app header fix */
+html{
+  background:var(--bg);
+}
+body{
+  min-height:100vh;
+  min-height:100dvh;
+}
+.app{
+  padding-top:env(safe-area-inset-top);
+}
+.wrap{
+  padding-top:18px!important;
+}
+
+/* Keep the whole header readable and below the iPhone status area */
+@media (max-width:700px){
+  .app{
+    padding-top:env(safe-area-inset-top)!important;
+  }
+
+  .wrap{
+    padding-top:16px!important;
+  }
+
+  .topbar{
+    margin-top:0!important;
+    padding-top:0!important;
+  }
+
+  .brand-wrap{
+    position:relative!important;
+    z-index:1!important;
+  }
+
+  .brand-stack{
+    min-width:0!important;
+  }
+
+  .eyebrow,
+  .brand-title,
+  .brand-sub{
+    position:relative!important;
+    z-index:2!important;
+  }
+
+  .eyebrow{
+    margin-top:0!important;
+  }
+
+  .brand-title{
+    margin-top:2px!important;
+  }
+
+  .top-actions{
+    margin-top:2px!important;
+  }
+}
+
+/* Installed iPhone app: create a little more breathing room at the very top */
+@supports (padding-top: env(safe-area-inset-top)){
+  @media (max-width:700px){
+    body{
+      padding-top:0!important;
+    }
+    .app{
+      padding-top:max(10px, env(safe-area-inset-top))!important;
+    }
+  }
+}
+</style>
+
+
+<style>
+@media (max-width:700px){
+  .topbar{
+    gap:12px!important;
+  }
+
+  .brand-wrap{
+    grid-template-columns:54px minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+
+  .ds-logo-img{
+    width:54px!important;
+    height:54px!important;
+    border-radius:15px!important;
+  }
+
+  .eyebrow{
+    font-size:11px!important;
+    line-height:1.2!important;
+  }
+
+  .brand-title{
+    font-size:18px!important;
+    line-height:1.1!important;
+  }
+
+  .brand-sub{
+    font-size:9.5px!important;
+    line-height:1.25!important;
+    white-space:nowrap!important;
+    margin-top:5px!important;
+  }
+
+  .demo-mode-badge{
+    margin-top:7px!important;
   }
 }
 </style>
