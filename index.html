@@ -25,13 +25,13 @@ body[data-theme="light"]{
   --bg:#f3eee6;
   --panel:#fffaf3;
   --panel2:#f7f1e8;
-  --line:#ded4c6;
-  --text:#1e2328;
-  --muted:#747b83;
+  --line:#d5c9b8;
+  --text:#1f252b;
+  --muted:#5f6770;
   --gold:#b88f60;
   --gold2:#9d7448;
-  --green:#218b53;
-  --red:#d9535a;
+  --green:#238651;
+  --red:#cf4d57;
   --blue:#557fc2;
   --chip:#eee6da;
 }
@@ -42,13 +42,33 @@ body[data-theme="light"] .hero{
   border-color:#c9b69f;
 }
 body[data-theme="light"] .status{
-  background:rgba(255,255,255,.68);
+  background:rgba(255,255,255,.88);
   border-color:#d7cbbb;
   color:#3b352f;
 }
 body[data-theme="light"] .topbar,
 body[data-theme="light"] .bottom-nav{
   background:rgba(243,238,230,.96);
+}
+body[data-theme="light"] .hero-label,
+body[data-theme="light"] .page-sub,
+body[data-theme="light"] .muted,
+body[data-theme="light"] .goal-meta,
+body[data-theme="light"] .activity-meta{
+  color:#5f6770 !important;
+}
+body[data-theme="light"] .stat-label,
+body[data-theme="light"] .section-title h2,
+body[data-theme="light"] .page-title,
+body[data-theme="light"] .activity-title,
+body[data-theme="light"] .goal-name,
+body[data-theme="light"] .brand h1,
+body[data-theme="light"] .eyebrow{
+  color:#1f252b;
+}
+body[data-theme="light"] .pill{
+  color:#8f6a42;
+  background:#efe6db;
 }
 body[data-theme="light"] input,
 body[data-theme="light"] select,
@@ -58,7 +78,10 @@ body[data-theme="light"] .goal,
 body[data-theme="light"] .debt-method,
 body[data-theme="light"] .compact-box,
 body[data-theme="light"] .goal-card,
-body[data-theme="light"] .rule-card{
+body[data-theme="light"] .rule-card,
+body[data-theme="light"] .summary-box,
+body[data-theme="light"] .activity,
+body[data-theme="light"] .card{
   background:#fbf6ef;
 }
 body[data-theme="light"] .activity-icon{
@@ -66,6 +89,10 @@ body[data-theme="light"] .activity-icon{
 }
 body[data-theme="light"] .sheet{
   background:#fffaf3;
+}
+body[data-theme="light"] .empty{
+  color:#5f6770;
+  border-color:#d8ccbc;
 }
 .theme-toggle{
   border:1px solid var(--line);
@@ -89,7 +116,7 @@ button{cursor:pointer}
 .app{min-height:100vh;padding-bottom:94px}
 .topbar{
   max-width:1100px;margin:0 auto;
-  padding:22px 18px 14px;
+  padding:18px 16px 12px;
   display:flex;align-items:center;gap:14px;
 }
 .logo{
@@ -113,11 +140,11 @@ button{cursor:pointer}
     radial-gradient(circle at 90% 15%,rgba(217,185,142,.10),transparent 30%),
     linear-gradient(145deg,#1b2026,#251f1b);
   border:1px solid #5a4e41;
-  border-radius:30px;padding:26px;
+  border-radius:26px;padding:22px;
 }
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
 .hero-label{font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#e5e9ee}
-.hero-value{font-size:46px;font-weight:900;letter-spacing:-.035em;margin:18px 0 8px}
+.hero-value{font-size:42px;font-weight:900;letter-spacing:-.035em;margin:14px 0 8px}
 .hero-sub{color:#c5cbd2;font-weight:600}
 .status{
   background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);
@@ -126,11 +153,11 @@ button{cursor:pointer}
 .grid{display:grid;gap:14px}
 .stats{grid-template-columns:repeat(2,1fr);margin-top:16px}
 .card{
-  background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px;
 }
 .card h3{margin:0 0 12px;font-size:18px}
 .stat-label{font-weight:800;color:#c3cad4}
-.stat-value{font-size:30px;font-weight:900;margin:14px 0 4px}
+.stat-value{font-size:26px;font-weight:900;margin:10px 0 4px}
 .green{color:var(--green)} .red{color:var(--red)} .gold{color:var(--gold)}
 .muted{color:var(--muted)}
 .small{font-size:13px}
@@ -151,7 +178,7 @@ button{cursor:pointer}
 .activity-amount{font-weight:900;font-size:18px;text-align:right}
 .page-title{margin:6px 0 4px;font-size:30px}
 .page-sub{margin:0 0 18px;color:var(--muted)}
-.form-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;margin-bottom:16px}
+.form-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:16px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field{margin-bottom:13px}
 label{display:block;font-weight:800;margin-bottom:7px;color:#d9dee5}
@@ -170,7 +197,7 @@ input:focus,select:focus{border-color:var(--gold)}
 }
 .danger{color:var(--red)}
 .summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.summary-box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.summary-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px}
 .summary-box strong{display:block;font-size:24px;margin-top:8px}
 .rule-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .rule{
@@ -180,7 +207,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .rule.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
 .rule b{display:block;font-size:17px;margin-bottom:5px}
 .hybrid-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hybrid-box{background:#111820;border:1px solid var(--line);border-radius:20px;padding:18px}
+.hybrid-box{background:#111820;border:1px solid var(--line);border-radius:18px;padding:14px}
 .hybrid-box strong{display:block;font-size:28px;margin-top:6px}
 .progress{height:9px;background:#0f161d;border-radius:999px;overflow:hidden;margin-top:11px}
 .progress > span{display:block;height:100%;background:var(--gold)}
@@ -190,7 +217,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .goal-name{font-weight:900}
 .goal-meta{color:var(--muted);font-size:13px;margin-top:4px}
 .debt-methods{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.debt-method{background:#111820;border:1px solid var(--line);border-radius:20px;padding:18px}
+.debt-method{background:#111820;border:1px solid var(--line);border-radius:18px;padding:14px}
 .debt-list{display:grid;gap:9px;margin-top:12px}
 .debt-row{padding:11px 0;border-top:1px solid var(--line)}
 .bottom-nav{
@@ -198,7 +225,7 @@ input:focus,select:focus{border-color:var(--gold)}
   width:100%;max-width:1100px;
   background:rgba(13,18,23,.96);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);
-  padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
   z-index:20
 }
 .nav-btn{
@@ -243,7 +270,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .sheet-head h3{margin:0;font-size:24px}
 .close-btn{border:1px solid var(--line);background:#111820;color:var(--text);width:40px;height:40px;border-radius:50%;font-size:20px}
 .compact-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.compact-box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.compact-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px}
 .compact-box strong{display:block;font-size:22px;margin-top:7px}
 .goal-section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 2px 12px}
 .goal-section-head h2{margin:0;font-size:24px}
@@ -261,16 +288,33 @@ input:focus,select:focus{border-color:var(--gold)}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 }
 @media(max-width:620px){
-  .topbar{padding-top:18px}
-  .logo{width:54px;height:54px}
-  .brand h1{font-size:22px}
-  .icon-actions{display:flex}.theme-toggle{padding:9px 12px;font-size:12px}
-  .hero{padding:22px}
-  .hero-value{font-size:40px}
+  .topbar{padding-top:14px}
+  .main{padding:6px 12px 22px}
+  .logo{width:50px;height:50px;border-radius:15px}
+  .brand h1{font-size:18px}
+  .eyebrow{font-size:12px}
+  .icon-actions{display:flex}
+  .theme-toggle{padding:8px 10px;font-size:11px}
+  .hero{padding:18px;border-radius:22px}
+  .hero-value{font-size:34px}
+  .hero-label{font-size:12px}
+  .hero-sub{font-size:12px;line-height:1.35}
   .hero-top{align-items:flex-start}
-  .status{font-size:12px;padding:8px 10px}
+  .status{font-size:11px;padding:7px 9px}
+  .card,.form-card,.summary-box,.goal-card,.compact-box,.hybrid-box,.debt-method,.activity{padding:14px}
+  .card h3{font-size:16px}
+  .stat-value{font-size:22px}
+  .section-title,.goal-section-head{margin:20px 2px 10px}
+  .section-title h2,.goal-section-head h2{font-size:18px}
+  .activity{grid-template-columns:40px 1fr auto;gap:10px}
+  .activity-icon{width:40px;height:40px;border-radius:12px;font-size:16px}
+  .activity-title{font-size:15px}
+  .activity-amount{font-size:16px}
   .form-grid,.summary-row,.rule-grid,.debt-methods{grid-template-columns:1fr}
-  .hybrid-grid{grid-template-columns:1fr 1fr}
+  .hybrid-grid,.compact-summary{grid-template-columns:1fr 1fr}
+  .bottom-nav{grid-template-columns:repeat(5,1fr)}
+  .nav-btn{font-size:10px;padding:6px 2px}
+  .nav-btn span:first-child{font-size:20px}
 }
 </style>
 </head>
