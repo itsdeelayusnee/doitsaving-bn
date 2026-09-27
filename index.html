@@ -133,6 +133,36 @@ body[data-theme="light"] .muted.small{
   opacity:1 !important;
 }
 
+
+.leftover-card{
+  margin-top:12px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:14px 16px;
+}
+.leftover-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.leftover-title{font-weight:900}
+.leftover-amount{font-size:22px;font-weight:900;color:var(--gold);margin-top:4px}
+.leftover-details{display:none;margin-top:14px}
+.leftover-card.open .leftover-details{display:block}
+.leftover-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.leftover-row{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:9px 0;border-top:1px solid var(--line)
+}
+.leftover-row:first-child{border-top:0}
+@media(max-width:620px){
+  .leftover-card{padding:12px 13px;border-radius:18px}
+  .leftover-grid{grid-template-columns:1fr}
+  .leftover-amount{font-size:20px}
+}
+
 .theme-toggle{
   border:1px solid var(--line);
   background:var(--panel);
@@ -383,6 +413,32 @@ input:focus,select:focus{border-color:var(--gold)}
           </div>
           <div class="status" id="homeStatus">Start tracking</div>
         </div>
+
+      </div>
+
+      <div class="leftover-card" id="leftoverCard">
+        <div class="leftover-head">
+          <div>
+            <div class="leftover-title">Allocate Remaining Balance</div>
+            <div class="muted small">Optional — assign leftover money intentionally or carry it forward.</div>
+            <div class="leftover-amount" id="leftoverDisplay">B$0.00</div>
+          </div>
+          <button class="secondary" id="toggleLeftoverBtn">Allocate</button>
+        </div>
+
+        <div class="leftover-details">
+          <div class="leftover-grid">
+            <div class="field"><label>Carry Forward (B$)</label><input id="allocCarry" type="number" min="0" step="0.01" value="0"></div>
+            <div class="field"><label>Cash Savings (B$)</label><input id="allocCash" type="number" min="0" step="0.01" value="0"></div>
+            <div class="field"><label>Gold Savings (B$)</label><input id="allocGold" type="number" min="0" step="0.01" value="0"></div>
+            <div class="field"><label>Extra Debt Payment (B$)</label><input id="allocDebt" type="number" min="0" step="0.01" value="0"></div>
+            <div class="field"><label>Saving Goal (B$)</label><input id="allocGoal" type="number" min="0" step="0.01" value="0"></div>
+          </div>
+
+          <div class="leftover-row"><span>Allocated</span><strong id="allocatedTotal">B$0.00</strong></div>
+          <div class="leftover-row"><span>Unallocated Remaining</span><strong id="unallocatedRemaining">B$0.00</strong></div>
+          <div class="muted small" style="margin-top:8px">This is a planning tool only. It does not move money automatically.</div>
+        </div>
       </div>
 
       <div class="card" style="margin-top:16px">
@@ -605,11 +661,13 @@ const key='doitsavingDashboardCleanV1';
 let state=JSON.parse(localStorage.getItem(key)||'null')||{
   incomes:[],expenses:[],savings:[],goals:[],debts:[],
   budgetRule:'50,30,20',customNeeds:50,customWants:30,customSavings:20,
-  manualAssets:{investments:0,retirement:0,property:0,other:0}
+  manualAssets:{investments:0,retirement:0,property:0,other:0},
+  leftoverAlloc:{carry:0,cash:0,gold:0,debt:0,goal:0}
 };
 
 function today(){return new Date().toISOString().slice(0,10)}
 if(!state.manualAssets)state.manualAssets={investments:0,retirement:0,property:0,other:0};
+if(!state.leftoverAlloc)state.leftoverAlloc={carry:0,cash:0,gold:0,debt:0,goal:0};
 function persist(){localStorage.setItem(key,JSON.stringify(state))}
 function sum(arr,key='amount'){return arr.reduce((a,b)=>a+(+b[key]||0),0)}
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
@@ -682,6 +740,18 @@ function render(){
 
   $('homeNet').textContent=money(net);
   $('homeStatus').textContent=monthIncomeTotal===0?'Start tracking':net>=0?'In good shape':'Needs review';
+
+  const alloc=state.leftoverAlloc||{carry:0,cash:0,gold:0,debt:0,goal:0};
+  const allocated=(+alloc.carry||0)+(+alloc.cash||0)+(+alloc.gold||0)+(+alloc.debt||0)+(+alloc.goal||0);
+  const unallocated=net-allocated;
+  $('leftoverDisplay').textContent=money(Math.max(0,net));
+  $('allocCarry').value=alloc.carry||0;
+  $('allocCash').value=alloc.cash||0;
+  $('allocGold').value=alloc.gold||0;
+  $('allocDebt').value=alloc.debt||0;
+  $('allocGoal').value=alloc.goal||0;
+  $('allocatedTotal').textContent=money(allocated);
+  $('unallocatedRemaining').textContent=money(unallocated);
   $('homeIncome').textContent=money(monthIncomeTotal);
   $('homeExpense').textContent=money(monthExpenseTotal);
   $('homeDebtRepayment').textContent=money(minTotal);
@@ -939,6 +1009,27 @@ applyTheme(savedTheme);
 $('themeToggle').addEventListener('click',()=>{
   const current=document.body.getAttribute('data-theme')||'dark';
   applyTheme(current==='dark'?'light':'dark');
+});
+
+
+$('toggleLeftoverBtn').addEventListener('click',()=>{
+  const card=$('leftoverCard');
+  card.classList.toggle('open');
+  $('toggleLeftoverBtn').textContent=card.classList.contains('open')?'Hide':'Allocate';
+});
+
+['allocCarry','allocCash','allocGold','allocDebt','allocGoal'].forEach(id=>{
+  $(id).addEventListener('input',()=>{
+    state.leftoverAlloc={
+      carry:+$('allocCarry').value||0,
+      cash:+$('allocCash').value||0,
+      gold:+$('allocGold').value||0,
+      debt:+$('allocDebt').value||0,
+      goal:+$('allocGoal').value||0
+    };
+    persist();
+    render();
+  });
 });
 
 render();
