@@ -1323,6 +1323,42 @@ body{
 }
 </style>
 
+
+<style>
+.demo-limit-message{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+  margin-bottom:12px;
+}
+.demo-limit-icon{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:var(--gold);
+  color:#fff;
+  font-weight:800;
+}
+.demo-limit-title{
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:3px;
+}
+.demo-limit-note{
+  font-size:11px;
+  line-height:1.4;
+  color:var(--muted);
+  margin:0 0 14px;
+}
+</style>
+
 </head>
 <body data-theme="light">
 
@@ -1367,7 +1403,7 @@ body{
           <div class="eyebrow">doitsaving.bn</div>
           <div class="brand-title">Hybrid Finance</div>
           <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
-          <div class="demo-mode-badge dev-hidden" id="demoModeBadge">Demo Mode</div>
+          <div class="demo-mode-badge dev-hidden" id="demoModeBadge">Demo Mode · Limited Access</div>
         </div>
       </div>
       <div class="top-actions">
@@ -1390,7 +1426,7 @@ body{
 
 <div class="demo-example-card dev-hidden" id="demoExampleCard">
   <strong>Example data</strong>
-  <span>This demo uses sample income, spending, savings, investments and debt so you can see how the dashboard works.</span>
+  <span>Sample data only · Demo access is limited to 2 entries per section.</span>
 </div>
 
         <div class="hero">
@@ -1921,16 +1957,11 @@ function createDemoState(){
     ],
     expenses:[
       {name:'Household & Groceries',category:'Needs',amount:520,date:demoDate(22)},
-      {name:'Utilities & Internet',category:'Bills',amount:210,date:demoDate(18)},
-      {name:'Transport & Fuel',category:'Transport',amount:240,date:demoDate(16)},
-      {name:'Dining & Coffee',category:'Lifestyle',amount:180,date:demoDate(14)},
-      {name:'Personal Spending',category:'Wants',amount:150,date:demoDate(10)},
-      {name:'Subscriptions',category:'Bills',amount:60,date:demoDate(5)}
+      {name:'Utilities & Internet',category:'Bills',amount:210,date:demoDate(18)}
     ],
     savings:[
       {type:'cash',name:'Emergency Fund',category:'Cash Saving',amount:700,date:demoDate(23)},
-      {type:'gold',name:'Gold Saving',category:'Gold Saving',amount:350,date:demoDate(23)},
-      {type:'cash',name:'Travel Fund',category:'Cash Saving',amount:250,date:demoDate(9)}
+      {type:'gold',name:'Gold Saving',category:'Gold Saving',amount:350,date:demoDate(23)}
     ],
     goals:[
       {name:'Emergency Fund',target:12000,saved:9000,date:demoDate(28)},
@@ -1942,7 +1973,6 @@ function createDemoState(){
     ],
     debts:[
       {name:'Personal Loan',initial:6000,balance:1200,minimum:120,rate:4.50},
-      {name:'Motorcycle Loan',initial:12000,balance:4800,minimum:190,rate:4.25},
       {name:'Car Loan',initial:30000,balance:18450,minimum:585,rate:4.25}
     ],
     budgetRule:'50,30,20',
@@ -1957,10 +1987,6 @@ function createDemoState(){
     transactionDateFrom:'',
     transactionDateTo:'',
     netWorthHistory:[
-      {month:monthKeyOffset(-5),value:18450},
-      {month:monthKeyOffset(-4),value:19680},
-      {month:monthKeyOffset(-3),value:21120},
-      {month:monthKeyOffset(-2),value:22950},
       {month:monthKeyOffset(-1),value:24640},
       {month:monthKeyOffset(0),value:26120}
     ]
@@ -1972,7 +1998,40 @@ function updateDemoUI(){
   if(badge) badge.classList.toggle('dev-hidden', !isDemoMode);
   const exampleCard=$('demoExampleCard');
   if(exampleCard) exampleCard.classList.toggle('dev-hidden', !isDemoMode);
-  if($('lockDashboardBtn')) $('lockDashboardBtn').textContent='Back to Access Screen';
+  if($('lockDashboardBtn')){
+    const desktopLabel=$('lockDashboardBtn').querySelector('.desktop-label');
+    const mobileLabel=$('lockDashboardBtn').querySelector('.mobile-label');
+    if(desktopLabel) desktopLabel.textContent='Back to Access Screen';
+    if(mobileLabel) mobileLabel.textContent='Back';
+    if(!desktopLabel && !mobileLabel) $('lockDashboardBtn').textContent='Back to Access Screen';
+  }
+}
+
+
+const DEMO_MAX_ENTRIES = 2;
+
+function showDemoLimit(message='This section is limited to 2 entries in Demo Mode.'){
+  openSheet(sheetHead('Demo Limit Reached')+`
+    <div class="demo-limit-message">
+      <div class="demo-limit-icon">2</div>
+      <div>
+        <div class="demo-limit-title">Limited Demo Access</div>
+        <div class="subtext">${message}</div>
+      </div>
+    </div>
+    <div class="demo-limit-note">
+      Full access will allow unlimited personal entries and complete tracking.
+    </div>
+    <button class="primary-btn" onclick="closeSheet()">Got it</button>
+  `);
+}
+
+function demoEntryLimitReached(list, label='entries'){
+  if(isDemoMode && list.length >= DEMO_MAX_ENTRIES){
+    showDemoLimit(`Demo Mode allows a maximum of 2 ${label}.`);
+    return true;
+  }
+  return false;
 }
 
 function startDemoMode(){
@@ -2414,13 +2473,13 @@ function render(){
   }
 }
 function openIncomeModal(){ openSheet(sheetHead('Add Income')+`<div class="field"><label>Name</label><input id="mIncomeName" placeholder="Salary"></div><div class="field"><label>Amount (B$)</label><input id="mIncomeAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mIncomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mIncomeDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveIncome()">Add Income</button>`); }
-window.saveIncome=function(){ const amount=+$('mIncomeAmount').value||0; if(amount<=0) return; state.incomes.push({name:$('mIncomeName').value.trim()||'Income', amount, category:$('mIncomeCategory').value, date:$('mIncomeDate').value||today()}); closeSheet(); render(); };
+window.saveIncome=function(){ if(demoEntryLimitReached(state.incomes,'income entries')) return; const amount=+$('mIncomeAmount').value||0; if(amount<=0) return; state.incomes.push({name:$('mIncomeName').value.trim()||'Income', amount, category:$('mIncomeCategory').value, date:$('mIncomeDate').value||today()}); closeSheet(); render(); };
 function openExpenseModal(){ openSheet(sheetHead('Add Expense')+`<div class="field"><label>Name</label><input id="mExpenseName" placeholder="Groceries"></div><div class="field"><label>Amount (B$)</label><input id="mExpenseAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mExpenseCategory"><option>Needs</option><option>Wants</option><option>Bills</option><option>Transport</option><option>Food</option><option>Family</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mExpenseDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveExpense()">Add Expense</button>`); }
-window.saveExpense=function(){ const amount=+$('mExpenseAmount').value||0; if(amount<=0) return; state.expenses.push({name:$('mExpenseName').value.trim()||'Expense', amount, category:$('mExpenseCategory').value, date:$('mExpenseDate').value||today()}); closeSheet(); render(); };
-function openSavingModal(){ openSheet(sheetHead('Add Saving')+`<div class="field"><label>Type</label><select id="mSavingType"><option value="cash">Cash Saving</option><option value="gold">Gold Saving</option></select></div><div class="field"><label>Name</label><input id="mSavingName" placeholder="Emergency Fund / Gold Top Up"></div><div class="field"><label>Amount (B$)</label><input id="mSavingAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Date</label><input id="mSavingDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveSaving()">Add Saving</button>`); }
-window.saveSaving=function(){ const amount=+$('mSavingAmount').value||0; if(amount<=0) return; const type=$('mSavingType').value; state.savings.push({type, name:$('mSavingName').value.trim()||(type==='cash'?'Cash Saving':'Gold Saving'), amount, category:type==='cash'?'Cash Saving':'Gold Saving', date:$('mSavingDate').value||today()}); closeSheet(); render(); };
-function openGoalModal(){ openSheet(sheetHead('New Saving Goal')+`<div class="field"><label>Goal Name</label><input id="mGoalName" placeholder="Emergency Fund"></div><div class="field"><label>Target Amount (B$)</label><input id="mGoalTarget" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Already Saved (B$)</label><input id="mGoalSaved" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div><div class="field"><label>Target Date (Optional)</label><input id="mGoalDate" type="date"></div><button class="primary-btn" onclick="saveGoal()">Create Goal</button>`); }
-window.saveGoal=function(){ const name=$('mGoalName').value.trim(), target=+$('mGoalTarget').value||0, saved=+$('mGoalSaved').value||0; if(!name||target<=0) return; state.goals.push({name,target,saved,targetDate:$('mGoalDate').value||''}); closeSheet(); render(); };
+window.saveExpense=function(){ if(demoEntryLimitReached(state.expenses,'expense entries')) return; const amount=+$('mExpenseAmount').value||0; if(amount<=0) return; state.expenses.push({name:$('mExpenseName').value.trim()||'Expense', amount, category:$('mExpenseCategory').value, date:$('mExpenseDate').value||today()}); closeSheet(); render(); };
+function openSavingModal(){ if(demoEntryLimitReached(state.savings,'saving entries')) return; openSheet(sheetHead('Add Saving')+`<div class="field"><label>Type</label><select id="mSavingType"><option value="cash">Cash Saving</option><option value="gold">Gold Saving</option></select></div><div class="field"><label>Name</label><input id="mSavingName" placeholder="Emergency Fund / Gold Top Up"></div><div class="field"><label>Amount (B$)</label><input id="mSavingAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Date</label><input id="mSavingDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveSaving()">Add Saving</button>`); }
+window.saveSaving=function(){ if(demoEntryLimitReached(state.savings,'saving entries')) return; const amount=+$('mSavingAmount').value||0; if(amount<=0) return; const type=$('mSavingType').value; state.savings.push({type, name:$('mSavingName').value.trim()||(type==='cash'?'Cash Saving':'Gold Saving'), amount, category:type==='cash'?'Cash Saving':'Gold Saving', date:$('mSavingDate').value||today()}); closeSheet(); render(); };
+function openGoalModal(){ if(demoEntryLimitReached(state.goals,'saving goals')) return; openSheet(sheetHead('New Saving Goal')+`<div class="field"><label>Goal Name</label><input id="mGoalName" placeholder="Emergency Fund"></div><div class="field"><label>Target Amount (B$)</label><input id="mGoalTarget" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Already Saved (B$)</label><input id="mGoalSaved" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div><div class="field"><label>Target Date (Optional)</label><input id="mGoalDate" type="date"></div><button class="primary-btn" onclick="saveGoal()">Create Goal</button>`); }
+window.saveGoal=function(){ if(demoEntryLimitReached(state.goals,'saving goals')) return; const name=$('mGoalName').value.trim(), target=+$('mGoalTarget').value||0, saved=+$('mGoalSaved').value||0; if(!name||target<=0) return; state.goals.push({name,target,saved,targetDate:$('mGoalDate').value||''}); closeSheet(); render(); };
 window.openAddMoneyGoal=function(i){ openSheet(sheetHead('Add Money to Goal')+`<div class="field"><label>Goal</label><input value="${esc(state.goals[i].name)}" disabled></div><div class="field"><label>Amount to Add (B$)</label><input id="mGoalAdd" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveGoalAdd(${i})">Add Money</button>`); };
 window.saveGoalAdd=function(i){ const add=+$('mGoalAdd').value||0; if(add<=0) return; state.goals[i].saved=(+state.goals[i].saved||0)+add; closeSheet(); render(); };
 window.openEditGoal=function(i){ const g=state.goals[i]; openSheet(sheetHead('Edit Goal')+`<div class="field"><label>Goal Name</label><input id="eGoalName" value="${esc(g.name)}"></div><div class="field"><label>Target Amount (B$)</label><input id="eGoalTarget" type="number" value="${g.target}" inputmode="decimal"></div><div class="field"><label>Saved (B$)</label><input id="eGoalSaved" type="number" value="${g.saved}" inputmode="decimal"></div><div class="field"><label>Target Date</label><input id="eGoalDate" type="date" value="${g.targetDate||''}"></div><button class="primary-btn" onclick="saveGoalEdit(${i})">Save Changes</button>`); };
@@ -2428,6 +2487,7 @@ window.saveGoalEdit=function(i){ state.goals[i]={name:$('eGoalName').value.trim(
 window.removeGoal=function(i){ state.goals.splice(i,1); render(); };
 
 function openInvestmentModal(){
+  if(demoEntryLimitReached(state.investments,'investments')) return;
   openSheet(sheetHead('Add Investment')+`
     <div class="field">
       <label>Investment Name</label>
@@ -2460,6 +2520,7 @@ function openInvestmentModal(){
 }
 
 window.saveInvestment=function(){
+  if(demoEntryLimitReached(state.investments,'investments')) return;
   const name=$('mInvestmentName').value.trim();
   const cost=parseFloat($('mInvestmentCost').value);
   const currentValue=parseFloat($('mInvestmentValue').value);
@@ -2533,8 +2594,9 @@ window.removeInvestment=function(i){
   render();
 };
 
-function openDebtModal(){ openSheet(sheetHead('Add Debt')+`<div class="field"><label>Debt Name</label><input id="mDebtName" placeholder="Car Loan"></div><div class="field"><label>Loan Amount (B$)</label><input id="mDebtInitial" type="number" min="0" step="0.01" placeholder="Original amount borrowed" inputmode="decimal"></div><div class="field"><label>Outstanding Balance (B$)</label><input id="mDebtBalance" type="number" min="0" step="0.01" placeholder="Amount still owed" inputmode="decimal"></div><div class="field"><label>Debt Payment (B$)</label><input id="mDebtMinimum" type="number" min="0" step="0.01" placeholder="Regular monthly payment" inputmode="decimal"></div><div class="field"><label>Interest / Profit Rate (%) <span style="font-weight:500;color:var(--muted)">(Optional)</span></label><input id="mDebtRate" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveDebt()">Add Debt</button>`); }
+function openDebtModal(){ if(demoEntryLimitReached(state.debts,'debts')) return; openSheet(sheetHead('Add Debt')+`<div class="field"><label>Debt Name</label><input id="mDebtName" placeholder="Car Loan"></div><div class="field"><label>Loan Amount (B$)</label><input id="mDebtInitial" type="number" min="0" step="0.01" placeholder="Original amount borrowed" inputmode="decimal"></div><div class="field"><label>Outstanding Balance (B$)</label><input id="mDebtBalance" type="number" min="0" step="0.01" placeholder="Amount still owed" inputmode="decimal"></div><div class="field"><label>Debt Payment (B$)</label><input id="mDebtMinimum" type="number" min="0" step="0.01" placeholder="Regular monthly payment" inputmode="decimal"></div><div class="field"><label>Interest / Profit Rate (%) <span style="font-weight:500;color:var(--muted)">(Optional)</span></label><input id="mDebtRate" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveDebt()">Add Debt</button>`); }
 window.saveDebt=function(){
+  if(demoEntryLimitReached(state.debts,'debts')) return;
   const name=$('mDebtName').value.trim();
   const initial=parseFloat($('mDebtInitial').value);
   const balance=parseFloat($('mDebtBalance').value);
@@ -2582,14 +2644,35 @@ window.saveDebtEdit=function(i){
 };
 window.removeDebt=function(i){ state.debts.splice(i,1); saveState(); render(); };
 function openRuleModal(){ openSheet(sheetHead('Change Budget Rule')+`<div class="rule-grid"><button class="rule-btn ${state.budgetRule==='50,30,20'?'active':''}" onclick="selectRule('50,30,20')"><strong>50 / 30 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='70,20,10'?'active':''}" onclick="selectRule('70,20,10')"><strong>70 / 20 / 10</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='60,20,20'?'active':''}" onclick="selectRule('60,20,20')"><strong>60 / 20 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='custom'?'active':''}" onclick="selectRule('custom')"><strong>Custom</strong><div class="subtext">Set your own percentages</div></button></div><div class="field" style="margin-top:14px"><label>Needs %</label><input id="rNeeds" type="number" value="${state.customNeeds}" inputmode="decimal"></div><div class="field"><label>Wants %</label><input id="rWants" type="number" value="${state.customWants}" inputmode="decimal"></div><div class="field"><label>Savings %</label><input id="rSavings" type="number" value="${state.customSavings}" inputmode="decimal"></div><button class="primary-btn" onclick="saveRule()">Save Rule</button>`); }
-window.selectRule=function(rule){ state.budgetRule=rule; openRuleModal(); };
+window.selectRule=function(rule){
+  if(isDemoMode && rule==='custom'){
+    showDemoLimit('Custom budget rules are available with full access. You can still preview the preset rules in Demo Mode.');
+    return;
+  }
+  state.budgetRule=rule;
+  openRuleModal();
+};
 window.saveRule=function(){ state.customNeeds=+$('rNeeds').value||0; state.customWants=+$('rWants').value||0; state.customSavings=+$('rSavings').value||0; closeSheet(); render(); };
-function openAssetsModal(){ openSheet(sheetHead('Manage Other Assets')+`<div class="subtext" style="margin-bottom:12px">Cash, gold and investments are already included automatically. Add only assets that are not tracked elsewhere.</div><div class="field"><label>Retirement (B$)</label><input id="aRetire" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}" inputmode="decimal"></div><div class="field"><label>Property / Major Assets (B$)</label><input id="aProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}" inputmode="decimal"></div><div class="field"><label>Other Assets (B$)</label><input id="aOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveAssets()">Save Assets</button>`); }
+function openAssetsModal(){
+  if(isDemoMode){
+    openSheet(sheetHead('Other Assets · Demo')+`
+      <div class="subtext" style="margin-bottom:12px">Other Assets are view-only in Demo Mode.</div>
+      <div class="compact-card"><div class="label">Retirement</div><div class="metric-mid">${money(state.manualAssets.retirement||0)}</div></div>
+      <div class="compact-card" style="margin-top:8px"><div class="label">Property / Major Assets</div><div class="metric-mid">${money(state.manualAssets.property||0)}</div></div>
+      <div class="compact-card" style="margin-top:8px"><div class="label">Other Assets</div><div class="metric-mid">${money(state.manualAssets.other||0)}</div></div>
+      <div class="demo-limit-note" style="margin-top:12px">Editing Other Assets is available with full access.</div>
+      <button class="primary-btn" onclick="closeSheet()">Close</button>
+    `);
+    return;
+  }
+  openSheet(sheetHead('Manage Other Assets')+`<div class="subtext" style="margin-bottom:12px">Cash, gold and investments are already included automatically. Add only assets that are not tracked elsewhere.</div><div class="field"><label>Retirement (B$)</label><input id="aRetire" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}" inputmode="decimal"></div><div class="field"><label>Property / Major Assets (B$)</label><input id="aProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}" inputmode="decimal"></div><div class="field"><label>Other Assets (B$)</label><input id="aOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveAssets()">Save Assets</button>`); }
 window.saveAssets=function(){ state.manualAssets={investments:state.manualAssets.investments||0,retirement:+$('aRetire').value||0,property:+$('aProperty').value||0,other:+$('aOther').value||0}; saveState(); closeSheet(); render(); };
 window.removeIncome=i=>{ state.incomes.splice(i,1); render(); }; window.removeExpense=i=>{ state.expenses.splice(i,1); render(); }; window.removeSaving=i=>{ state.savings.splice(i,1); render(); };
 document.querySelectorAll('[data-strategy]').forEach(btn=>btn.addEventListener('click',()=>{ state.strategyView=btn.dataset.strategy; render(); }));
 $('newTransactionBtn').addEventListener('click', ()=>{
   const startingType=state.transactionView==='expense' ? 'expense' : 'income';
+  const startingList=startingType==='income' ? state.incomes : state.expenses;
+  if(demoEntryLimitReached(startingList, startingType==='income' ? 'income entries' : 'expense entries')) return;
   openSheet(sheetHead('Add Transaction')+`
     <div class="transaction-type-toggle">
       <button class="transaction-type-btn ${startingType==='income'?'active':''}" type="button" data-modal-type="income">Income</button>
@@ -2653,6 +2736,7 @@ $('newTransactionBtn').addEventListener('click', ()=>{
 }); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newInvestmentBtn').addEventListener('click', openInvestmentModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
 
 function openNetWorthSnapshotModal(){
+  if(demoEntryLimitReached(state.netWorthHistory,'net worth snapshots')) return;
   openSheet(sheetHead('Add Past Net Worth Snapshot')+`
     <div class="subtext" style="margin-bottom:12px">
       Use this if you already know a previous month's net worth and want it included in the progression chart.
@@ -2671,9 +2755,14 @@ function openNetWorthSnapshotModal(){
 window.saveNetWorthSnapshot=function(){
   const month=$('snapshotMonth').value;
   const value=+$('snapshotValue').value;
+  const existingSnapshot=state.netWorthHistory.find(x=>x.month===month);
+  if(isDemoMode && !existingSnapshot && state.netWorthHistory.length>=DEMO_MAX_ENTRIES){
+    showDemoLimit('Demo Mode allows a maximum of 2 net worth snapshots.');
+    return;
+  }
   if(!month || !Number.isFinite(value)) return;
 
-  const existing=state.netWorthHistory.find(x=>x.month===month);
+  const existing=existingSnapshot || state.netWorthHistory.find(x=>x.month===month);
   if(existing) existing.value=value;
   else state.netWorthHistory.push({month,value});
 
@@ -2686,6 +2775,8 @@ $('addNetWorthSnapshotBtn').addEventListener('click', openNetWorthSnapshotModal)
 
 window.saveTransaction=function(){
   const type=$('mTransactionType').value;
+  const targetList=type==='income' ? state.incomes : state.expenses;
+  if(demoEntryLimitReached(targetList, type==='income' ? 'income entries' : 'expense entries')) return;
   const amount=+$('mTransactionAmount').value||0;
   if(amount<=0) return;
   const categoryEl=$('mTransactionCategory');
