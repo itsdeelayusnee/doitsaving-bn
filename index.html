@@ -272,6 +272,68 @@ body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
 }
 
 
+
+.text-action{
+  border:0;
+  background:transparent;
+  padding:4px 0;
+  color:var(--gold);
+  font-weight:900;
+  font-size:12px;
+  cursor:pointer;
+}
+.home-compact-summary{
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius:var(--radius-xl);
+  padding:16px;
+}
+.home-compact-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.home-compact-value{
+  font-size:26px;
+  font-weight:900;
+  line-height:1.05;
+}
+.home-inline-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
+.home-inline-stat .label{
+  margin-bottom:3px;
+}
+.home-inline-stat strong{
+  font-size:15px;
+}
+.home-mini-debt{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.home-mini-debt .compact-card{
+  padding:12px;
+}
+.home-mini-debt .metric-mid{
+  font-size:18px;
+}
+.latest-moves-footer{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+}
+@media(max-width:640px){
+  .home-mini-debt{grid-template-columns:1fr 1fr}
+  .home-mini-debt .compact-card:last-child{grid-column:1/-1}
+}
+
 .networth-chart-panel{
   margin-top:14px;
   border-top:1px solid var(--line);
@@ -374,7 +436,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
             </div>
             <div class="status" id="leftoverStatus">Start tracking</div>
           </div>
-          <div style="margin-top:14px"><button class="action-btn" id="toggleAllocation">Allocate Remaining Balance</button></div>
+          <div style="margin-top:14px"><button class="action-btn" id="toggleAllocation">Plan My Remaining Balance</button></div>
           <div class="allocation" id="allocationBox">
             <div class="allocation-grid" style="margin-top:14px">
               <div class="field"><label>Carry Forward</label><input id="allocCarry" type="number" min="0" step="0.01" value="0"></div>
@@ -419,36 +481,6 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
 
         <div class="section">
           <div class="section-head">
-            <div><h2>Hybrid Savings</h2><p>Your cash + gold saving system.</p></div>
-            <button class="link-inline" data-nav="savings">Open Savings</button>
-          </div>
-          <div class="hybrid-summary">
-            <div class="panel">
-              <div class="label">Total Hybrid Savings</div>
-              <div class="metric-large goldish" id="homeHybridTotal">B$0.00</div>
-              <div class="subtext">Combined value of your recorded cash and gold savings.</div>
-            </div>
-            <div class="stack">
-              <div class="compact-card"><div class="label">Cash Saved</div><div class="metric-mid" id="homeCash">B$0.00</div><div class="subtext">Accessible savings recorded.</div></div>
-              <div class="compact-card"><div class="label">Gold Saved Value</div><div class="metric-mid" id="homeGold">B$0.00</div><div class="subtext">BND value recorded for gold savings.</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-head">
-            <div><h2>Debt-Free Journey</h2><p>Track debt reduction and repayment direction.</p></div>
-            <button class="link-inline" data-nav="debt">View Debt</button>
-          </div>
-          <div class="split-3">
-            <div class="panel panel-tight"><div class="label">Debt Remaining</div><div class="metric-mid goldish" id="homeDebtRemaining">B$0.00</div><div class="subtext" id="homeDebtCount">0 active debts</div></div>
-            <div class="panel panel-tight"><div class="label">Monthly Debt Repayment</div><div class="metric-mid goldish" id="homeDebtMonthly">B$0.00</div><div class="subtext">Current minimum commitments.</div></div>
-            <div class="panel panel-tight"><div class="label">Debt Progress</div><div class="metric-mid goldish" id="homeDebtProgress">0%</div><div class="subtext">Paid down against recorded starting balances.</div></div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-head">
             <div><h2>Net Worth</h2><p>Your overall financial position.</p></div>
             <button class="action-btn" id="manageAssetsBtn">Manage Assets</button>
           </div>
@@ -465,7 +497,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
                   <div class="networth-chart-title">Net Worth Progress</div>
                   <div class="networth-chart-sub">Monthly snapshots of your overall financial position.</div>
                 </div>
-                <button class="action-btn" id="addNetWorthSnapshotBtn">+ Add Past Snapshot</button>
+                <button class="text-action" id="addNetWorthSnapshotBtn">+ Add Past Snapshot</button>
               </div>
 
               <div class="networth-chart-wrap">
@@ -481,9 +513,58 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         </div>
 
         <div class="section">
+          <div class="section-head">
+            <div><h2>Hybrid Savings</h2><p>Your cash + gold saving system.</p></div>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Total Hybrid Savings</div>
+                <div class="home-compact-value" id="homeHybridTotal">B$0.00</div>
+              </div>
+              <div class="subtext">Cash + gold value</div>
+            </div>
+            <div class="home-inline-stats">
+              <div class="home-inline-stat">
+                <div class="label">Cash</div>
+                <strong id="homeCashSaved">B$0.00</strong>
+              </div>
+              <div class="home-inline-stat">
+                <div class="label">Gold</div>
+                <strong id="homeGoldSaved">B$0.00</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Debt-Free Journey</h2><p>Track debt reduction and repayment direction.</p></div>
+            <button class="link-inline" data-nav="debt">View Debt</button>
+          </div>
+          <div class="home-mini-debt">
+            <div class="panel panel-tight"><div class="label">Debt Remaining</div><div class="metric-mid goldish" id="homeDebtRemaining">B$0.00</div><div class="subtext" id="homeDebtCount">0 active debts</div></div>
+            <div class="panel panel-tight"><div class="label">Monthly Debt Repayment</div><div class="metric-mid goldish" id="homeDebtMonthly">B$0.00</div><div class="subtext">Current minimum commitments.</div></div>
+            <div class="panel panel-tight"><div class="label">Debt Progress</div><div class="metric-mid goldish" id="homeDebtProgress">0%</div><div class="subtext">Paid down against recorded starting balances.</div></div>
+          </div>
+        </div>
+
+        <div class="section">
           <div class="section-head"><div><h2>Latest Money Moves</h2><p>Your latest recorded financial activity.</p></div></div>
           <div class="list" id="homeMoves"></div>
+        
+          <div class="latest-moves-footer">
+            <button class="text-action" id="viewAllTransactionsBtn">View all transactions →</button>
+          </div>
         </div>
+
+        
+
+        
+
+        
+
+        
       </section>
 
       
@@ -689,7 +770,7 @@ $('themeToggle').addEventListener('click',()=>{ const current=document.body.getA
 document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
 document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.nav)));
 function openPage(page){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); $(page).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});}
-$('toggleAllocation').addEventListener('click',()=>{ $('allocationBox').classList.toggle('open'); $('toggleAllocation').textContent = $('allocationBox').classList.contains('open') ? 'Hide Allocation' : 'Allocate Remaining Balance'; });
+$('toggleAllocation').addEventListener('click',()=>{ $('allocationBox').classList.toggle('open'); $('toggleAllocation').textContent = $('allocationBox').classList.contains('open') ? 'Hide Allocation' : 'Plan My Remaining Balance'; });
 ['allocCarry','allocCash','allocGold','allocDebt','allocGoal'].forEach(id=>$(id).addEventListener('input',()=>{ state.leftoverAlloc={carry:+$('allocCarry').value||0, cash:+$('allocCash').value||0, gold:+$('allocGold').value||0, debt:+$('allocDebt').value||0, goal:+$('allocGoal').value||0}; saveState(); render(); }));
 $('modal').addEventListener('click',e=>{ if(e.target===$('modal')) closeSheet(); });
 function closeSheet(){ $('modal').classList.remove('open'); $('sheet').innerHTML=''; } window.closeSheet = closeSheet;
@@ -1148,6 +1229,15 @@ if(calcHelpToggle){
     const body=$('calcHelpBody');
     body.classList.toggle('open');
     calcHelpToggle.textContent=body.classList.contains('open') ? 'Hide calculation guide' : 'How is this calculated?';
+  });
+}
+
+
+const viewAllTransactionsBtn=$('viewAllTransactionsBtn');
+if(viewAllTransactionsBtn){
+  viewAllTransactionsBtn.addEventListener('click',()=>{
+    const txNav=document.querySelector('[data-page="transactions"]');
+    if(txNav) txNav.click();
   });
 }
 
