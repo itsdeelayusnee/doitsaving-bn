@@ -442,7 +442,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         <div class="brand-stack">
           <div class="eyebrow">doitsaving.bn</div>
           <div class="brand-title">Hybrid Finance Dashboard</div>
-          <div class="brand-sub">Cash • Gold • Debt • Net Worth</div>
+          <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
         </div>
       </div>
       <button class="theme-toggle" id="themeToggle">Dark Mode</button>
@@ -451,7 +451,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
     <div class="brand-strip">
       <div class="brand-strip-title">The doitsaving.bn hybrid system</div>
       <div class="brand-strip-main">A personal finance dashboard built for hybrid savers.</div>
-      <div class="brand-strip-note">Track your money flow, cash savings, gold savings, debt-free journey and net worth in one place.</div>
+      <div class="brand-strip-note">Track your money flow, cash savings, gold savings, investments, debt-free journey and net worth in one place.</div>
     </div>
 
     <main>
@@ -503,16 +503,13 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
               </div>
               <div class="chart-legend" id="homeIncomeLegend"></div>
             </div>
-            <div class="small-note" id="homeChartNote">
-              Expenses + hybrid savings + debt repayment + money left = total income.
-            </div>
           </div>
         </div>
 
         <div class="section">
           <div class="section-head">
             <div><h2>Net Worth</h2><p>Your overall financial position.</p></div>
-            <button class="action-btn" id="manageAssetsBtn">Manage Assets</button>
+            <button class="action-btn" id="manageAssetsBtn">Other Assets</button>
           </div>
           <div class="panel">
             <div class="label">Net Worth</div><div class="metric-large goldish" id="homeNetWorth">B$0.00</div>
@@ -563,6 +560,35 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
               <div class="home-inline-stat">
                 <div class="label">Gold</div>
                 <strong id="homeGoldSaved">B$0.00</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Investments</h2><p>A quick snapshot of your investment value.</p></div>
+            <button class="link-inline" data-nav="investments">View Investments</button>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Current Investment Value</div>
+                <div class="home-compact-value" id="homeInvestmentValue">B$0.00</div>
+              </div>
+              <div style="text-align:right">
+                <div class="label">Gain / Loss</div>
+                <div class="metric-mid" id="homeInvestmentGain">B$0.00</div>
+              </div>
+            </div>
+            <div class="home-inline-stats">
+              <div class="home-inline-stat">
+                <div class="label">Amount Invested</div>
+                <strong id="homeInvestmentCost">B$0.00</strong>
+              </div>
+              <div class="home-inline-stat">
+                <div class="label">Holdings</div>
+                <strong id="homeInvestmentCount">0</strong>
               </div>
             </div>
           </div>
@@ -748,6 +774,36 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         </div>
       </section>
 
+      <section class="page" id="investments">
+        <h1 class="page-title">Investments</h1>
+        <p class="page-sub">Track how much you have invested and the current value of your holdings.</p>
+
+        <div class="split-3">
+          <div class="panel panel-tight">
+            <div class="label">Amount Invested</div>
+            <div class="metric-mid" id="investmentCostTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Current Value</div>
+            <div class="metric-mid goldish" id="investmentValueTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Gain / Loss</div>
+            <div class="metric-mid" id="investmentGainTotal">B$0.00</div>
+            <div class="subtext" id="investmentReturnPct">0.00%</div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-top:18px">
+          <div>
+            <h2>Your Investments</h2>
+            <p>Record each holding using the amount invested and its latest value.</p>
+          </div>
+          <button class="primary-btn" id="newInvestmentBtn">+ Add Investment</button>
+        </div>
+        <div class="stack" id="investmentList"></div>
+      </section>
+
       <section class="page" id="debt">
         <h1 class="page-title">Debt-Free Journey</h1><p class="page-sub">Monitor your debt-free journey using your preferred snowball payoff approach.</p>
         <div class="split-3">
@@ -798,10 +854,11 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
   </div>
 
   <div class="nav">
-    <div class="nav-inner" style="grid-template-columns:repeat(4,1fr)">
+    <div class="nav-inner" style="grid-template-columns:repeat(5,1fr)">
       <button class="nav-btn active" data-page="home"><span>⌂</span><span>Home</span></button>
       <button class="nav-btn" data-page="transactions"><span>⇄</span><span>Transactions</span></button>
       <button class="nav-btn" data-page="savings"><span>◉</span><span>Savings</span></button>
+      <button class="nav-btn" data-page="investments"><span>↗</span><span>Investments</span></button>
       <button class="nav-btn" data-page="debt"><span>▣</span><span>Debt</span></button>
     </div>
   </div>
@@ -817,13 +874,14 @@ const esc = s => String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;'
 const storeKey = 'doitsavingRedesignV1';
 const themeKey = 'doitsavingRedesignTheme';
 let state = JSON.parse(localStorage.getItem(storeKey)||'null') || {
-  incomes:[], expenses:[], savings:[], goals:[], debts:[],
+  incomes:[], expenses:[], savings:[], goals:[], investments:[], debts:[],
   budgetRule:'50,30,20', customNeeds:50, customWants:30, customSavings:20,
   manualAssets:{investments:0, retirement:0, property:0, other:0},
   leftoverAlloc:{carry:0, cash:0, gold:0, debt:0, goal:0},
   strategyView:'snowball', transactionView:'income'
 };
 if(!state.manualAssets) state.manualAssets = {investments:0, retirement:0, property:0, other:0};
+if(!Array.isArray(state.investments)) state.investments = [];
 if(!state.leftoverAlloc) state.leftoverAlloc = {carry:0, cash:0, gold:0, debt:0, goal:0};
 if(!state.strategyView) state.strategyView = 'snowball';
 if(!state.transactionView) state.transactionView = 'income';
@@ -918,9 +976,6 @@ function drawHomeIncomeChart(income, expenses, savings, debt, left){
 
   $('homeChartIncome').textContent=money(Math.max(0,income));
 
-  $('homeChartNote').textContent = left < 0
-    ? `Your recorded expenses, savings and debt repayments exceed this month's income by ${money(Math.abs(left))}.`
-    : 'Expenses + hybrid savings + debt repayment + money left = total income.';
 }
 
 
@@ -1046,7 +1101,7 @@ function drawNetWorthChart(){
 
 function render(){
   saveState();
-  const incomes=state.incomes, expenses=state.expenses, savings=state.savings, debts=state.debts;
+  const incomes=state.incomes, expenses=state.expenses, savings=state.savings, investments=state.investments, debts=state.debts;
   const incomeTotal=sum(incomes), expenseTotal=sum(expenses), cashTotal=sum(savings.filter(s=>s.type==='cash')), goldTotal=sum(savings.filter(s=>s.type==='gold')), hybridTotal=cashTotal+goldTotal;
   const monthIncome=incomes.filter(currentMonthFilter), monthExpense=expenses.filter(currentMonthFilter), monthSavings=savings.filter(currentMonthFilter);
   const monthCash=sum(monthSavings.filter(s=>s.type==='cash')), monthGold=sum(monthSavings.filter(s=>s.type==='gold')), monthHybrid=monthCash+monthGold;
@@ -1058,7 +1113,20 @@ function render(){
   const allocated=(+alloc.carry||0)+(+alloc.cash||0)+(+alloc.gold||0)+(+alloc.debt||0)+(+alloc.goal||0); $('allocTotal').textContent=money(allocated); $('allocRemaining').textContent=money(monthLeft-allocated);
   $('homeHybridTotal').textContent=money(hybridTotal); $('homeCashSaved').textContent=money(cashTotal); $('homeGoldSaved').textContent=money(goldTotal);
   const debtPaid=debts.reduce((total,d)=>{ const loan=+(d.initial ?? d.balance ?? 0); const outstanding=+(d.balance ?? 0); return total + Math.max(0,loan-outstanding); },0); $('homeDebtPaid').textContent=money(debtPaid); $('homeDebtCount').textContent=`${debts.length} active ${debts.length===1?'debt':'debts'}`; const progress=debtProgressPercent(); $('homeDebtProgress').textContent=`${progress.toFixed(0)}%`; $('homeDebtProgressBar').style.width=`${Math.max(0,Math.min(100,progress))}%`;
-  const manualAssets=(+state.manualAssets.investments||0)+(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0), totalAssets=hybridTotal+manualAssets, netWorth=totalAssets-debtRemaining;
+  const investmentCost=sum(investments,'cost');
+  const trackedInvestmentValue=sum(investments,'currentValue');
+  const investmentValue=investments.length ? trackedInvestmentValue : (+state.manualAssets.investments||0);
+  const investmentGain=investmentValue-investmentCost;
+  const investmentReturn=investmentCost>0 ? (investmentGain/investmentCost)*100 : 0;
+
+  $('homeInvestmentCost').textContent=money(investmentCost);
+  $('homeInvestmentValue').textContent=money(investmentValue);
+  $('homeInvestmentGain').textContent=`${investmentGain>=0?'+':''}${money(investmentGain)}`;
+  $('homeInvestmentGain').className='metric-mid '+(investmentGain>=0?'positive':'negative');
+  $('homeInvestmentCount').textContent=investments.length;
+
+  const otherManualAssets=(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0);
+  const totalAssets=hybridTotal+investmentValue+otherManualAssets, netWorth=totalAssets-debtRemaining;
   $('homeNetWorth').textContent=money(netWorth); $('homeAssets').textContent=money(totalAssets); $('homeLiabilities').textContent=money(debtRemaining);
   updateMonthlyNetWorthSnapshot(netWorth);
   drawNetWorthChart();
@@ -1120,6 +1188,42 @@ function render(){
   $('goalList').innerHTML=state.goals.length ? state.goals.map((g,i)=>{ const pct=g.target>0?Math.max(0,Math.min(100,(g.saved/g.target)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)}${g.targetDate ? ' · Target ' + esc(g.targetDate) : ''}</div></div><div class="goal-name" style="color:var(--gold)">${pct.toFixed(0)}%</div></div><div class="progress"><span style="width:${pct}%"></span></div><div class="goal-meta">${money(Math.max(0,g.target-g.saved))} remaining</div><div class="goal-actions"><button class="text-btn text-green" onclick="openAddMoneyGoal(${i})">+ Add Money</button><button class="text-btn text-muted" onclick="openEditGoal(${i})">Edit</button><button class="text-btn text-red" onclick="removeGoal(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No saving goals yet.</div>';
   $('savingList').innerHTML=savings.length ? [...savings].reverse().map((x,rev)=>activityMarkup(x,x.type,savings.length-1-rev,'removeSaving')).join('') : '<div class="empty">No savings activity yet.</div>';
 
+  $('investmentCostTotal').textContent=money(investmentCost);
+  $('investmentValueTotal').textContent=money(investmentValue);
+  $('investmentGainTotal').textContent=`${investmentGain>=0?'+':''}${money(investmentGain)}`;
+  $('investmentGainTotal').className='metric-mid '+(investmentGain>=0?'positive':'negative');
+  $('investmentReturnPct').textContent=`${investmentReturn>=0?'+':''}${investmentReturn.toFixed(2)}%`;
+  $('investmentReturnPct').className='subtext '+(investmentReturn>=0?'positive':'negative');
+
+  $('investmentList').innerHTML=investments.length ? investments.map((inv,i)=>{
+    const gain=(+inv.currentValue||0)-(+inv.cost||0);
+    const pct=(+inv.cost||0)>0 ? (gain/(+inv.cost||0))*100 : 0;
+    return `<div class="goal-card">
+      <div class="goal-head">
+        <div>
+          <div class="goal-name">${esc(inv.name)}</div>
+          <div class="goal-meta">${esc(inv.type||'Investment')}${inv.date ? ' · '+esc(inv.date) : ''}</div>
+        </div>
+        <div class="goal-name ${gain>=0?'positive':'negative'}">${gain>=0?'+':''}${money(gain)}</div>
+      </div>
+      <div class="split-2" style="margin-top:12px">
+        <div class="compact-card">
+          <div class="label">Amount Invested</div>
+          <div class="metric-mid">${money(inv.cost)}</div>
+        </div>
+        <div class="compact-card">
+          <div class="label">Current Value</div>
+          <div class="metric-mid goldish">${money(inv.currentValue)}</div>
+        </div>
+      </div>
+      <div class="goal-meta" style="margin-top:10px">${pct>=0?'+':''}${pct.toFixed(2)}% return</div>
+      <div class="goal-actions">
+        <button class="text-btn text-muted" onclick="openEditInvestment(${i})">Edit</button>
+        <button class="text-btn text-red" onclick="removeInvestment(${i})">Delete</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No investments added yet.</div>';
+
   $('debtTotal').textContent=money(debtRemaining); $('debtMinimums').textContent=money(debtMonthly); $('debtProgress').textContent=`${progress.toFixed(0)}%`;
 
   const debtStartingTotal = debts.reduce((t,d)=>t+(+(d.initial||d.balance)||0),0);
@@ -1158,6 +1262,113 @@ window.saveGoalAdd=function(i){ const add=+$('mGoalAdd').value||0; if(add<=0) re
 window.openEditGoal=function(i){ const g=state.goals[i]; openSheet(sheetHead('Edit Goal')+`<div class="field"><label>Goal Name</label><input id="eGoalName" value="${esc(g.name)}"></div><div class="field"><label>Target Amount (B$)</label><input id="eGoalTarget" type="number" value="${g.target}" inputmode="decimal"></div><div class="field"><label>Saved (B$)</label><input id="eGoalSaved" type="number" value="${g.saved}" inputmode="decimal"></div><div class="field"><label>Target Date</label><input id="eGoalDate" type="date" value="${g.targetDate||''}"></div><button class="primary-btn" onclick="saveGoalEdit(${i})">Save Changes</button>`); };
 window.saveGoalEdit=function(i){ state.goals[i]={name:$('eGoalName').value.trim()||state.goals[i].name,target:+$('eGoalTarget').value||0,saved:+$('eGoalSaved').value||0,targetDate:$('eGoalDate').value||''}; closeSheet(); render(); };
 window.removeGoal=function(i){ state.goals.splice(i,1); render(); };
+
+function openInvestmentModal(){
+  openSheet(sheetHead('Add Investment')+`
+    <div class="field">
+      <label>Investment Name</label>
+      <input id="mInvestmentName" placeholder="e.g. S&P 500 ETF">
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="mInvestmentType">
+        <option>Investment Fund</option>
+        <option>ETF / Stock</option>
+        <option>Sukuk / Bond</option>
+        <option>Retirement Investment</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Amount Invested (B$)</label>
+      <input id="mInvestmentCost" type="number" min="0" step="0.01" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Current Value (B$)</label>
+      <input id="mInvestmentValue" type="number" min="0" step="0.01" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Date <span style="font-weight:500;color:var(--muted)">(Optional)</span></label>
+      <input id="mInvestmentDate" type="date" value="${today()}">
+    </div>
+    <button class="primary-btn" onclick="saveInvestment()">Add Investment</button>
+  `);
+}
+
+window.saveInvestment=function(){
+  const name=$('mInvestmentName').value.trim();
+  const cost=parseFloat($('mInvestmentCost').value);
+  const currentValue=parseFloat($('mInvestmentValue').value);
+  if(!name){ alert('Please enter an investment name.'); return; }
+  if(!Number.isFinite(cost) || cost<0){ alert('Please enter a valid amount invested.'); return; }
+  if(!Number.isFinite(currentValue) || currentValue<0){ alert('Please enter a valid current value.'); return; }
+
+  state.investments.push({
+    name,
+    type:$('mInvestmentType').value,
+    cost:Number(cost.toFixed(2)),
+    currentValue:Number(currentValue.toFixed(2)),
+    date:$('mInvestmentDate').value||''
+  });
+  saveState();
+  closeSheet();
+  render();
+};
+
+window.openEditInvestment=function(i){
+  const inv=state.investments[i];
+  openSheet(sheetHead('Edit Investment')+`
+    <div class="field">
+      <label>Investment Name</label>
+      <input id="eInvestmentName" value="${esc(inv.name)}">
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="eInvestmentType">
+        ${['Investment Fund','ETF / Stock','Sukuk / Bond','Retirement Investment','Other'].map(x=>`<option ${inv.type===x?'selected':''}>${x}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field">
+      <label>Amount Invested (B$)</label>
+      <input id="eInvestmentCost" type="number" min="0" step="0.01" inputmode="decimal" value="${(+inv.cost||0).toFixed(2)}">
+    </div>
+    <div class="field">
+      <label>Current Value (B$)</label>
+      <input id="eInvestmentValue" type="number" min="0" step="0.01" inputmode="decimal" value="${(+inv.currentValue||0).toFixed(2)}">
+    </div>
+    <div class="field">
+      <label>Date <span style="font-weight:500;color:var(--muted)">(Optional)</span></label>
+      <input id="eInvestmentDate" type="date" value="${inv.date||''}">
+    </div>
+    <button class="primary-btn" onclick="saveInvestmentEdit(${i})">Save Changes</button>
+  `);
+};
+
+window.saveInvestmentEdit=function(i){
+  const name=$('eInvestmentName').value.trim()||state.investments[i].name;
+  const cost=parseFloat($('eInvestmentCost').value);
+  const currentValue=parseFloat($('eInvestmentValue').value);
+  if(!Number.isFinite(cost) || cost<0){ alert('Please enter a valid amount invested.'); return; }
+  if(!Number.isFinite(currentValue) || currentValue<0){ alert('Please enter a valid current value.'); return; }
+
+  state.investments[i]={
+    name,
+    type:$('eInvestmentType').value,
+    cost:Number(cost.toFixed(2)),
+    currentValue:Number(currentValue.toFixed(2)),
+    date:$('eInvestmentDate').value||''
+  };
+  saveState();
+  closeSheet();
+  render();
+};
+
+window.removeInvestment=function(i){
+  state.investments.splice(i,1);
+  saveState();
+  render();
+};
+
 function openDebtModal(){ openSheet(sheetHead('Add Debt')+`<div class="field"><label>Debt Name</label><input id="mDebtName" placeholder="Car Loan"></div><div class="field"><label>Loan Amount (B$)</label><input id="mDebtInitial" type="number" min="0" step="0.01" placeholder="Original amount borrowed" inputmode="decimal"></div><div class="field"><label>Outstanding Balance (B$)</label><input id="mDebtBalance" type="number" min="0" step="0.01" placeholder="Amount still owed" inputmode="decimal"></div><div class="field"><label>Debt Payment (B$)</label><input id="mDebtMinimum" type="number" min="0" step="0.01" placeholder="Regular monthly payment" inputmode="decimal"></div><div class="field"><label>Interest / Profit Rate (%) <span style="font-weight:500;color:var(--muted)">(Optional)</span></label><input id="mDebtRate" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveDebt()">Add Debt</button>`); }
 window.saveDebt=function(){
   const name=$('mDebtName').value.trim();
@@ -1209,8 +1420,8 @@ window.removeDebt=function(i){ state.debts.splice(i,1); saveState(); render(); }
 function openRuleModal(){ openSheet(sheetHead('Change Budget Rule')+`<div class="rule-grid"><button class="rule-btn ${state.budgetRule==='50,30,20'?'active':''}" onclick="selectRule('50,30,20')"><strong>50 / 30 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='70,20,10'?'active':''}" onclick="selectRule('70,20,10')"><strong>70 / 20 / 10</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='60,20,20'?'active':''}" onclick="selectRule('60,20,20')"><strong>60 / 20 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='custom'?'active':''}" onclick="selectRule('custom')"><strong>Custom</strong><div class="subtext">Set your own percentages</div></button></div><div class="field" style="margin-top:14px"><label>Needs %</label><input id="rNeeds" type="number" value="${state.customNeeds}" inputmode="decimal"></div><div class="field"><label>Wants %</label><input id="rWants" type="number" value="${state.customWants}" inputmode="decimal"></div><div class="field"><label>Savings %</label><input id="rSavings" type="number" value="${state.customSavings}" inputmode="decimal"></div><button class="primary-btn" onclick="saveRule()">Save Rule</button>`); }
 window.selectRule=function(rule){ state.budgetRule=rule; openRuleModal(); };
 window.saveRule=function(){ state.customNeeds=+$('rNeeds').value||0; state.customWants=+$('rWants').value||0; state.customSavings=+$('rSavings').value||0; closeSheet(); render(); };
-function openAssetsModal(){ openSheet(sheetHead('Manage Assets')+`<div class="subtext" style="margin-bottom:12px">Cash and gold savings are already included automatically. Add only other assets that are not already tracked elsewhere.</div><div class="field"><label>Investments (B$)</label><input id="aInvest" type="number" min="0" step="0.01" value="${state.manualAssets.investments||0}" inputmode="decimal"></div><div class="field"><label>Retirement (B$)</label><input id="aRetire" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}" inputmode="decimal"></div><div class="field"><label>Property / Major Assets (B$)</label><input id="aProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}" inputmode="decimal"></div><div class="field"><label>Other Assets (B$)</label><input id="aOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveAssets()">Save Assets</button>`); }
-window.saveAssets=function(){ state.manualAssets={investments:+$('aInvest').value||0,retirement:+$('aRetire').value||0,property:+$('aProperty').value||0,other:+$('aOther').value||0}; closeSheet(); render(); };
+function openAssetsModal(){ openSheet(sheetHead('Manage Other Assets')+`<div class="subtext" style="margin-bottom:12px">Cash, gold and investments are already included automatically. Add only assets that are not tracked elsewhere.</div><div class="field"><label>Retirement (B$)</label><input id="aRetire" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}" inputmode="decimal"></div><div class="field"><label>Property / Major Assets (B$)</label><input id="aProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}" inputmode="decimal"></div><div class="field"><label>Other Assets (B$)</label><input id="aOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveAssets()">Save Assets</button>`); }
+window.saveAssets=function(){ state.manualAssets={investments:state.manualAssets.investments||0,retirement:+$('aRetire').value||0,property:+$('aProperty').value||0,other:+$('aOther').value||0}; saveState(); closeSheet(); render(); };
 window.removeIncome=i=>{ state.incomes.splice(i,1); render(); }; window.removeExpense=i=>{ state.expenses.splice(i,1); render(); }; window.removeSaving=i=>{ state.savings.splice(i,1); render(); };
 document.querySelectorAll('[data-strategy]').forEach(btn=>btn.addEventListener('click',()=>{ state.strategyView=btn.dataset.strategy; render(); }));
 $('newTransactionBtn').addEventListener('click', ()=>{
@@ -1275,7 +1486,7 @@ $('newTransactionBtn').addEventListener('click', ()=>{
     $('moreTransactionDetails').textContent=
       $('transactionOptionalDetails').classList.contains('open') ? '− Less details' : '+ More details';
   });
-}); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
+}); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newInvestmentBtn').addEventListener('click', openInvestmentModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
 
 function openNetWorthSnapshotModal(){
   openSheet(sheetHead('Add Past Net Worth Snapshot')+`
