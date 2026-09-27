@@ -267,6 +267,29 @@ input:focus,select:focus{border-color:var(--gold)}
         </div>
       </div>
 
+
+      <div class="card" style="margin-top:16px">
+        <div class="goal-head">
+          <div>
+            <div class="stat-label">Net Worth</div>
+            <div class="stat-value gold" id="homeNetWorth">B$0.00</div>
+            <div class="muted small">Total assets − total debt</div>
+          </div>
+          <button class="secondary" id="manageAssetsBtn">Manage Assets</button>
+        </div>
+
+        <div class="hybrid-grid" style="margin-top:14px">
+          <div class="hybrid-box">
+            <span class="muted small">Total assets</span>
+            <strong id="homeAssets">B$0.00</strong>
+          </div>
+          <div class="hybrid-box">
+            <span class="muted small">Total liabilities</span>
+            <strong id="homeLiabilities">B$0.00</strong>
+          </div>
+        </div>
+      </div>
+
       <div class="section-title">
         <h2>Hybrid Savings</h2>
         <span class="pill">Cash + Gold</span>
@@ -441,10 +464,12 @@ const key='doitsavingDashboardCleanV1';
 
 let state=JSON.parse(localStorage.getItem(key)||'null')||{
   incomes:[],expenses:[],savings:[],goals:[],debts:[],
-  budgetRule:'50,30,20',customNeeds:50,customWants:30,customSavings:20
+  budgetRule:'50,30,20',customNeeds:50,customWants:30,customSavings:20,
+  manualAssets:{investments:0,retirement:0,property:0,other:0}
 };
 
 function today(){return new Date().toISOString().slice(0,10)}
+if(!state.manualAssets)state.manualAssets={investments:0,retirement:0,property:0,other:0};
 function persist(){localStorage.setItem(key,JSON.stringify(state))}
 function sum(arr,key='amount'){return arr.reduce((a,b)=>a+(+b[key]||0),0)}
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
@@ -492,6 +517,9 @@ function render(){
   const debtTotal=sum(state.debts,'balance');
   const minTotal=sum(state.debts,'minimum');
   const net=incomeTotal-expenseTotal;
+  const manualAssetTotal=(+state.manualAssets.investments||0)+(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0);
+  const totalAssets=hybridTotal+manualAssetTotal;
+  const netWorth=totalAssets-debtTotal;
 
   $('homeNet').textContent=money(net);
   $('homeStatus').textContent=incomeTotal===0?'Start tracking':net>=0?'In good shape':'Needs review';
@@ -504,6 +532,9 @@ function render(){
   $('homeDebtCount').textContent=`${state.debts.length} active ${state.debts.length===1?'debt':'debts'}`;
   $('homeCashSaved').textContent=money(cashTotal);
   $('homeGoldSaved').textContent=money(goldTotal);
+  $('homeAssets').textContent=money(totalAssets);
+  $('homeLiabilities').textContent=money(debtTotal);
+  $('homeNetWorth').textContent=money(netWorth);
 
   $('incomeTotal').textContent=money(incomeTotal);
   $('incomeEntries').textContent=state.incomes.length;
@@ -681,6 +712,24 @@ $('changeRuleBtn').onclick=()=>openSheet(sheetHead('Budget Guide')+`
 window.saveRule=()=>{
   state.budgetRule=$('mRule').value;
   state.customNeeds=+$('mNeeds').value||0;state.customWants=+$('mWants').value||0;state.customSavings=+$('mSavings').value||0;
+  persist();closeSheet();render();
+};
+
+
+$('manageAssetsBtn').onclick=()=>openSheet(sheetHead('Manage Assets')+`
+  <p class="muted">Cash and gold savings are already included automatically. Add only assets that are not already tracked elsewhere.</p>
+  <div class="field"><label>Investments (B$)</label><input id="mAssetInvestments" type="number" min="0" step="0.01" value="${state.manualAssets.investments||0}"></div>
+  <div class="field"><label>Retirement (B$)</label><input id="mAssetRetirement" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}"></div>
+  <div class="field"><label>Property / major assets (B$)</label><input id="mAssetProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}"></div>
+  <div class="field"><label>Other assets (B$)</label><input id="mAssetOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}"></div>
+  <button class="primary" onclick="saveAssets()">Save Assets</button>`);
+window.saveAssets=()=>{
+  state.manualAssets={
+    investments:+$('mAssetInvestments').value||0,
+    retirement:+$('mAssetRetirement').value||0,
+    property:+$('mAssetProperty').value||0,
+    other:+$('mAssetOther').value||0
+  };
   persist();closeSheet();render();
 };
 
