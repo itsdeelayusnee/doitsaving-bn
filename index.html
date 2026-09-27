@@ -1388,7 +1388,7 @@ body{
     <button class="secondary-btn demo-open-btn" id="demoModeBtn" type="button">Explore Demo</button>
 
     <div class="dev-lock-note">
-      Temporary development access only.<br>
+      Temporary development access only · Offline-ready after first successful load.<br>
       This will be replaced with account sign-in before public release.
     </div>
   </div>
@@ -2848,5 +2848,19 @@ if(sessionStorage.getItem(DEV_UNLOCK_KEY)==='1'){
 }
 
 </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => {
+        // Ask the browser to check for an updated service worker when online.
+        reg.update().catch(() => {});
+      })
+      .catch(() => {});
+  });
+}
+</script>
+
 </body>
 </html>
