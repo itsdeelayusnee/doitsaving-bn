@@ -170,29 +170,43 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         </div>
       </section>
 
-      <section class="page" id="income">
-        <h1 class="page-title">Income</h1><p class="page-sub">Track salary, side income and other money in.</p>
+      
+      <section class="page" id="transactions">
+        <h1 class="page-title">Transactions</h1>
+        <p class="page-sub">Track money in and money out in one place.</p>
+
         <div class="split-3">
-          <div class="panel panel-tight"><div class="label">Total Income</div><div class="metric-mid positive" id="incomeTotal">B$0.00</div></div>
-          <div class="panel panel-tight"><div class="label">Entries</div><div class="metric-mid" id="incomeCount">0</div></div>
-          <div class="panel panel-tight"><div class="label">Latest Entry</div><div class="metric-mid" id="incomeLatest">—</div></div>
+          <div class="panel panel-tight">
+            <div class="label">Money In</div>
+            <div class="metric-mid positive" id="transactionIncomeTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Money Out</div>
+            <div class="metric-mid negative" id="transactionExpenseTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Net Cash Flow</div>
+            <div class="metric-mid goldish" id="transactionNet">B$0.00</div>
+          </div>
         </div>
-        <div class="section-head" style="margin-top:18px"><div><h2>Income Activity</h2><p>Recorded money in.</p></div><button class="primary-btn" id="newIncomeBtn">+ Add Income</button></div>
-        <div class="list" id="incomeList"></div>
+
+        <div class="section-head" style="margin-top:18px">
+          <div>
+            <h2>Activity</h2>
+            <p>Switch between income and expenses.</p>
+          </div>
+          <button class="primary-btn" id="newTransactionBtn">+ Add</button>
+        </div>
+
+        <div class="tab-switch" style="margin-bottom:14px">
+          <button class="tab-btn active" data-transaction-view="income">Income</button>
+          <button class="tab-btn" data-transaction-view="expense">Expenses</button>
+        </div>
+
+        <div class="list" id="transactionList"></div>
       </section>
 
-      <section class="page" id="expenses">
-        <h1 class="page-title">Expenses</h1><p class="page-sub">Track daily spending and monthly commitments.</p>
-        <div class="split-3">
-          <div class="panel panel-tight"><div class="label">Total Expenses</div><div class="metric-mid negative" id="expenseTotal">B$0.00</div></div>
-          <div class="panel panel-tight"><div class="label">Entries</div><div class="metric-mid" id="expenseCount">0</div></div>
-          <div class="panel panel-tight"><div class="label">Latest Entry</div><div class="metric-mid" id="expenseLatest">—</div></div>
-        </div>
-        <div class="section-head" style="margin-top:18px"><div><h2>Expense Activity</h2><p>Recorded money out.</p></div><button class="primary-btn" id="newExpenseBtn">+ Add Expense</button></div>
-        <div class="list" id="expenseList"></div>
-      </section>
-
-      <section class="page" id="savings">
+<section class="page" id="savings">
         <h1 class="page-title">Savings</h1><p class="page-sub">Plan and record your hybrid saving system.</p>
         <div class="panel">
           <div class="section-head" style="margin:0 0 12px">
@@ -251,10 +265,9 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
   </div>
 
   <div class="nav">
-    <div class="nav-inner">
+    <div class="nav-inner" style="grid-template-columns:repeat(4,1fr)">
       <button class="nav-btn active" data-page="home"><span>⌂</span><span>Home</span></button>
-      <button class="nav-btn" data-page="income"><span>↗</span><span>Income</span></button>
-      <button class="nav-btn" data-page="expenses"><span>↘</span><span>Expenses</span></button>
+      <button class="nav-btn" data-page="transactions"><span>⇄</span><span>Transactions</span></button>
       <button class="nav-btn" data-page="savings"><span>◉</span><span>Savings</span></button>
       <button class="nav-btn" data-page="debt"><span>▣</span><span>Debt</span></button>
     </div>
@@ -275,11 +288,12 @@ let state = JSON.parse(localStorage.getItem(storeKey)||'null') || {
   budgetRule:'50,30,20', customNeeds:50, customWants:30, customSavings:20,
   manualAssets:{investments:0, retirement:0, property:0, other:0},
   leftoverAlloc:{carry:0, cash:0, gold:0, debt:0, goal:0},
-  strategyView:'snowball'
+  strategyView:'snowball', transactionView:'income'
 };
 if(!state.manualAssets) state.manualAssets = {investments:0, retirement:0, property:0, other:0};
 if(!state.leftoverAlloc) state.leftoverAlloc = {carry:0, cash:0, gold:0, debt:0, goal:0};
 if(!state.strategyView) state.strategyView = 'snowball';
+if(!state.transactionView) state.transactionView = 'income';
 function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
 function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
 function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
@@ -321,11 +335,14 @@ function render(){
   const combined=[...incomes.map((x,i)=>({...x,kind:'income',idx:i})),...expenses.map((x,i)=>({...x,kind:'expense',idx:i})),...savings.map((x,i)=>({...x,kind:x.type,idx:i}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
   $('homeMoves').innerHTML=combined.length ? combined.map(x=>activityMarkup(x,x.kind,x.idx,null)).join('') : '<div class="empty">Your latest money moves will appear here.</div>';
 
-  $('incomeTotal').textContent=money(incomeTotal); $('incomeCount').textContent=incomes.length; $('incomeLatest').textContent=latestAmount(incomes);
-  $('incomeList').innerHTML=incomes.length ? [...incomes].reverse().map((x,rev)=>activityMarkup(x,'income',incomes.length-1-rev,'removeIncome')).join('') : '<div class="empty">No income recorded yet.</div>';
-
-  $('expenseTotal').textContent=money(expenseTotal); $('expenseCount').textContent=expenses.length; $('expenseLatest').textContent=latestAmount(expenses);
-  $('expenseList').innerHTML=expenses.length ? [...expenses].reverse().map((x,rev)=>activityMarkup(x,'expense',expenses.length-1-rev,'removeExpense')).join('') : '<div class="empty">No expenses recorded yet.</div>';
+  $('transactionIncomeTotal').textContent=money(incomeTotal);
+  $('transactionExpenseTotal').textContent=money(expenseTotal);
+  $('transactionNet').textContent=money(incomeTotal-expenseTotal);
+  document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.classList.toggle('active', btn.dataset.transactionView===state.transactionView));
+  const transactionItems = state.transactionView==='income'
+    ? [...incomes].reverse().map((x,rev)=>activityMarkup(x,'income',incomes.length-1-rev,'removeIncome')).join('')
+    : [...expenses].reverse().map((x,rev)=>activityMarkup(x,'expense',expenses.length-1-rev,'removeExpense')).join('');
+  $('transactionList').innerHTML = transactionItems || `<div class="empty">No ${state.transactionView==='income'?'income':'expenses'} recorded yet.</div>`;
 
   const budget=currentBudgetRule(), suggested=incomeTotal*budget[2]/100, suggestedCash=suggested*.60, suggestedGold=suggested*.40;
   $('ruleName').textContent=budget[3]; $('suggestedSavings').textContent=money(suggested); $('suggestedSplit').textContent=`${money(suggestedCash)} / ${money(suggestedGold)}`;
@@ -365,7 +382,29 @@ function openAssetsModal(){ openSheet(sheetHead('Manage Assets')+`<div class="su
 window.saveAssets=function(){ state.manualAssets={investments:+$('aInvest').value||0,retirement:+$('aRetire').value||0,property:+$('aProperty').value||0,other:+$('aOther').value||0}; closeSheet(); render(); };
 window.removeIncome=i=>{ state.incomes.splice(i,1); render(); }; window.removeExpense=i=>{ state.expenses.splice(i,1); render(); }; window.removeSaving=i=>{ state.savings.splice(i,1); render(); };
 document.querySelectorAll('[data-strategy]').forEach(btn=>btn.addEventListener('click',()=>{ state.strategyView=btn.dataset.strategy; render(); }));
-$('newIncomeBtn').addEventListener('click', openIncomeModal); $('newExpenseBtn').addEventListener('click', openExpenseModal); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
+$('newTransactionBtn').addEventListener('click', ()=>openSheet(sheetHead('Add Transaction')+`<div class="field"><label>Type</label><select id="mTransactionType"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="field"><label>Name</label><input id="mTransactionName" placeholder="Salary / Groceries"></div><div class="field"><label>Amount (B$)</label><input id="mTransactionAmount" type="number" min="0" step="0.01"></div><div class="field"><label>Category</label><input id="mTransactionCategory" placeholder="Salary / Food / Bills / Other"></div><div class="field"><label>Date</label><input id="mTransactionDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveTransaction()">Add Transaction</button>`)); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
+
+window.saveTransaction=function(){
+  const type=$('mTransactionType').value;
+  const amount=+$('mTransactionAmount').value||0;
+  if(amount<=0) return;
+  const item={
+    name:$('mTransactionName').value.trim()||(type==='income'?'Income':'Expense'),
+    amount,
+    category:$('mTransactionCategory').value.trim()||(type==='income'?'Income':'Expense'),
+    date:$('mTransactionDate').value||today()
+  };
+  if(type==='income') state.incomes.push(item);
+  else state.expenses.push(item);
+  state.transactionView=type;
+  closeSheet();
+  render();
+};
+document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.addEventListener('click',()=>{
+  state.transactionView=btn.dataset.transactionView;
+  render();
+}));
+
 render();
 </script>
 </body>
