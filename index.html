@@ -575,6 +575,112 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
 }
 
 </style>
+
+<style>
+/* Final mobile typography pass — intentionally compact to match Gold with Elleanor */
+@media (max-width:640px){
+  html{font-size:14px!important}
+  body{line-height:1.35!important}
+
+  .wrap{padding:12px 12px 18px!important}
+  .topbar{margin-bottom:10px!important;gap:8px!important}
+  .brand-wrap{gap:9px!important}
+  .ds-logo-img{width:42px!important;height:42px!important;border-radius:12px!important}
+
+  .eyebrow{font-size:10px!important;line-height:1.15!important}
+  .brand-title{font-size:14px!important;line-height:1.05!important}
+  .brand-sub{font-size:10.5px!important;line-height:1.25!important;margin-top:2px!important}
+
+  .lock-btn,.theme-toggle{
+    padding:6px 8px!important;
+    font-size:10px!important;
+    min-height:34px!important;
+  }
+
+  .brand-strip{
+    padding:14px!important;
+    margin-bottom:14px!important;
+    border-radius:18px!important;
+  }
+  .brand-strip-title{font-size:9.5px!important;letter-spacing:.10em!important}
+  .brand-strip-main{font-size:15px!important;line-height:1.18!important;margin-top:5px!important}
+  .brand-strip-note{font-size:11px!important;line-height:1.38!important;margin-top:5px!important}
+
+  .section{margin-top:14px!important}
+  .section-head{margin-bottom:8px!important;align-items:start!important}
+  .section-head h2{font-size:11px!important;line-height:1.15!important;letter-spacing:.065em!important}
+  .section-head p{font-size:10.5px!important;line-height:1.3!important;margin-top:3px!important}
+  .link-inline{font-size:11px!important;line-height:1.25!important}
+
+  .hero,.panel{
+    padding:14px!important;
+    border-radius:18px!important;
+  }
+  .hero-title{font-size:10px!important;line-height:1.15!important}
+  .hero-value{font-size:30px!important;line-height:1!important;margin:8px 0 7px!important}
+  .hero-sub{font-size:11px!important;line-height:1.35!important}
+  .status{font-size:10px!important;padding:6px 8px!important}
+
+  .metric-large{font-size:24px!important}
+  .metric-mid{font-size:16px!important}
+  .label,.subtext{font-size:10.5px!important;line-height:1.3!important}
+
+  .action-btn,.primary-btn,.secondary-btn{
+    font-size:11px!important;
+    padding:8px 10px!important;
+    border-radius:11px!important;
+  }
+
+  .item-title{font-size:12px!important}
+  .item-meta{font-size:10px!important}
+  .item-amount{font-size:12px!important}
+
+  .page-title{font-size:19px!important;line-height:1.1!important}
+  .page-sub{font-size:11px!important;line-height:1.35!important;margin-bottom:12px!important}
+  .sheet-head h3{font-size:17px!important}
+  .field label{font-size:11px!important}
+
+  .chart-legend{font-size:10px!important}
+  .chart-center strong{font-size:14px!important}
+  .chart-center span{font-size:9px!important}
+
+  .bottom-nav{padding-top:6px!important;padding-bottom:calc(6px + env(safe-area-inset-bottom))!important}
+  .nav-btn{font-size:9px!important;gap:2px!important;padding:4px 1px!important}
+  .nav-btn span:first-child{font-size:17px!important}
+
+  .page-footnote{font-size:10px!important;margin-top:14px!important}
+}
+</style>
+
+
+<style>
+/* Keep Lock, theme toggle and Start tracking visually consistent on mobile */
+@media (max-width:640px){
+  .lock-btn,
+  .theme-toggle,
+  .status{
+    font-size:10px!important;
+    line-height:1!important;
+    padding:6px 9px!important;
+    min-height:32px!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  .theme-toggle{
+    min-width:auto!important;
+    max-width:none!important;
+  }
+
+  #leftoverStatus{
+    align-self:flex-start!important;
+  }
+}
+</style>
+
 </head>
 <body data-theme="light">
 
