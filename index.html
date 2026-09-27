@@ -963,7 +963,7 @@ button,
         </div>
       </div>
       <div class="top-actions">
-        <button class="lock-btn" id="lockDashboardBtn" type="button">Lock</button>
+        <button class="lock-btn" id="lockDashboardBtn" type="button">Back to Access Screen</button>
         <button class="theme-toggle" id="themeToggle">Dark Mode</button>
       </div>
     </header>
@@ -1536,7 +1536,7 @@ function updateDemoUI(){
   if(badge) badge.classList.toggle('dev-hidden', !isDemoMode);
   const exampleCard=$('demoExampleCard');
   if(exampleCard) exampleCard.classList.toggle('dev-hidden', !isDemoMode);
-  if($('lockDashboardBtn')) $('lockDashboardBtn').textContent=isDemoMode ? 'Exit Demo' : 'Lock';
+  if($('lockDashboardBtn')) $('lockDashboardBtn').textContent='Back to Access Screen';
 }
 
 function startDemoMode(){
