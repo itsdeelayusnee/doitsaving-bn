@@ -233,6 +233,7 @@ input:focus,select:focus{border-color:var(--gold)}
 
   <main class="main">
     
+    
     <section id="home" class="page active">
       <div class="hero">
         <div class="hero-top">
@@ -282,27 +283,26 @@ input:focus,select:focus{border-color:var(--gold)}
           <div class="stat-value gold" id="homeDebtRepayment">B$0.00</div>
           <div class="muted small">Monthly minimum payments</div>
         </div>
-        <div class="card">
-          <div class="stat-label">Hybrid Savings</div>
-          <div class="stat-value gold" id="homeHybrid">B$0.00</div>
-          <div class="muted small">Cash + gold saved this month</div>
-        </div>
       </div>
 
       <div class="section-title">
         <h2>Hybrid Savings</h2>
         <span class="pill">Cash + Gold</span>
       </div>
-      <div class="hybrid-grid">
-        <div class="card">
-          <div class="stat-label">Cash Saved</div>
-          <div class="stat-value" id="homeCashSaved">B$0.00</div>
-          <div class="muted small">This month</div>
-        </div>
-        <div class="card">
-          <div class="stat-label">Gold Saved</div>
-          <div class="stat-value" id="homeGoldSaved">B$0.00</div>
-          <div class="muted small">This month</div>
+      <div class="card">
+        <div class="stat-label">Total Hybrid Savings</div>
+        <div class="stat-value gold" id="homeHybrid">B$0.00</div>
+        <div class="hybrid-grid" style="margin-top:14px">
+          <div class="hybrid-box">
+            <span class="muted small">Cash Saved</span>
+            <strong id="homeCashSaved">B$0.00</strong>
+            <div class="muted small">This month</div>
+          </div>
+          <div class="hybrid-box">
+            <span class="muted small">Gold Saved</span>
+            <strong id="homeGoldSaved">B$0.00</strong>
+            <div class="muted small">This month</div>
+          </div>
         </div>
       </div>
 
@@ -312,6 +312,7 @@ input:focus,select:focus{border-color:var(--gold)}
       </div>
       <div id="recentList" class="activity-list"></div>
     </section>
+
 
 
     
