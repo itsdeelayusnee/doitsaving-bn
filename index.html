@@ -1848,7 +1848,24 @@ applyTheme(localStorage.getItem(themeKey)||'light');
 $('themeToggle').addEventListener('click',()=>{ const current=document.body.getAttribute('data-theme')||'light'; applyTheme(current==='light'?'dark':'light'); drawNetWorthChart(); });
 document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
 document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.nav)));
-function openPage(page){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); $(page).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});}
+function openPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page));
+  $(page).classList.add('active');
+
+  // Always start a newly opened page from the very top.
+  window.scrollTo(0,0);
+  document.documentElement.scrollTop=0;
+  document.body.scrollTop=0;
+
+  // Safari/iPhone can restore the previous scroll position after layout,
+  // so enforce top position again on the next frame.
+  requestAnimationFrame(()=>{
+    window.scrollTo(0,0);
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+  });
+}
 $('toggleAllocation').addEventListener('click',()=>{ $('allocationBox').classList.toggle('open'); $('toggleAllocation').textContent = $('allocationBox').classList.contains('open') ? 'Hide Allocation' : 'Plan My Remaining Balance'; });
 ['allocCarry','allocCash','allocGold','allocDebt','allocGoal'].forEach(id=>$(id).addEventListener('input',()=>{ state.leftoverAlloc={carry:+$('allocCarry').value||0, cash:+$('allocCash').value||0, gold:+$('allocGold').value||0, debt:+$('allocDebt').value||0, goal:+$('allocGoal').value||0}; saveState(); render(); }));
 $('modal').addEventListener('click',e=>{ if(e.target===$('modal')) closeSheet(); });
