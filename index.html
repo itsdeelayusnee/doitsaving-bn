@@ -1183,6 +1183,22 @@ button,
 }
 </style>
 
+
+<style>
+.page{
+  scroll-margin-top:0!important;
+}
+@media (max-width:700px){
+  html,body{
+    scroll-behavior:auto!important;
+    overscroll-behavior-y:none;
+  }
+  .page.active{
+    scroll-margin-top:0!important;
+  }
+}
+</style>
+
 </head>
 <body data-theme="light">
 
@@ -1685,6 +1701,8 @@ button,
 </div>
 
 <script>
+if('scrollRestoration' in history){ history.scrollRestoration='manual'; }
+
 const $ = id => document.getElementById(id);
 
 const DEVELOPMENT_PASSCODE = 'DS2026';
@@ -1851,20 +1869,26 @@ document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click
 function openPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page));
-  $(page).classList.add('active');
 
-  // Always start a newly opened page from the very top.
-  window.scrollTo(0,0);
-  document.documentElement.scrollTop=0;
-  document.body.scrollTop=0;
+  const target=$(page);
+  target.classList.add('active');
 
-  // Safari/iPhone can restore the previous scroll position after layout,
-  // so enforce top position again on the next frame.
-  requestAnimationFrame(()=>{
-    window.scrollTo(0,0);
+  const forceTop=()=>{
+    window.scrollTo({top:0,left:0,behavior:'auto'});
     document.documentElement.scrollTop=0;
     document.body.scrollTop=0;
-  });
+
+    // iOS Safari sometimes keeps the previous viewport offset.
+    if(target){
+      target.scrollIntoView({block:'start',inline:'nearest',behavior:'auto'});
+      window.scrollTo({top:0,left:0,behavior:'auto'});
+    }
+  };
+
+  forceTop();
+  requestAnimationFrame(forceTop);
+  setTimeout(forceTop,0);
+  setTimeout(forceTop,80);
 }
 $('toggleAllocation').addEventListener('click',()=>{ $('allocationBox').classList.toggle('open'); $('toggleAllocation').textContent = $('allocationBox').classList.contains('open') ? 'Hide Allocation' : 'Plan My Remaining Balance'; });
 ['allocCarry','allocCash','allocGold','allocDebt','allocGoal'].forEach(id=>$(id).addEventListener('input',()=>{ state.leftoverAlloc={carry:+$('allocCarry').value||0, cash:+$('allocCash').value||0, gold:+$('allocGold').value||0, debt:+$('allocDebt').value||0, goal:+$('allocGoal').value||0}; saveState(); render(); }));
