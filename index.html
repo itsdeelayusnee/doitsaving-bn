@@ -232,41 +232,18 @@ input:focus,select:focus{border-color:var(--gold)}
   </header>
 
   <main class="main">
+    
     <section id="home" class="page active">
       <div class="hero">
         <div class="hero-top">
           <div>
-            <div class="hero-label">Money left this month</div>
+            <div class="hero-label">Money Left This Month</div>
             <div class="hero-value" id="homeNet">B$0.00</div>
-            <div class="hero-sub">Money in minus money out</div>
+            <div class="hero-sub">Money in − expenses − hybrid savings − debt repayment</div>
           </div>
           <div class="status" id="homeStatus">Start tracking</div>
         </div>
       </div>
-
-      <div class="grid stats">
-        <div class="card">
-          <div class="stat-label">Money In</div>
-          <div class="stat-value green" id="homeIncome">B$0.00</div>
-          <div class="muted small" id="homeIncomeCount">0 entries</div>
-        </div>
-        <div class="card">
-          <div class="stat-label">Money Out</div>
-          <div class="stat-value red" id="homeExpense">B$0.00</div>
-          <div class="muted small" id="homeExpenseCount">0 entries</div>
-        </div>
-        <div class="card">
-          <div class="stat-label">Hybrid Saved</div>
-          <div class="stat-value gold" id="homeHybrid">B$0.00</div>
-          <div class="muted small">Cash + gold</div>
-        </div>
-        <div class="card">
-          <div class="stat-label">Debt Remaining</div>
-          <div class="stat-value gold" id="homeDebt">B$0.00</div>
-          <div class="muted small" id="homeDebtCount">0 active debts</div>
-        </div>
-      </div>
-
 
       <div class="card" style="margin-top:16px">
         <div class="goal-head">
@@ -277,7 +254,6 @@ input:focus,select:focus{border-color:var(--gold)}
           </div>
           <button class="secondary" id="manageAssetsBtn">Manage Assets</button>
         </div>
-
         <div class="hybrid-grid" style="margin-top:14px">
           <div class="hybrid-box">
             <span class="muted small">Total assets</span>
@@ -290,6 +266,29 @@ input:focus,select:focus{border-color:var(--gold)}
         </div>
       </div>
 
+      <div class="grid stats">
+        <div class="card">
+          <div class="stat-label">Money In</div>
+          <div class="stat-value green" id="homeIncome">B$0.00</div>
+          <div class="muted small" id="homeIncomeCount">0 entries this month</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Money Out</div>
+          <div class="stat-value red" id="homeExpense">B$0.00</div>
+          <div class="muted small" id="homeExpenseCount">0 entries this month</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Debt Repayment</div>
+          <div class="stat-value gold" id="homeDebtRepayment">B$0.00</div>
+          <div class="muted small">Monthly minimum payments</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Hybrid Savings</div>
+          <div class="stat-value gold" id="homeHybrid">B$0.00</div>
+          <div class="muted small">Cash + gold saved this month</div>
+        </div>
+      </div>
+
       <div class="section-title">
         <h2>Hybrid Savings</h2>
         <span class="pill">Cash + Gold</span>
@@ -298,12 +297,12 @@ input:focus,select:focus{border-color:var(--gold)}
         <div class="card">
           <div class="stat-label">Cash Saved</div>
           <div class="stat-value" id="homeCashSaved">B$0.00</div>
-          <div class="muted small">Recorded cash saving entries</div>
+          <div class="muted small">This month</div>
         </div>
         <div class="card">
           <div class="stat-label">Gold Saved</div>
           <div class="stat-value" id="homeGoldSaved">B$0.00</div>
-          <div class="muted small">Recorded gold saving value</div>
+          <div class="muted small">This month</div>
         </div>
       </div>
 
@@ -313,6 +312,7 @@ input:focus,select:focus{border-color:var(--gold)}
       </div>
       <div id="recentList" class="activity-list"></div>
     </section>
+
 
     
     <section id="income" class="page">
@@ -509,29 +509,47 @@ function currentRule(){
 }
 
 function render(){
+  const now=new Date();
+  const currentMonth=String(now.getMonth()+1).padStart(2,'0');
+  const currentYear=String(now.getFullYear());
+  const inCurrentMonth=x=>{
+    const d=(x.date||'').split('-');
+    return d.length===3 && d[0]===currentYear && d[1]===currentMonth;
+  };
+
   const incomeTotal=sum(state.incomes);
   const expenseTotal=sum(state.expenses);
   const cashTotal=sum(state.savings.filter(s=>s.type==='cash'));
   const goldTotal=sum(state.savings.filter(s=>s.type==='gold'));
   const hybridTotal=cashTotal+goldTotal;
+
+  const monthIncomes=state.incomes.filter(inCurrentMonth);
+  const monthExpenses=state.expenses.filter(inCurrentMonth);
+  const monthSavings=state.savings.filter(inCurrentMonth);
+  const monthIncomeTotal=sum(monthIncomes);
+  const monthExpenseTotal=sum(monthExpenses);
+  const monthCashTotal=sum(monthSavings.filter(s=>s.type==='cash'));
+  const monthGoldTotal=sum(monthSavings.filter(s=>s.type==='gold'));
+  const monthHybridTotal=monthCashTotal+monthGoldTotal;
+
   const debtTotal=sum(state.debts,'balance');
   const minTotal=sum(state.debts,'minimum');
-  const net=incomeTotal-expenseTotal;
+  const net=monthIncomeTotal-monthExpenseTotal-monthHybridTotal-minTotal;
+
   const manualAssetTotal=(+state.manualAssets.investments||0)+(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0);
   const totalAssets=hybridTotal+manualAssetTotal;
   const netWorth=totalAssets-debtTotal;
 
   $('homeNet').textContent=money(net);
-  $('homeStatus').textContent=incomeTotal===0?'Start tracking':net>=0?'In good shape':'Needs review';
-  $('homeIncome').textContent=money(incomeTotal);
-  $('homeExpense').textContent=money(expenseTotal);
-  $('homeHybrid').textContent=money(hybridTotal);
-  $('homeDebt').textContent=money(debtTotal);
-  $('homeIncomeCount').textContent=`${state.incomes.length} ${state.incomes.length===1?'entry':'entries'}`;
-  $('homeExpenseCount').textContent=`${state.expenses.length} ${state.expenses.length===1?'entry':'entries'}`;
-  $('homeDebtCount').textContent=`${state.debts.length} active ${state.debts.length===1?'debt':'debts'}`;
-  $('homeCashSaved').textContent=money(cashTotal);
-  $('homeGoldSaved').textContent=money(goldTotal);
+  $('homeStatus').textContent=monthIncomeTotal===0?'Start tracking':net>=0?'In good shape':'Needs review';
+  $('homeIncome').textContent=money(monthIncomeTotal);
+  $('homeExpense').textContent=money(monthExpenseTotal);
+  $('homeDebtRepayment').textContent=money(minTotal);
+  $('homeHybrid').textContent=money(monthHybridTotal);
+  $('homeIncomeCount').textContent=`${monthIncomes.length} ${monthIncomes.length===1?'entry':'entries'} this month`;
+  $('homeExpenseCount').textContent=`${monthExpenses.length} ${monthExpenses.length===1?'entry':'entries'} this month`;
+  $('homeCashSaved').textContent=money(monthCashTotal);
+  $('homeGoldSaved').textContent=money(monthGoldTotal);
   $('homeAssets').textContent=money(totalAssets);
   $('homeLiabilities').textContent=money(debtTotal);
   $('homeNetWorth').textContent=money(netWorth);
