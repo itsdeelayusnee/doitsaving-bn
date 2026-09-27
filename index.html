@@ -178,8 +178,22 @@ input:focus,select:focus{border-color:var(--gold)}
 .history-title{font-weight:850}
 .history-meta{font-size:12px;color:var(--muted);margin-top:3px}
 .history-amount{font-weight:900;text-align:right}
+.asset-list{display:grid;gap:8px;margin-top:10px}
+.asset-row{
+  display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
+  padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff
+}
+.asset-name{font-weight:800}
+.asset-amount{font-weight:900}
+.networth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.networth-card{
+  background:linear-gradient(145deg,#f3eadf,#ead9c3);
+  border:1px solid #d9c4a7;border-radius:26px;padding:22px;box-shadow:var(--shadow)
+}
+.networth-card .card-value{font-size:36px}
 .note{margin-top:14px;padding:15px 16px;border-radius:18px;background:var(--sage-soft);border:1px solid #cad7c4;color:#43513e}
 @media(max-width:850px){
+  .networth-grid{grid-template-columns:1fr}
   .hero-grid{grid-template-columns:1fr}
   .summary-grid{grid-template-columns:repeat(2,1fr)}
   .flow-card{grid-template-columns:1fr;gap:8px}
@@ -246,6 +260,39 @@ input:focus,select:focus{border-color:var(--gold)}
         <div class="card-value" id="debtTotalHome">B$0.00</div>
         <div class="card-foot" id="debtCountHome">0 active debts</div>
       </div>
+    </div>
+
+
+    <div class="networth-grid">
+      <div class="networth-card">
+        <div class="card-label">Net Worth</div>
+        <div class="card-value" id="netWorthValue">B$0.00</div>
+        <div class="card-foot">Total assets minus debt remaining</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Assets</div>
+        <div class="card-value" id="totalAssetsValue">B$0.00</div>
+        <div class="card-foot">Cash + gold + other assets</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div><h2>Other assets</h2><p>Add assets that are not already included in cash or gold savings.</p></div>
+    </div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="field">
+          <label>Asset name</label>
+          <input id="assetName" placeholder="Investment / Retirement / Property">
+        </div>
+        <div class="field">
+          <label>Current value (B$)</label>
+          <input id="assetValue" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+      <button class="primary" id="addAsset">Add asset</button>
+      <div id="assetList" class="asset-list"></div>
+      <div class="note"><b>Avoid double counting:</b> saving goals are not added separately here if the money is already included in your cash or gold savings.</div>
     </div>
 
     <div class="section-head">
@@ -486,7 +533,7 @@ const $=id=>document.getElementById(id);
 const money=n=>'B$'+(Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const key='doitsavingOriginalV1';
 let state=JSON.parse(localStorage.getItem(key)||'null')||{
-  incomes:[],expenses:[],savings:[],goals:[],debts:[],
+  incomes:[],expenses:[],savings:[],goals:[],debts:[],assets:[],
   budgetRule:'50,30,20',customNeeds:50,customWants:30,customSavings:20
 };
 
@@ -576,6 +623,7 @@ function refreshSweepDestinations(){
 
 
 function render(){
+  if(!Array.isArray(state.assets))state.assets=[];
   const income=sum(state.incomes);
   const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
   const spending=sum(state.expenses.filter(x=>(x.type||'spending')==='spending'));
@@ -594,6 +642,21 @@ function render(){
   $('moneyOut').textContent=money(commitments+spending+mins);
   $('cashTotal').textContent=money(cash);
   $('debtTotalHome').textContent=money(debt);
+
+  const otherAssets=sum(state.assets,'value');
+  const totalAssets=hybrid+otherAssets;
+  const netWorth=totalAssets-debt;
+  $('totalAssetsValue').textContent=money(totalAssets);
+  $('netWorthValue').textContent=money(netWorth);
+
+  $('assetList').innerHTML=state.assets.length
+    ? state.assets.map((a,i)=>`<div class="asset-row">
+        <div class="asset-name">${esc(a.name)}</div>
+        <div class="asset-amount">${money(a.value)}</div>
+        <button class="secondary danger" onclick="removeAsset(${i})">Remove</button>
+      </div>`).join('')
+    : '<div class="empty">No other assets added yet.</div>';
+
   $('moneyInCount').textContent=`${state.incomes.length} entries`;
   $('moneyOutCount').textContent=`${state.expenses.length} outflow entries + ${state.debts.length} debt payments`;
   $('debtCountHome').textContent=`${state.debts.length} active debts`;
@@ -883,6 +946,26 @@ $('sweepRemaining').addEventListener('click',()=>{
   persist();
   render();
 });
+
+
+$('addAsset').addEventListener('click',()=>{
+  const name=$('assetName').value.trim();
+  const value=+$('assetValue').value||0;
+  if(!name || value<=0)return;
+  if(!Array.isArray(state.assets))state.assets=[];
+  state.assets.push({name,value});
+  $('assetName').value='';
+  $('assetValue').value='';
+  persist();
+  render();
+});
+
+window.removeAsset=function(i){
+  if(!Array.isArray(state.assets))return;
+  state.assets.splice(i,1);
+  persist();
+  render();
+}
 
 render();
 </script>
