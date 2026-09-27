@@ -182,7 +182,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="hero">
         <div class="hero-kicker">Monthly money flow</div>
         <h1 id="netBalance">B$0.00</h1>
-        <p>What remains after your recorded income, expenses, actual savings and monthly debt payments.</p>
+        <p>What remains after paying yourself first, clearing commitments and debt payments, then covering your spending.</p>
       </div>
       <div class="hybrid-card">
         <div class="eyebrow">Hybrid savings total</div>
@@ -218,15 +218,23 @@ input:focus,select:focus{border-color:var(--gold)}
       <div><h2>Your system</h2><p>Simple, practical and built around your hybrid approach.</p></div>
     </div>
     <div class="card flow-card">
-      <div class="flow-step"><b>1. Plan</b><span class="card-foot">Choose a budget rule</span></div>
+      <div class="flow-step"><b>1. Pay Yourself First</b><span class="card-foot">Cash + gold savings</span></div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step"><b>2. Save</b><span class="card-foot">Cash + gold</span></div>
+      <div class="flow-step"><b>2. Clear Commitments</b><span class="card-foot">Bills + debt payments</span></div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step"><b>3. Reduce Debt</b><span class="card-foot">Snowball or avalanche</span></div>
+      <div class="flow-step"><b>3. Spend the Rest</b><span class="card-foot">Use what remains for expenses</span></div>
+    </div>
+
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-label">Before next payday</div>
+      <div class="card-value" id="sweepAvailable">B$0.00</div>
+      <div class="card-foot">Available to move into cash savings if you want to sweep the leftover.</div>
+      <button class="primary" id="sweepRemaining" style="margin-top:14px">Move remaining to savings</button>
     </div>
 
     <div class="section-head">
-      <div><h2>Recent records</h2><p>Latest activity across income, expenses and savings.</p></div>
+      <div><h2>Recent records</h2><p>Latest activity across income, outflow and savings.</p></div>
     </div>
     <div id="recentList" class="activity-list"></div>
   </section>
@@ -252,8 +260,8 @@ input:focus,select:focus{border-color:var(--gold)}
   </section>
 
   <section id="expenses" class="page">
-    <h2 class="page-title">Expenses</h2>
-    <p class="page-sub">Track daily spending and recurring commitments.</p>
+    <h2 class="page-title">Outflow</h2>
+    <p class="page-sub">Separate fixed commitments from day-to-day spending.</p>
 
     <div class="form-card">
       <div class="form-grid">
@@ -261,11 +269,14 @@ input:focus,select:focus{border-color:var(--gold)}
         <div class="field"><label>Amount (B$)</label><input id="expenseAmount" type="number" min="0" step="0.01"></div>
       </div>
       <div class="form-grid">
-        <div class="field"><label>Category</label>
-          <select id="expenseCategory"><option>Needs</option><option>Wants</option><option>Bills</option><option>Transport</option><option>Food</option><option>Family</option><option>Other</option></select>
+        <div class="field"><label>Type</label>
+          <select id="expenseType"><option value="commitment">Commitment</option><option value="spending">Spending</option></select>
         </div>
-        <div class="field"><label>Date</label><input id="expenseDate" type="date"></div>
+        <div class="field"><label>Category</label>
+          <select id="expenseCategory"><option>Bills</option><option>Insurance</option><option>Utilities</option><option>Subscriptions</option><option>Transport</option><option>Food</option><option>Family</option><option>Wants</option><option>Other</option></select>
+        </div>
       </div>
+      <div class="field"><label>Date</label><input id="expenseDate" type="date"></div>
       <button class="primary" id="addExpense">Add expense</button>
     </div>
     <div id="expenseList" class="activity-list"></div>
@@ -394,7 +405,7 @@ input:focus,select:focus{border-color:var(--gold)}
 <nav class="dock">
   <button class="active" data-page="home"><span>⌂</span><span>Home</span></button>
   <button data-page="income"><span>＋</span><span>Income</span></button>
-  <button data-page="expenses"><span>−</span><span>Expenses</span></button>
+  <button data-page="expenses"><span>−</span><span>Outflow</span></button>
   <button data-page="savings"><span>◆</span><span>Savings</span></button>
   <button data-page="debt"><span>▤</span><span>Debt</span></button>
 </nav>
@@ -427,7 +438,7 @@ function activityHTML(item,kind,index,withDelete=true){
   return `<div class="activity">
     <div class="activity-icon">${icon}</div>
     <div><div class="activity-title">${esc(item.name||item.category||kind)}</div>
-    <div class="activity-meta">${esc(item.category||kind)} · ${esc(item.date||'')}</div></div>
+    <div class="activity-meta">${esc(item.type?((item.type==='commitment'?'Commitment':'Spending')+' · '+(item.category||'')):(item.category||kind))} · ${esc(item.date||'')}</div></div>
     <div style="text-align:right"><div class="activity-amount ${cls}">${sign}${money(item.amount)}</div>
     ${withDelete?`<button class="secondary danger" style="margin-top:5px" onclick="removeRecord('${kind}',${index})">Delete</button>`:''}</div>
   </div>`;
@@ -446,21 +457,26 @@ window.removeRecord=function(kind,index){
 }
 
 function render(){
-  const income=sum(state.incomes), expenses=sum(state.expenses);
+  const income=sum(state.incomes);
+  const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
+  const spending=sum(state.expenses.filter(x=>(x.type||'spending')==='spending'));
+  const expenses=commitments+spending;
   const cash=sum(state.savings.filter(x=>x.type==='cash'));
   const gold=sum(state.savings.filter(x=>x.type==='gold'));
   const hybrid=cash+gold;
   const debt=sum(state.debts,'balance');
   const mins=sum(state.debts,'minimum');
 
-  $('netBalance').textContent=money(income-expenses-hybrid-mins);
+  const remaining=income-hybrid-commitments-spending-mins;
+  $('netBalance').textContent=money(remaining);
+  $('sweepAvailable').textContent=money(Math.max(0,remaining));
   $('hybridTotal').textContent=money(hybrid);
   $('moneyIn').textContent=money(income);
-  $('moneyOut').textContent=money(expenses);
+  $('moneyOut').textContent=money(commitments+spending+mins);
   $('cashTotal').textContent=money(cash);
   $('debtTotalHome').textContent=money(debt);
   $('moneyInCount').textContent=`${state.incomes.length} entries`;
-  $('moneyOutCount').textContent=`${state.expenses.length} entries`;
+  $('moneyOutCount').textContent=`${state.expenses.length} outflow entries + ${state.debts.length} debt payments`;
   $('debtCountHome').textContent=`${state.debts.length} active debts`;
 
   $('cashSavedTotal').textContent=money(cash);
@@ -537,7 +553,7 @@ $('addIncome').addEventListener('click',()=>{
 });
 $('addExpense').addEventListener('click',()=>{
   const name=$('expenseName').value.trim()||'Expense',amount=+$('expenseAmount').value||0;if(amount<=0)return;
-  state.expenses.push({name,amount,category:$('expenseCategory').value,date:$('expenseDate').value||today()});
+  state.expenses.push({name,amount,type:$('expenseType').value,category:$('expenseCategory').value,date:$('expenseDate').value||today()});
   $('expenseName').value='';$('expenseAmount').value='';persist();render();
 });
 $('addSaving').addEventListener('click',()=>{
@@ -608,6 +624,28 @@ window.updateDebt=function(i){
   const n=+v;if(isNaN(n)||n<0)return;state.debts[i].balance=n;persist();render();
 }
 window.removeDebt=function(i){state.debts.splice(i,1);persist();render()}
+
+
+$('sweepRemaining').addEventListener('click',()=>{
+  const income=sum(state.incomes);
+  const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
+  const spending=sum(state.expenses.filter(x=>(x.type||'spending')==='spending'));
+  const cash=sum(state.savings.filter(x=>x.type==='cash'));
+  const gold=sum(state.savings.filter(x=>x.type==='gold'));
+  const hybrid=cash+gold;
+  const mins=sum(state.debts,'minimum');
+  const remaining=income-hybrid-commitments-spending-mins;
+  if(remaining<=0)return;
+  state.savings.push({
+    type:'cash',
+    name:'Payday Leftover Sweep',
+    amount:remaining,
+    category:'Cash Saving',
+    date:today()
+  });
+  persist();
+  render();
+});
 
 render();
 </script>
