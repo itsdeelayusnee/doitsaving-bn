@@ -20,6 +20,63 @@
   --chip:#202b36;
 }
 *{box-sizing:border-box}
+
+body[data-theme="light"]{
+  --bg:#f3eee6;
+  --panel:#fffaf3;
+  --panel2:#f7f1e8;
+  --line:#ded4c6;
+  --text:#1e2328;
+  --muted:#747b83;
+  --gold:#b88f60;
+  --gold2:#9d7448;
+  --green:#218b53;
+  --red:#d9535a;
+  --blue:#557fc2;
+  --chip:#eee6da;
+}
+body[data-theme="light"] .hero{
+  background:
+    radial-gradient(circle at 90% 15%,rgba(184,143,96,.10),transparent 30%),
+    linear-gradient(145deg,#fffaf3,#eee4d7);
+  border-color:#c9b69f;
+}
+body[data-theme="light"] .status{
+  background:rgba(255,255,255,.68);
+  border-color:#d7cbbb;
+  color:#3b352f;
+}
+body[data-theme="light"] .topbar,
+body[data-theme="light"] .bottom-nav{
+  background:rgba(243,238,230,.96);
+}
+body[data-theme="light"] input,
+body[data-theme="light"] select,
+body[data-theme="light"] .secondary,
+body[data-theme="light"] .hybrid-box,
+body[data-theme="light"] .goal,
+body[data-theme="light"] .debt-method,
+body[data-theme="light"] .compact-box,
+body[data-theme="light"] .goal-card,
+body[data-theme="light"] .rule-card{
+  background:#fbf6ef;
+}
+body[data-theme="light"] .activity-icon{
+  background:#efe5d8;
+}
+body[data-theme="light"] .sheet{
+  background:#fffaf3;
+}
+.theme-toggle{
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
 html{background:var(--bg)}
 body{
   margin:0;
@@ -207,7 +264,7 @@ input:focus,select:focus{border-color:var(--gold)}
   .topbar{padding-top:18px}
   .logo{width:54px;height:54px}
   .brand h1{font-size:22px}
-  .icon-actions{display:none}
+  .icon-actions{display:flex}.theme-toggle{padding:9px 12px;font-size:12px}
   .hero{padding:22px}
   .hero-value{font-size:40px}
   .hero-top{align-items:flex-start}
@@ -226,8 +283,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <h1>Hybrid Finance</h1>
     </div>
     <div class="icon-actions">
-      <button class="icon-btn" title="Theme">◐</button>
-      <button class="icon-btn" title="Settings">⚙</button>
+      <button class="theme-toggle" id="themeToggle" type="button">Light Mode</button>
     </div>
   </header>
 
@@ -786,6 +842,21 @@ document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',
   $(btn.dataset.page).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }));
+
+
+const themeKey='doitsavingTheme';
+function applyTheme(theme){
+  document.body.setAttribute('data-theme',theme);
+  localStorage.setItem(themeKey,theme);
+  const btn=$('themeToggle');
+  if(btn) btn.textContent=theme==='dark'?'Light Mode':'Dark Mode';
+}
+const savedTheme=localStorage.getItem(themeKey)||'dark';
+applyTheme(savedTheme);
+$('themeToggle').addEventListener('click',()=>{
+  const current=document.body.getAttribute('data-theme')||'dark';
+  applyTheme(current==='dark'?'light':'dark');
+});
 
 render();
 </script>
