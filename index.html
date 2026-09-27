@@ -381,7 +381,7 @@ body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
 }
 .networth-chart-wrap canvas{
   width:100%;
-  height:190px;
+  height:140px;
   display:block;
 }
 .networth-chart-meta{
@@ -402,7 +402,7 @@ body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
   border-radius:16px;
 }
 @media(max-width:640px){
-  .networth-chart-wrap canvas{height:170px}
+  .networth-chart-wrap canvas{height:125px}
   .networth-chart-head{align-items:flex-start}
 }
 
@@ -1048,7 +1048,7 @@ button,
               <div class="networth-chart-head">
                 <div>
                   <div class="networth-chart-title">Net Worth Progress</div>
-                  <div class="networth-chart-sub">Monthly snapshots of your overall financial position.</div>
+                  <div class="networth-chart-sub" id="netWorthChartYearLabel">Annual view · Jan–Dec</div>
                 </div>
                 <button class="text-action" id="addNetWorthSnapshotBtn">+ Add Past Snapshot</button>
               </div>
@@ -1659,10 +1659,17 @@ function drawNetWorthChart(){
   const canvas=$('netWorthChart');
   if(!canvas) return;
 
-  const history=[...state.netWorthHistory].sort((a,b)=>a.month.localeCompare(b.month));
+  const currentYear=new Date().getFullYear();
+  const history=[...state.netWorthHistory]
+    .filter(x=>Number(String(x.month).slice(0,4))===currentYear)
+    .sort((a,b)=>a.month.localeCompare(b.month));
+
+  const yearLabel=$('netWorthChartYearLabel');
+  if(yearLabel) yearLabel.textContent=`${currentYear} annual view · Jan–Dec`;
+
   const wrap=canvas.parentElement;
   const cssWidth=Math.max(280, wrap.clientWidth || 320);
-  const cssHeight=window.innerWidth<=640 ? 170 : 190;
+  const cssHeight=window.innerWidth<=640 ? 125 : 140;
   const ratio=window.devicePixelRatio || 1;
 
   canvas.style.width=cssWidth+'px';
@@ -1674,87 +1681,105 @@ function drawNetWorthChart(){
   ctx.setTransform(ratio,0,0,ratio,0,0);
   ctx.clearRect(0,0,cssWidth,cssHeight);
 
-  const textColor=getComputedStyle(document.body).getPropertyValue('--muted').trim() || '#777';
-  const lineColor=getComputedStyle(document.body).getPropertyValue('--gold').trim() || '#b58b5c';
-  const gridColor=getComputedStyle(document.body).getPropertyValue('--line').trim() || '#ddd';
+  const styles=getComputedStyle(document.body);
+  const textColor=styles.getPropertyValue('--muted').trim() || '#777';
+  const lineColor=styles.getPropertyValue('--gold').trim() || '#b58b5c';
+  const gridColor=styles.getPropertyValue('--line').trim() || '#ddd';
+  const panelColor=styles.getPropertyValue('--panel').trim() || '#fff';
 
-  if(history.length===0){
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthly=new Array(12).fill(null);
+  history.forEach(item=>{
+    const m=Number(String(item.month).slice(5,7))-1;
+    if(m>=0 && m<12) monthly[m]=Number(item.value)||0;
+  });
+
+  const values=monthly.filter(v=>v!==null);
+  const pad={l:10,r:10,t:12,b:24};
+  const plotW=cssWidth-pad.l-pad.r;
+  const plotH=cssHeight-pad.t-pad.b;
+
+  // Baseline/grid
+  ctx.strokeStyle=gridColor;
+  ctx.lineWidth=1;
+  ctx.globalAlpha=.55;
+  for(let i=0;i<3;i++){
+    const y=pad.t+(plotH*i/2);
+    ctx.beginPath();
+    ctx.moveTo(pad.l,y);
+    ctx.lineTo(cssWidth-pad.r,y);
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
+  // Month labels always show the full year.
+  ctx.fillStyle=textColor;
+  ctx.textAlign='center';
+  ctx.font=(cssWidth<430?'9px':'10px')+' system-ui';
+  for(let i=0;i<12;i++){
+    const x=pad.l+(plotW*i/11);
+    const label=cssWidth<430 ? months[i][0] : months[i];
+    ctx.fillText(label,x,cssHeight-7);
+  }
+
+  if(values.length===0){
     ctx.fillStyle=textColor;
-    ctx.font='13px system-ui';
+    ctx.font='11px system-ui';
     ctx.textAlign='center';
-    ctx.fillText('Net worth history will appear here.', cssWidth/2, cssHeight/2);
-    $('netWorthChartStart').textContent='No history yet';
+    ctx.fillText(`Add ${currentYear} snapshots to see your progress.`, cssWidth/2, pad.t+plotH/2);
+    $('netWorthChartStart').textContent=`${currentYear}: No snapshots yet`;
     $('netWorthChartChange').textContent='';
     return;
   }
 
-  const pad={l:18,r:18,t:18,b:34};
-  const plotW=cssWidth-pad.l-pad.r;
-  const plotH=cssHeight-pad.t-pad.b;
-  const vals=history.map(x=>+x.value||0);
-  let min=Math.min(...vals), max=Math.max(...vals);
+  let min=Math.min(...values), max=Math.max(...values);
   if(min===max){
     const buffer=Math.max(100,Math.abs(max)*0.1 || 100);
-    min-=buffer; max+=buffer;
+    min-=buffer;
+    max+=buffer;
   }else{
     const buffer=(max-min)*0.12;
-    min-=buffer; max+=buffer;
+    min-=buffer;
+    max+=buffer;
   }
 
-  // horizontal guide lines
-  ctx.strokeStyle=gridColor;
-  ctx.lineWidth=1;
-  ctx.globalAlpha=.65;
-  for(let i=0;i<4;i++){
-    const y=pad.t+(plotH*i/3);
-    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(cssWidth-pad.r,y); ctx.stroke();
-  }
-  ctx.globalAlpha=1;
-
-  const points=history.map((item,i)=>{
-    const x=history.length===1 ? pad.l+plotW/2 : pad.l+(plotW*i/(history.length-1));
-    const y=pad.t+((max-(+item.value||0))/(max-min))*plotH;
-    return {x,y,...item};
+  const points=monthly.map((value,i)=>{
+    if(value===null) return null;
+    const x=pad.l+(plotW*i/11);
+    const y=pad.t+((max-value)/(max-min))*plotH;
+    return {x,y,value,month:i};
   });
 
-  // line
-  if(points.length>1){
+  // Connect available monthly snapshots across the year.
+  const available=points.filter(Boolean);
+  if(available.length>1){
     ctx.beginPath();
-    points.forEach((p,i)=> i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    available.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
     ctx.strokeStyle=lineColor;
-    ctx.lineWidth=3;
+    ctx.lineWidth=2.5;
     ctx.lineJoin='round';
     ctx.lineCap='round';
     ctx.stroke();
   }
 
-  // points
-  points.forEach(p=>{
+  available.forEach(p=>{
     ctx.beginPath();
-    ctx.arc(p.x,p.y,4.5,0,Math.PI*2);
+    ctx.arc(p.x,p.y,3.5,0,Math.PI*2);
     ctx.fillStyle=lineColor;
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(p.x,p.y,2,0,Math.PI*2);
-    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--panel').trim() || '#fff';
+    ctx.arc(p.x,p.y,1.4,0,Math.PI*2);
+    ctx.fillStyle=panelColor;
     ctx.fill();
   });
 
-  // x labels: first and last, plus middle if enough room
-  ctx.fillStyle=textColor;
-  ctx.font='11px system-ui';
-  ctx.textAlign='center';
-  const labelIndexes = history.length<=2 ? history.map((_,i)=>i) : [0, Math.floor((history.length-1)/2), history.length-1];
-  [...new Set(labelIndexes)].forEach(i=>{
-    ctx.fillText(prettyMonth(history[i].month), points[i].x, cssHeight-10);
-  });
-
-  const first=history[0], last=history[history.length-1];
-  $('netWorthChartStart').textContent=`${prettyMonth(first.month)}: ${money(first.value)}`;
-  const change=(+last.value||0)-(+first.value||0);
-  $('netWorthChartChange').textContent=history.length>1
-    ? `${change>=0?'+':''}${money(change)} since first snapshot`
-    : 'Current month';
+  const first=available[0];
+  const last=available[available.length-1];
+  $('netWorthChartStart').textContent=`${months[first.month]}: ${money(first.value)}`;
+  const change=last.value-first.value;
+  $('netWorthChartChange').textContent=available.length>1
+    ? `${change>=0?'+':''}${money(change)} YTD`
+    : `${months[last.month]} snapshot`;
 }
 
 function render(){
