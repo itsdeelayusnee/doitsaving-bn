@@ -89,6 +89,59 @@ body[data-theme='dark'] .transaction-type-btn{background:var(--surface-2)}
   margin:-4px 0 12px;
 }
 
+
+.calc-help{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.calc-help-toggle{
+  border:0;
+  background:transparent;
+  color:var(--gold-2);
+  font-weight:900;
+  padding:0;
+}
+.calc-help-body{
+  display:none;
+  margin-top:12px;
+}
+.calc-help-body.open{display:block}
+.calc-step{
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:10px;
+  align-items:start;
+  margin-bottom:12px;
+}
+.calc-step-num{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(181,139,92,.14);
+  color:var(--gold-2);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  border:1px solid var(--line);
+}
+.calc-example{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+}
+body[data-theme='dark'] .calc-example{background:var(--surface-2)}
+.calc-example-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:7px 0;
+  border-top:1px solid var(--line);
+}
+.calc-example-line:first-child{border-top:0}
+
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--nav-bg);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
 .nav-inner{max-width:780px;margin:0 auto;padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
@@ -255,6 +308,48 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
             <div class="compact-card"><div class="label">Cash / Gold Example</div><div class="metric-mid" id="suggestedSplit">B$0.00 / B$0.00</div></div>
           </div>
           <div class="small-note">The split uses a 60% cash and 40% gold example for planning only. You can adjust based on your own needs.</div>
+
+          <div class="calc-help">
+            <button class="calc-help-toggle" id="calcHelpToggle">How is this calculated?</button>
+
+            <div class="calc-help-body" id="calcHelpBody">
+              <div class="calc-step">
+                <div class="calc-step-num">1</div>
+                <div>
+                  <div class="goal-name">Choose a budget rule</div>
+                  <div class="subtext">Example: 50 / 30 / 20 means 50% for needs, 30% for wants and 20% for savings.</div>
+                </div>
+              </div>
+
+              <div class="calc-step">
+                <div class="calc-step-num">2</div>
+                <div>
+                  <div class="goal-name">The savings amount is calculated automatically</div>
+                  <div class="subtext">The savings percentage is applied to your recorded income.</div>
+                </div>
+              </div>
+
+              <div class="calc-step">
+                <div class="calc-step-num">3</div>
+                <div>
+                  <div class="goal-name">Your savings are shown as a hybrid example</div>
+                  <div class="subtext">For illustration, the suggested savings amount is shown as 60% cash and 40% gold.</div>
+                </div>
+              </div>
+
+              <div class="calc-example">
+                <div class="goal-name" style="margin-bottom:6px">Example</div>
+                <div class="calc-example-line"><span>Monthly income</span><strong>B$3,000</strong></div>
+                <div class="calc-example-line"><span>20% savings</span><strong>B$600</strong></div>
+                <div class="calc-example-line"><span>Cash example · 60%</span><strong>B$360</strong></div>
+                <div class="calc-example-line"><span>Gold example · 40%</span><strong>B$240</strong></div>
+              </div>
+
+              <div class="small-note">
+                <strong>Important:</strong> The 60/40 cash-gold split is only an example, not a fixed rule. Adjust your actual saving mix based on your emergency fund, short-term needs and long-term goals.
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="section">
@@ -503,6 +598,16 @@ document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.addEventLi
   state.transactionView=btn.dataset.transactionView;
   render();
 }));
+
+
+const calcHelpToggle=$('calcHelpToggle');
+if(calcHelpToggle){
+  calcHelpToggle.addEventListener('click',()=>{
+    const body=$('calcHelpBody');
+    body.classList.toggle('open');
+    calcHelpToggle.textContent=body.classList.contains('open') ? 'Hide calculation guide' : 'How is this calculated?';
+  });
+}
 
 render();
 </script>
