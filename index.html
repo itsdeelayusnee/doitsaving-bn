@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E
+%3Crect width=%22200%22 height=%22200%22 rx=%2245%22 fill=%22%23151515%22/%3E
+%3Ccircle cx=%22100%22 cy=%22100%22 r=%2272%22 fill=%22none%22 stroke=%22%23C29A63%22 stroke-width=%228%22/%3E
+%3Ctext x=%22100%22 y=%22125%22 text-anchor=%22middle%22 font-family=%22Arial, sans-serif%22 font-size=%2272%22 font-weight=%22900%22 fill=%22%23F7F1E8%22%3EDS%3C/text%3E
+%3C/svg%3E">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>doitsaving.bn — Hybrid Finance</title>
+<style>
+:root{
+  --bg:#f5efe6; --surface:#fffaf4; --surface-2:#f1e8dc; --panel:#fffaf4; --line:#dccfbe;
+  --text:#20252b; --muted:#626b75; --gold:#b58b5c; --gold-2:#9d7448; --green:#24854f; --red:#cf5560;
+  --shadow:0 10px 28px rgba(50,40,25,.08); --radius-xl:24px; --radius-lg:20px; --nav-bg:rgba(245,239,230,.95);
+}
+body[data-theme="dark"]{
+  --bg:#0f141a; --surface:#141b22; --surface-2:#19222c; --panel:#151d26; --line:#293440;
+  --text:#f3f2ee; --muted:#9aa5b2; --gold:#d5b082; --gold-2:#c49a6c; --green:#4fd786; --red:#ff737b;
+  --shadow:none; --nav-bg:rgba(15,20,26,.96);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit} button{cursor:pointer}
+.app{min-height:100vh;padding-bottom:88px}.wrap{max-width:780px;margin:0 auto;padding:18px 14px 26px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand-wrap{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(145deg,#e0c29a,#bb9266);color:#16202a;font-weight:900;font-size:18px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.eyebrow{font-size:13px;font-weight:800;color:var(--muted)} .brand-title{font-size:18px;font-weight:900;line-height:1.08}
+.theme-toggle{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:900}
+.section{margin-top:18px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:10px}
+.section-head h2{margin:0;font-size:15px;text-transform:uppercase;letter-spacing:.08em}.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.link-inline{color:var(--gold-2);font-weight:900;border:0;background:transparent;padding:0}
+.hero{background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--radius-xl);padding:18px;box-shadow:var(--shadow)}
+.hero-top{display:flex;justify-content:space-between;align-items:start;gap:12px}.hero-title{font-size:14px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--muted)}
+.hero-value{font-size:44px;line-height:1;font-weight:900;margin:12px 0 10px}.hero-sub{max-width:460px;color:var(--muted);font-weight:700;line-height:1.35}
+.status{display:inline-flex;align-items:center;border:1px solid var(--line);padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.55);font-weight:900}
+body[data-theme='dark'] .status{background:rgba(255,255,255,.06)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow)}
+.panel-tight{padding:14px}.metric-large{font-size:34px;font-weight:900;line-height:1.05}.metric-mid{font-size:20px;font-weight:900;line-height:1.1}
+.label{font-size:13px;font-weight:900;color:var(--muted)}.subtext{font-size:13px;color:var(--muted);line-height:1.35}
+.split-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.split-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.compact-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px}
+body[data-theme='dark'] .compact-card{background:var(--surface-2)} .hybrid-summary{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+.list{display:grid;gap:10px}.list-item{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center}
+body[data-theme='dark'] .list-item{background:var(--surface-2)}
+.icon{width:44px;height:44px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;font-size:18px;border:1px solid var(--line)}
+.item-title{font-weight:900}.item-meta{margin-top:2px;font-size:12px;color:var(--muted)}.item-amount{font-weight:900;text-align:right}
+.positive{color:var(--green)} .negative{color:var(--red)} .goldish{color:var(--gold)}
+.goal-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px}
+body[data-theme='dark'] .goal-card{background:var(--surface-2)}
+.progress{height:8px;background:rgba(0,0,0,.06);border-radius:999px;overflow:hidden;margin:10px 0 8px}
+body[data-theme='dark'] .progress{background:rgba(255,255,255,.08)} .progress>span{display:block;height:100%;background:var(--gold)}
+.goal-head{display:flex;justify-content:space-between;align-items:start;gap:12px}.goal-name{font-weight:900;font-size:16px}.goal-meta{color:var(--muted);font-size:12px}
+.goal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.text-btn{border:0;background:transparent;padding:0;font-weight:900}
+.text-green{color:var(--green)} .text-red{color:var(--red)} .text-muted{color:var(--muted)}
+.action-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 14px;border-radius:14px;font-weight:900}
+.primary-btn{border:0;background:var(--gold);color:#15181b;padding:12px 14px;border-radius:14px;font-weight:900}
+.small-note{margin-top:8px;padding:12px;background:rgba(181,139,92,.08);border:1px solid var(--line);border-radius:16px;color:var(--muted);font-size:13px}
+
+.transaction-type-toggle{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:14px;
+}
+.transaction-type-btn{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--muted);
+  padding:10px 12px;
+  border-radius:14px;
+  font-weight:900;
+}
+body[data-theme='dark'] .transaction-type-btn{background:var(--surface-2)}
+.transaction-type-btn.active{
+  background:var(--gold);
+  color:#171818;
+  border-color:var(--gold);
+}
+.more-details{
+  border:0;
+  background:transparent;
+  color:var(--gold-2);
+  font-weight:900;
+  padding:4px 0 10px;
+}
+.optional-details{display:none}
+.optional-details.open{display:block}
+.compact-sheet-note{
+  color:var(--muted);
+  font-size:12px;
+  margin:-4px 0 12px;
+}
+
+
+.calc-help{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.calc-help-toggle{
+  border:0;
+  background:transparent;
+  color:var(--gold-2);
+  font-weight:900;
+  padding:0;
+}
+.calc-help-body{
+  display:none;
+  margin-top:12px;
+}
+.calc-help-body.open{display:block}
+.calc-step{
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:10px;
+  align-items:start;
+  margin-bottom:12px;
+}
+.calc-step-num{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(181,139,92,.14);
+  color:var(--gold-2);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  border:1px solid var(--line);
+}
+.calc-example{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+}
+body[data-theme='dark'] .calc-example{background:var(--surface-2)}
+.calc-example-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:7px 0;
+  border-top:1px solid var(--line);
+}
+.calc-example-line:first-child{border-top:0}
+
+
+.transaction-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  margin:10px 0 12px;
+}
+.transaction-total-label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:800;
+}
+.transaction-total{
+  font-size:30px;
+  font-weight:900;
+  margin-top:3px;
+}
+.period-tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:4px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:16px;
+  margin-bottom:12px;
+}
+body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
+.period-btn{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  border-radius:12px;
+  padding:9px 10px;
+  font-weight:900;
+}
+.period-btn.active{
+  background:var(--gold);
+  color:#171818;
+}
+.date-range{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+.date-range.open{display:grid}
+.chart-panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius-xl);
+  padding:16px;
+  margin-bottom:14px;
+}
+.chart-wrap{
+  display:grid;
+  grid-template-columns:190px 1fr;
+  gap:16px;
+  align-items:center;
+}
+.chart-box{
+  width:190px;
+  height:190px;
+  margin:auto;
+  position:relative;
+}
+.chart-box canvas{
+  width:190px;
+  height:190px;
+  display:block;
+}
+.chart-center{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  text-align:center;
+}
+.chart-center strong{
+  display:block;
+  font-size:18px;
+}
+.chart-center span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:2px;
+}
+.chart-legend{
+  display:grid;
+  gap:8px;
+}
+.legend-row{
+  display:grid;
+  grid-template-columns:12px 1fr auto;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+}
+.legend-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+.legend-name{
+  font-weight:800;
+}
+.legend-amount{
+  font-weight:900;
+}
+.transaction-section-label{
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin:16px 0 8px;
+}
+@media(max-width:640px){
+  .transaction-toolbar{align-items:center}
+  .transaction-total{font-size:26px}
+  .date-range{grid-template-columns:1fr}
+  .chart-wrap{grid-template-columns:1fr}
+  .chart-box{width:170px;height:170px}
+  .chart-box canvas{width:170px;height:170px}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.text-action{
+  border:0;
+  background:transparent;
+  padding:4px 0;
+  color:var(--gold);
+  font-weight:900;
+  font-size:12px;
+  cursor:pointer;
+}
+.home-compact-summary{
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius:var(--radius-xl);
+  padding:16px;
+}
+.home-compact-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.home-compact-value{
+  font-size:26px;
+  font-weight:900;
+  line-height:1.05;
+}
+.home-inline-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
+.home-inline-stat .label{
+  margin-bottom:3px;
+}
+.home-inline-stat strong{
+  font-size:15px;
+}
+.home-mini-debt{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.home-mini-debt .compact-card{
+  padding:12px;
+}
+.home-mini-debt .metric-mid{
+  font-size:18px;
+}
+.latest-moves-footer{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+}
+.brand-stack{display:flex;flex-direction:column;gap:2px}
+.brand-sub{font-size:12px;color:var(--muted);letter-spacing:.02em}
+.brand-strip{margin:4px 0 16px;padding:14px 16px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel),var(--soft))}
+.brand-strip-title{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-strong)}
+.brand-strip-main{margin-top:6px;font-size:18px;font-weight:800}
+.brand-strip-note{margin-top:4px;font-size:13px;color:var(--muted)}
+.page-footnote{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
+
+@media(max-width:640px){
+  .home-mini-debt{grid-template-columns:1fr 1fr}
+  .home-mini-debt .compact-card:last-child{grid-column:1/-1}
+}
+
+.networth-chart-panel{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+.networth-chart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.networth-chart-title{
+  font-weight:900;
+  font-size:14px;
+}
+.networth-chart-sub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+.networth-chart-wrap{
+  width:100%;
+  overflow:hidden;
+}
+.networth-chart-wrap canvas{
+  width:100%;
+  height:190px;
+  display:block;
+}
+.networth-chart-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+.networth-empty{
+  height:150px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--line);
+  border-radius:16px;
+}
+@media(max-width:640px){
+  .networth-chart-wrap canvas{height:170px}
+  .networth-chart-head{align-items:flex-start}
+}
+
+.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--nav-bg);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav-inner{max-width:780px;margin:0 auto;padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.nav-btn{border:0;background:transparent;color:var(--muted);padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:800}
+.nav-btn span:first-child{font-size:20px}.nav-btn.active{color:var(--gold-2)}
+.page{display:none}.page.active{display:block}.page-title{font-size:24px;font-weight:900;margin:4px 0}.page-sub{margin:0 0 16px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:40}.modal.open{display:flex}
+.sheet{width:100%;max-width:780px;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.sheet-head h3{margin:0;font-size:20px}
+.close-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text)}
+.field{margin-bottom:12px}.field label{display:block;margin-bottom:6px;font-weight:900;font-size:13px}
+input,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text)}
+body[data-theme='dark'] input,body[data-theme='dark'] select{background:var(--surface-2)}
+.stack{display:grid;gap:12px}.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.rule-btn{text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:16px;padding:12px}
+body[data-theme='dark'] .rule-btn{background:var(--surface-2)} .rule-btn.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.tab-switch{display:flex;gap:8px;background:var(--surface);border:1px solid var(--line);padding:4px;border-radius:999px}
+body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 10px;border-radius:999px;font-weight:900}
+.tab-btn.active{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.allocation{display:none;margin-top:12px}.allocation.open{display:block}.allocation-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inline-metrics{display:flex;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--line);margin-top:10px}.home-preview-goals{display:grid;gap:10px}
+@media(max-width:640px){
+  .wrap{padding:14px 12px 22px}.logo{width:50px;height:50px;border-radius:16px}.brand-title{font-size:16px}.theme-toggle{padding:8px 11px;font-size:12px}
+  .hero{padding:16px}.hero-value{font-size:38px}.hero-sub{font-size:13px}.split-2,.hybrid-summary,.split-3,.allocation-grid,.rule-grid{grid-template-columns:1fr}
+  .list-item{grid-template-columns:38px 1fr auto;padding:12px;gap:10px}.icon{width:38px;height:38px;border-radius:12px;font-size:16px}.metric-large{font-size:30px}
+}
+
+.dev-lock-screen{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px 16px;
+  background:
+    radial-gradient(circle at top left, rgba(181,139,92,.14), transparent 34%),
+    var(--bg);
+}
+.dev-lock-card{
+  width:min(100%,420px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+.dev-lock-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:22px;
+}
+.dev-lock-brand h1{
+  margin:0;
+  font-size:21px;
+}
+.dev-lock-brand p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+.dev-lock-title{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+.dev-lock-sub{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  margin-bottom:16px;
+}
+.dev-lock-message{
+  min-height:18px;
+  color:var(--red);
+  font-size:12px;
+  margin:8px 0 2px;
+}
+.dev-lock-submit{
+  width:100%;
+  margin-top:8px;
+}
+.dev-lock-note{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+  text-align:center;
+}
+.dev-hidden{display:none !important}
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.lock-btn{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:999px;
+  padding:8px 11px;
+  font-weight:900;
+  font-size:12px;
+}
+@media(max-width:640px){
+  .dev-lock-card{padding:20px;border-radius:24px}
+  .top-actions{display:flex;gap:6px}
+}
+
+
+.ds-logo-img{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  object-fit:cover;
+  display:block;
+}
+
+</style>
+</head>
+<body data-theme="light">
+
+<div class="dev-lock-screen" id="devLockScreen">
+  <div class="dev-lock-card">
+    <div class="dev-lock-brand">
+      <img class="ds-logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E
+%3Crect width=%22200%22 height=%22200%22 rx=%2245%22 fill=%22%23151515%22/%3E
+%3Ccircle cx=%22100%22 cy=%22100%22 r=%2272%22 fill=%22none%22 stroke=%22%23C29A63%22 stroke-width=%228%22/%3E
+%3Ctext x=%22100%22 y=%22125%22 text-anchor=%22middle%22 font-family=%22Arial, sans-serif%22 font-size=%2272%22 font-weight=%22900%22 fill=%22%23F7F1E8%22%3EDS%3C/text%3E
+%3C/svg%3E" alt="doitsaving.bn logo">
+      <div>
+        <div class="eyebrow">doitsaving.bn</div>
+        <h1>Hybrid Finance</h1>
+        <p>Private Development Access</p>
+      </div>
+    </div>
+
+    <div class="dev-lock-title">Enter Passcode</div>
+    <div class="dev-lock-sub">Your personal finance dashboard is currently being developed.</div>
+
+    <div class="field">
+      <label>Passcode</label>
+      <input id="devPasscodeInput" type="password" inputmode="text" autocomplete="off" placeholder="Enter passcode">
+    </div>
+
+    <div class="dev-lock-message" id="devPasscodeMessage"></div>
+
+    <button class="primary-btn dev-lock-submit" id="devUnlockBtn" type="button">Unlock Dashboard</button>
+
+    <div class="dev-lock-note">
+      Temporary development access only.<br>
+      This will be replaced with account sign-in before public release.
+    </div>
+  </div>
+</div>
+
+<div class="app dev-hidden" id="dashboardApp">
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <img class="ds-logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E
+%3Crect width=%22200%22 height=%22200%22 rx=%2245%22 fill=%22%23151515%22/%3E
+%3Ccircle cx=%22100%22 cy=%22100%22 r=%2272%22 fill=%22none%22 stroke=%22%23C29A63%22 stroke-width=%228%22/%3E
+%3Ctext x=%22100%22 y=%22125%22 text-anchor=%22middle%22 font-family=%22Arial, sans-serif%22 font-size=%2272%22 font-weight=%22900%22 fill=%22%23F7F1E8%22%3EDS%3C/text%3E
+%3C/svg%3E" alt="doitsaving.bn logo">
+        <div class="brand-stack">
+          <div class="eyebrow">doitsaving.bn</div>
+          <div class="brand-title">Hybrid Finance</div>
+          <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="lock-btn" id="lockDashboardBtn" type="button">Lock</button>
+        <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+      </div>
+    </header>
+
+    <div class="brand-strip">
+      <div class="brand-strip-title">doitsaving.bn financial system</div>
+      <div class="brand-strip-main">Your money. Your system. Your financial journey.</div>
+      <div class="brand-strip-note">Track your money flow, cash savings, gold savings, investments, debt-free journey and net worth in one place.</div>
+    </div>
+
+    <main>
+      <section class="page active" id="home">
+        <div class="hero">
+          <div class="hero-top">
+            <div>
+              <div class="hero-title">Monthly Snapshot</div>
+              <div class="hero-value" id="homeLeftover">B$0.00</div>
+              <div class="hero-sub">Your remaining balance after expenses, cash + gold savings and debt commitments.</div>
+            </div>
+            <div class="status" id="leftoverStatus">Start tracking</div>
+          </div>
+          <div style="margin-top:14px"><button class="action-btn" id="toggleAllocation">Plan My Remaining Balance</button></div>
+          <div class="allocation" id="allocationBox">
+            <div class="allocation-grid" style="margin-top:14px">
+              <div class="field"><label>Carry Forward</label><input id="allocCarry" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+              <div class="field"><label>Cash Savings</label><input id="allocCash" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+              <div class="field"><label>Gold Savings</label><input id="allocGold" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+              <div class="field"><label>Extra Debt Payment</label><input id="allocDebt" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+              <div class="field"><label>Saving Goal</label><input id="allocGoal" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+            </div>
+            <div class="inline-metrics">
+              <div><div class="label">Allocated</div><div class="metric-mid" id="allocTotal">B$0.00</div></div>
+              <div style="text-align:right"><div class="label">Unallocated</div><div class="metric-mid" id="allocRemaining">B$0.00</div></div>
+            </div>
+            <div class="small-note">Planning tool only. It helps you decide where the leftover balance should go.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>This Month's Money Flow</h2>
+              <p>See how your money is distributed across your financial priorities.</p>
+            </div>
+            <button class="link-inline" data-nav="transactions">View Transactions</button>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-wrap">
+              <div class="chart-box">
+                <canvas id="homeIncomePie" width="380" height="380"></canvas>
+                <div class="chart-center">
+                  <div>
+                    <strong id="homeChartIncome">B$0.00</strong>
+                    <span>Total Income</span>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend" id="homeIncomeLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Net Worth</h2><p>Your overall financial position.</p></div>
+            <button class="action-btn" id="manageAssetsBtn">Other Assets</button>
+          </div>
+          <div class="panel">
+            <div class="label">Net Worth</div><div class="metric-large goldish" id="homeNetWorth">B$0.00</div>
+            <div class="split-2" style="margin-top:14px">
+              <div class="compact-card"><div class="label">Total Assets</div><div class="metric-mid" id="homeAssets">B$0.00</div><div class="subtext">Tracked savings plus additional assets.</div></div>
+              <div class="compact-card"><div class="label">Total Liabilities</div><div class="metric-mid" id="homeLiabilities">B$0.00</div><div class="subtext">Outstanding debt balances.</div></div>
+            </div>
+
+            <div class="networth-chart-panel">
+              <div class="networth-chart-head">
+                <div>
+                  <div class="networth-chart-title">Net Worth Progress</div>
+                  <div class="networth-chart-sub">Monthly snapshots of your overall financial position.</div>
+                </div>
+                <button class="text-action" id="addNetWorthSnapshotBtn">+ Add Past Snapshot</button>
+              </div>
+
+              <div class="networth-chart-wrap">
+                <canvas id="netWorthChart"></canvas>
+              </div>
+
+              <div class="networth-chart-meta">
+                <span id="netWorthChartStart">No history yet</span>
+                <span id="netWorthChartChange"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Hybrid Savings</h2><p>Your cash + gold saving system.</p></div>
+            <button class="link-inline" data-nav="savings">View Savings</button>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Total Hybrid Savings</div>
+                <div class="home-compact-value" id="homeHybridTotal">B$0.00</div>
+              </div>
+              <div class="subtext">Cash + gold value</div>
+            </div>
+            <div class="home-inline-stats">
+              <div class="home-inline-stat">
+                <div class="label">Cash</div>
+                <strong id="homeCashSaved">B$0.00</strong>
+              </div>
+              <div class="home-inline-stat">
+                <div class="label">Gold</div>
+                <strong id="homeGoldSaved">B$0.00</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Investments</h2><p>A quick snapshot of your investment value.</p></div>
+            <button class="link-inline" data-nav="investments">View Investments</button>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Current Investment Value</div>
+                <div class="home-compact-value" id="homeInvestmentValue">B$0.00</div>
+              </div>
+              <div style="text-align:right">
+                <div class="label">Gain / Loss</div>
+                <div class="metric-mid" id="homeInvestmentGain">B$0.00</div>
+              </div>
+            </div>
+            <div class="home-inline-stats">
+              <div class="home-inline-stat">
+                <div class="label">Amount Invested</div>
+                <strong id="homeInvestmentCost">B$0.00</strong>
+              </div>
+              <div class="home-inline-stat">
+                <div class="label">Holdings</div>
+                <strong id="homeInvestmentCount">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div><h2>Debt-Free Journey</h2><p>A quick snapshot of your debt payoff progress.</p></div>
+            <button class="link-inline" data-nav="debt">View Debt Details</button>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Debt Paid</div>
+                <div class="home-compact-value" id="homeDebtPaid">B$0.00</div>
+                <div class="subtext" id="homeDebtCount">0 active debts</div>
+              </div>
+              <div style="text-align:right">
+                <div class="label">Debt Progress</div>
+                <div class="metric-mid goldish" id="homeDebtProgress">0%</div>
+              </div>
+            </div>
+            <div class="progress" style="margin-top:16px">
+              <span id="homeDebtProgressBar" style="width:0%"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head"><div><h2>Latest Money Moves</h2><p>A quick look at your most recent transactions.</p></div></div>
+          <div class="list" id="homeMoves"></div>
+        
+          <div class="latest-moves-footer">
+            <button class="text-action" id="viewAllTransactionsBtn">View all transactions →</button>
+          </div>
+          <div class="page-footnote">doitsaving.bn · Hybrid Finance Dashboard · Your money, your system.</div>
+        </div>
+
+        
+
+        
+
+        
+
+        
+      </section>
+
+      
+      
+      
+      <section class="page" id="transactions">
+        <h1 class="page-title">Transactions</h1>
+        <p class="page-sub">Track every money-in and money-out movement inside your doitsaving.bn system.</p>
+
+        <div class="tab-switch" style="margin-bottom:12px">
+          <button class="tab-btn active" data-transaction-view="income">Income</button>
+          <button class="tab-btn" data-transaction-view="expense">Expenses</button>
+        </div>
+
+        <div class="transaction-toolbar">
+          <div>
+            <div class="transaction-total-label" id="transactionHeading">Income</div>
+            <div class="transaction-total positive" id="transactionFilteredTotal">B$0.00</div>
+            <div class="subtext" id="transactionCountLabel">0 entries</div>
+          </div>
+          <button class="primary-btn" id="newTransactionBtn">+ Add Income</button>
+        </div>
+
+        <div class="period-tabs">
+          <button class="period-btn active" data-period="all">All Time</button>
+          <button class="period-btn" data-period="month">This Month</button>
+          <button class="period-btn" data-period="custom">Pick Dates</button>
+        </div>
+
+        <div class="date-range" id="transactionDateRange">
+          <div class="field">
+            <label>From</label>
+            <input type="date" id="transactionDateFrom">
+          </div>
+          <div class="field">
+            <label>To</label>
+            <input type="date" id="transactionDateTo">
+          </div>
+        </div>
+
+        <div class="transaction-section-label">Transaction History</div>
+        <div class="list" id="transactionList"></div>
+      </section>
+
+<section class="page" id="savings">
+        <h1 class="page-title">Savings</h1><p class="page-sub">Manage your doitsaving.bn hybrid saving system: cash + gold in one place.</p>
+        <div class="panel">
+          <div class="section-head" style="margin:0 0 12px">
+            <div><h2>Hybrid Plan</h2><p>Choose a budget guide for your savings.</p></div>
+            <button class="action-btn" id="changeRuleBtn">Change Rule</button>
+          </div>
+          <div class="split-2">
+            <div class="compact-card">
+              <div class="label">Current Rule</div>
+              <div class="metric-mid" id="ruleName">50 / 30 / 20</div>
+            </div>
+            <div class="compact-card">
+              <div class="label">Suggested Savings</div>
+              <div class="metric-mid goldish" id="suggestedSavings">B$0.00</div>
+            </div>
+          </div>
+
+          <div class="compact-card" style="margin-top:12px">
+            <div class="label">Suggested Hybrid Split</div>
+            <div class="split-2" style="margin-top:10px">
+              <div>
+                <div class="subtext">Cash · 60%</div>
+                <div class="metric-mid" id="suggestedCash">B$0.00</div>
+              </div>
+              <div>
+                <div class="subtext">Gold · 40%</div>
+                <div class="metric-mid" id="suggestedGold">B$0.00</div>
+              </div>
+            </div>
+          </div>
+          <div class="small-note">The split uses a 60% cash and 40% gold example for planning only. You can adjust based on your own needs.</div>
+
+          <div class="calc-help">
+            <button class="calc-help-toggle" id="calcHelpToggle">How is this calculated?</button>
+
+            <div class="calc-help-body" id="calcHelpBody">
+              <div class="calc-step">
+                <div class="calc-step-num">1</div>
+                <div>
+                  <div class="goal-name">Choose a budget rule</div>
+                  <div class="subtext">Example: 50 / 30 / 20 means 50% for needs, 30% for wants and 20% for savings.</div>
+                </div>
+              </div>
+
+              <div class="calc-step">
+                <div class="calc-step-num">2</div>
+                <div>
+                  <div class="goal-name">The savings amount is calculated automatically</div>
+                  <div class="subtext">The savings percentage is applied to your recorded income.</div>
+                </div>
+              </div>
+
+              <div class="calc-step">
+                <div class="calc-step-num">3</div>
+                <div>
+                  <div class="goal-name">Your savings are shown as a hybrid example</div>
+                  <div class="subtext">For illustration, the suggested savings amount is shown as 60% cash and 40% gold.</div>
+                </div>
+              </div>
+
+              <div class="calc-example">
+                <div class="goal-name" style="margin-bottom:6px">Example</div>
+                <div class="calc-example-line"><span>Monthly income</span><strong>B$3,000</strong></div>
+                <div class="calc-example-line"><span>20% savings</span><strong>B$600</strong></div>
+                <div class="calc-example-line"><span>Cash example · 60%</span><strong>B$360</strong></div>
+                <div class="calc-example-line"><span>Gold example · 40%</span><strong>B$240</strong></div>
+              </div>
+
+              <div class="small-note">
+                <strong>Important:</strong> The 60/40 cash-gold split is only an example, not a fixed rule. Adjust your actual saving mix based on your emergency fund, short-term needs and long-term goals.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head"><div><h2>Actual Hybrid Savings</h2><p>Your recorded savings activity.</p></div><button class="primary-btn" id="newSavingBtn">+ Add Saving</button></div>
+          <div class="split-3">
+            <div class="panel panel-tight"><div class="label">Cash Saved</div><div class="metric-mid" id="savingsCash">B$0.00</div></div>
+            <div class="panel panel-tight"><div class="label">Gold Saved Value</div><div class="metric-mid" id="savingsGold">B$0.00</div></div>
+            <div class="panel panel-tight"><div class="label">Hybrid Total</div><div class="metric-mid goldish" id="savingsHybrid">B$0.00</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head"><div><h2>Saving Goals</h2><p>Track your progress toward specific targets.</p></div><button class="primary-btn" id="newGoalBtn">+ New Goal</button></div>
+          <div class="stack" id="goalList"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head"><div><h2>Savings Activity</h2><p>Cash and gold top-ups.</p></div></div>
+          <div class="list" id="savingList"></div>
+        </div>
+      </section>
+
+      <section class="page" id="investments">
+        <h1 class="page-title">Investments</h1>
+        <p class="page-sub">Track how much you have invested and the current value of your holdings.</p>
+
+        <div class="split-3">
+          <div class="panel panel-tight">
+            <div class="label">Amount Invested</div>
+            <div class="metric-mid" id="investmentCostTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Current Value</div>
+            <div class="metric-mid goldish" id="investmentValueTotal">B$0.00</div>
+          </div>
+          <div class="panel panel-tight">
+            <div class="label">Gain / Loss</div>
+            <div class="metric-mid" id="investmentGainTotal">B$0.00</div>
+            <div class="subtext" id="investmentReturnPct">0.00%</div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-top:18px">
+          <div>
+            <h2>Your Investments</h2>
+            <p>Record each holding using the amount invested and its latest value.</p>
+          </div>
+          <button class="primary-btn" id="newInvestmentBtn">+ Add Investment</button>
+        </div>
+        <div class="stack" id="investmentList"></div>
+      </section>
+
+      <section class="page" id="debt">
+        <h1 class="page-title">Debt-Free Journey</h1><p class="page-sub">Monitor your debt-free journey using your preferred snowball payoff approach.</p>
+        <div class="split-3">
+          <div class="panel panel-tight"><div class="label">Outstanding Balance</div><div class="metric-mid goldish" id="debtTotal">B$0.00</div></div>
+          <div class="panel panel-tight"><div class="label">Debt Payment</div><div class="metric-mid goldish" id="debtMinimums">B$0.00</div></div>
+          <div class="panel panel-tight"><div class="label">Closer to Debt Free</div><div class="metric-mid goldish" id="debtProgress">0%</div></div>
+        </div>
+
+        <div class="section" style="margin-top:18px">
+          <div class="section-head">
+            <div>
+              <h2>Debt-Free Target</h2>
+              <p>See how much further you have to go.</p>
+            </div>
+          </div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">More to Debt Free</div>
+                <div class="home-compact-value" id="debtToFreePercent">100%</div>
+              </div>
+              <div style="text-align:right">
+                <div class="label">Outstanding</div>
+                <div class="metric-mid goldish" id="debtToFreeAmount">B$0.00</div>
+              </div>
+            </div>
+            <div class="progress" style="margin-top:16px">
+              <span id="debtToFreeBar" style="width:100%"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-top:18px"><div><h2>Your Debts</h2><p>Active balances and updates.</p></div><button class="primary-btn" id="newDebtBtn">+ Add Debt</button></div>
+        <div class="stack" id="debtCards"></div>
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <h2>Snowball Method</h2>
+              <p>Focus on the smallest outstanding balance first.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="stack" id="strategyList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="nav">
+    <div class="nav-inner" style="grid-template-columns:repeat(5,1fr)">
+      <button class="nav-btn active" data-page="home"><span>⌂</span><span>Home</span></button>
+      <button class="nav-btn" data-page="transactions"><span>⇄</span><span>Transactions</span></button>
+      <button class="nav-btn" data-page="savings"><span>◉</span><span>Savings</span></button>
+      <button class="nav-btn" data-page="investments"><span>↗</span><span>Investments</span></button>
+      <button class="nav-btn" data-page="debt"><span>▣</span><span>Debt</span></button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const DEVELOPMENT_PASSCODE = 'DS2026';
+const DEV_UNLOCK_KEY = 'doitsavingDevUnlocked';
+
+function showDevLock(){
+  sessionStorage.removeItem(DEV_UNLOCK_KEY);
+  $('dashboardApp').classList.add('dev-hidden');
+  $('devLockScreen').classList.remove('dev-hidden');
+  $('devPasscodeInput').value='';
+  $('devPasscodeMessage').textContent='';
+  setTimeout(()=>$('devPasscodeInput').focus(),50);
+}
+
+function showDashboardAfterUnlock(){
+  sessionStorage.setItem(DEV_UNLOCK_KEY,'1');
+  $('devLockScreen').classList.add('dev-hidden');
+  $('dashboardApp').classList.remove('dev-hidden');
+  render();
+}
+
+function tryDevUnlock(){
+  const value=$('devPasscodeInput').value;
+  if(value===DEVELOPMENT_PASSCODE){
+    showDashboardAfterUnlock();
+  }else{
+    $('devPasscodeMessage').textContent='Incorrect passcode.';
+    $('devPasscodeInput').select();
+  }
+}
+
+const money = n => 'B$' + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+const today = () => new Date().toISOString().slice(0,10);
+const esc = s => String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const storeKey = 'doitsavingRedesignV1';
+const themeKey = 'doitsavingRedesignTheme';
+let state = JSON.parse(localStorage.getItem(storeKey)||'null') || {
+  incomes:[], expenses:[], savings:[], goals:[], investments:[], debts:[],
+  budgetRule:'50,30,20', customNeeds:50, customWants:30, customSavings:20,
+  manualAssets:{investments:0, retirement:0, property:0, other:0},
+  leftoverAlloc:{carry:0, cash:0, gold:0, debt:0, goal:0},
+  strategyView:'snowball', transactionView:'income'
+};
+if(!state.manualAssets) state.manualAssets = {investments:0, retirement:0, property:0, other:0};
+if(!Array.isArray(state.investments)) state.investments = [];
+if(!state.leftoverAlloc) state.leftoverAlloc = {carry:0, cash:0, gold:0, debt:0, goal:0};
+if(!state.strategyView) state.strategyView = 'snowball';
+if(!state.transactionView) state.transactionView = 'income';
+if(!state.transactionPeriod) state.transactionPeriod = 'all';
+if(!state.transactionDateFrom) state.transactionDateFrom = '';
+if(!state.transactionDateTo) state.transactionDateTo = '';
+if(!Array.isArray(state.netWorthHistory)) state.netWorthHistory = [];
+function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
+function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
+function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
+applyTheme(localStorage.getItem(themeKey)||'light');
+$('themeToggle').addEventListener('click',()=>{ const current=document.body.getAttribute('data-theme')||'light'; applyTheme(current==='light'?'dark':'light'); drawNetWorthChart(); });
+document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
+document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.nav)));
+function openPage(page){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); $(page).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});}
+$('toggleAllocation').addEventListener('click',()=>{ $('allocationBox').classList.toggle('open'); $('toggleAllocation').textContent = $('allocationBox').classList.contains('open') ? 'Hide Allocation' : 'Plan My Remaining Balance'; });
+['allocCarry','allocCash','allocGold','allocDebt','allocGoal'].forEach(id=>$(id).addEventListener('input',()=>{ state.leftoverAlloc={carry:+$('allocCarry').value||0, cash:+$('allocCash').value||0, gold:+$('allocGold').value||0, debt:+$('allocDebt').value||0, goal:+$('allocGoal').value||0}; saveState(); render(); }));
+$('modal').addEventListener('click',e=>{ if(e.target===$('modal')) closeSheet(); });
+function closeSheet(){ $('modal').classList.remove('open'); $('sheet').innerHTML=''; } window.closeSheet = closeSheet;
+function sheetHead(title){ return `<div class="sheet-head"><h3>${title}</h3><button class="close-btn" onclick="closeSheet()">×</button></div>`; }
+function openSheet(html){ $('sheet').innerHTML=html; $('modal').classList.add('open'); }
+function currentBudgetRule(){ if(state.budgetRule==='custom') return [+state.customNeeds||0,+state.customWants||0,+state.customSavings||0,'Custom']; const p=state.budgetRule.split(',').map(Number); return [p[0],p[1],p[2],state.budgetRule.replaceAll(',',' / ')]; }
+function currentMonthFilter(entry){ const d=(entry.date||'').split('-'); const now=new Date(); return d.length===3 && +d[0]===now.getFullYear() && +d[1]===now.getMonth()+1; }
+function latestAmount(arr){ return arr.length ? money(arr[arr.length-1].amount) : '—'; }
+function debtProgressPercent(){ if(!state.debts.length) return 0; const initialTotal = state.debts.reduce((a,d)=>a+(+(d.initial||d.balance)||0),0); const currentTotal = sum(state.debts,'balance'); if(initialTotal<=0) return 0; return Math.max(0,Math.min(100,((initialTotal-currentTotal)/initialTotal)*100)); }
+function debtStrategyList(type){ const arr=[...state.debts]; if(type==='snowball') arr.sort((a,b)=>(+a.balance||0)-(+b.balance||0)); else arr.sort((a,b)=>(+b.rate||0)-(+a.rate||0)); return arr; }
+function activityIcon(kind){ return {income:'▲', expense:'▼', cash:'💵', gold:'◈'}[kind] || '•'; }
+function activityClass(kind){ return kind==='income' ? 'positive' : kind==='expense' ? 'negative' : 'goldish'; }
+function activityMarkup(item, kind, index, deleteFn){ const sign = kind==='expense' ? '-' : '+'; return `<div class="list-item"><div class="icon">${activityIcon(kind)}</div><div><div class="item-title">${esc(item.name || item.category || kind)}</div><div class="item-meta">${esc(item.category || kind)} · ${esc(item.date || '')}</div></div><div><div class="item-amount ${activityClass(kind)}">${sign}${money(item.amount)}</div>${deleteFn ? `<button class="text-btn text-red" style="margin-top:6px" onclick="${deleteFn}(${index})">Delete</button>` : ''}</div></div>`; }
+
+const chartPalette = ['#b58b5c','#6f8f72','#b96c6c','#6f82a8'];
+
+function drawHomeIncomeChart(income, expenses, savings, debt, left){
+  const canvas=$('homeIncomePie');
+  if(!canvas) return;
+
+  const ctx=canvas.getContext('2d');
+  const ratio=window.devicePixelRatio || 1;
+  const cssSize=window.innerWidth <= 640 ? 170 : 190;
+
+  canvas.style.width=cssSize+'px';
+  canvas.style.height=cssSize+'px';
+  canvas.width=Math.round(cssSize*ratio*2);
+  canvas.height=Math.round(cssSize*ratio*2);
+  ctx.setTransform(ratio*2,0,0,ratio*2,0,0);
+
+  const size=cssSize;
+  const cx=size/2, cy=size/2;
+  const outer=size*0.44;
+  const inner=size*0.26;
+  const safeLeft=Math.max(0,left);
+
+  const data=[
+    ['Expenses', Math.max(0,expenses)],
+    ['Hybrid Savings', Math.max(0,savings)],
+    ['Debt Repayment', Math.max(0,debt)],
+    ['Money Left', safeLeft]
+  ];
+  const total=data.reduce((a,x)=>a+x[1],0);
+
+  ctx.clearRect(0,0,size,size);
+
+  if(income<=0 || total<=0){
+    ctx.beginPath();
+    ctx.arc(cx,cy,outer,0,Math.PI*2);
+    ctx.arc(cx,cy,inner,0,Math.PI*2,true);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--surface-2').trim() || '#eee';
+    ctx.fill('evenodd');
+    $('homeIncomeLegend').innerHTML='<div class="empty">Add income and monthly activity to see your allocation.</div>';
+  }else{
+    let angle=-Math.PI/2;
+    data.forEach(([name,value],i)=>{
+      if(value<=0) return;
+      const slice=(value/total)*Math.PI*2;
+      ctx.beginPath();
+      ctx.arc(cx,cy,outer,angle,angle+slice);
+      ctx.arc(cx,cy,inner,angle+slice,angle,true);
+      ctx.closePath();
+      ctx.fillStyle=chartPalette[i];
+      ctx.fill();
+      angle+=slice;
+    });
+
+    $('homeIncomeLegend').innerHTML=data.map(([name,value],i)=>`
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${chartPalette[i]}"></span>
+        <span class="legend-name">${name}</span>
+        <span class="legend-amount">${money(value)}</span>
+      </div>
+    `).join('');
+  }
+
+  $('homeChartIncome').textContent=money(Math.max(0,income));
+
+}
+
+
+function monthKeyFromDate(dateObj=new Date()){
+  return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}`;
+}
+function prettyMonth(key){
+  const [y,m]=key.split('-').map(Number);
+  if(!y || !m) return key;
+  return new Date(y,m-1,1).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+}
+function updateMonthlyNetWorthSnapshot(netWorth){
+  const key=monthKeyFromDate();
+  const existing=state.netWorthHistory.find(x=>x.month===key);
+  if(existing){
+    existing.value=Number(netWorth)||0;
+  }else{
+    state.netWorthHistory.push({month:key,value:Number(netWorth)||0});
+  }
+  state.netWorthHistory.sort((a,b)=>a.month.localeCompare(b.month));
+}
+function drawNetWorthChart(){
+  const canvas=$('netWorthChart');
+  if(!canvas) return;
+
+  const history=[...state.netWorthHistory].sort((a,b)=>a.month.localeCompare(b.month));
+  const wrap=canvas.parentElement;
+  const cssWidth=Math.max(280, wrap.clientWidth || 320);
+  const cssHeight=window.innerWidth<=640 ? 170 : 190;
+  const ratio=window.devicePixelRatio || 1;
+
+  canvas.style.width=cssWidth+'px';
+  canvas.style.height=cssHeight+'px';
+  canvas.width=Math.round(cssWidth*ratio);
+  canvas.height=Math.round(cssHeight*ratio);
+
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  ctx.clearRect(0,0,cssWidth,cssHeight);
+
+  const textColor=getComputedStyle(document.body).getPropertyValue('--muted').trim() || '#777';
+  const lineColor=getComputedStyle(document.body).getPropertyValue('--gold').trim() || '#b58b5c';
+  const gridColor=getComputedStyle(document.body).getPropertyValue('--line').trim() || '#ddd';
+
+  if(history.length===0){
+    ctx.fillStyle=textColor;
+    ctx.font='13px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText('Net worth history will appear here.', cssWidth/2, cssHeight/2);
+    $('netWorthChartStart').textContent='No history yet';
+    $('netWorthChartChange').textContent='';
+    return;
+  }
+
+  const pad={l:18,r:18,t:18,b:34};
+  const plotW=cssWidth-pad.l-pad.r;
+  const plotH=cssHeight-pad.t-pad.b;
+  const vals=history.map(x=>+x.value||0);
+  let min=Math.min(...vals), max=Math.max(...vals);
+  if(min===max){
+    const buffer=Math.max(100,Math.abs(max)*0.1 || 100);
+    min-=buffer; max+=buffer;
+  }else{
+    const buffer=(max-min)*0.12;
+    min-=buffer; max+=buffer;
+  }
+
+  // horizontal guide lines
+  ctx.strokeStyle=gridColor;
+  ctx.lineWidth=1;
+  ctx.globalAlpha=.65;
+  for(let i=0;i<4;i++){
+    const y=pad.t+(plotH*i/3);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(cssWidth-pad.r,y); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
+  const points=history.map((item,i)=>{
+    const x=history.length===1 ? pad.l+plotW/2 : pad.l+(plotW*i/(history.length-1));
+    const y=pad.t+((max-(+item.value||0))/(max-min))*plotH;
+    return {x,y,...item};
+  });
+
+  // line
+  if(points.length>1){
+    ctx.beginPath();
+    points.forEach((p,i)=> i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle=lineColor;
+    ctx.lineWidth=3;
+    ctx.lineJoin='round';
+    ctx.lineCap='round';
+    ctx.stroke();
+  }
+
+  // points
+  points.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,4.5,0,Math.PI*2);
+    ctx.fillStyle=lineColor;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--panel').trim() || '#fff';
+    ctx.fill();
+  });
+
+  // x labels: first and last, plus middle if enough room
+  ctx.fillStyle=textColor;
+  ctx.font='11px system-ui';
+  ctx.textAlign='center';
+  const labelIndexes = history.length<=2 ? history.map((_,i)=>i) : [0, Math.floor((history.length-1)/2), history.length-1];
+  [...new Set(labelIndexes)].forEach(i=>{
+    ctx.fillText(prettyMonth(history[i].month), points[i].x, cssHeight-10);
+  });
+
+  const first=history[0], last=history[history.length-1];
+  $('netWorthChartStart').textContent=`${prettyMonth(first.month)}: ${money(first.value)}`;
+  const change=(+last.value||0)-(+first.value||0);
+  $('netWorthChartChange').textContent=history.length>1
+    ? `${change>=0?'+':''}${money(change)} since first snapshot`
+    : 'Current month';
+}
+
+function render(){
+  saveState();
+  const incomes=state.incomes, expenses=state.expenses, savings=state.savings, investments=state.investments, debts=state.debts;
+  const incomeTotal=sum(incomes), expenseTotal=sum(expenses), cashTotal=sum(savings.filter(s=>s.type==='cash')), goldTotal=sum(savings.filter(s=>s.type==='gold')), hybridTotal=cashTotal+goldTotal;
+  const monthIncome=incomes.filter(currentMonthFilter), monthExpense=expenses.filter(currentMonthFilter), monthSavings=savings.filter(currentMonthFilter);
+  const monthCash=sum(monthSavings.filter(s=>s.type==='cash')), monthGold=sum(monthSavings.filter(s=>s.type==='gold')), monthHybrid=monthCash+monthGold;
+  const debtRemaining=sum(debts,'balance'), debtMonthly=sum(debts,'minimum');
+  const monthLeft=sum(monthIncome)-sum(monthExpense)-monthHybrid-debtMonthly;
+  $('homeLeftover').textContent=money(monthLeft); $('leftoverStatus').textContent=monthIncome.length===0 ? 'Start tracking' : monthLeft>=0 ? 'On Track' : 'Review Spending';
+  drawHomeIncomeChart(sum(monthIncome), sum(monthExpense), monthHybrid, debtMonthly, monthLeft);
+  const alloc=state.leftoverAlloc; $('allocCarry').value=alloc.carry||0; $('allocCash').value=alloc.cash||0; $('allocGold').value=alloc.gold||0; $('allocDebt').value=alloc.debt||0; $('allocGoal').value=alloc.goal||0;
+  const allocated=(+alloc.carry||0)+(+alloc.cash||0)+(+alloc.gold||0)+(+alloc.debt||0)+(+alloc.goal||0); $('allocTotal').textContent=money(allocated); $('allocRemaining').textContent=money(monthLeft-allocated);
+  $('homeHybridTotal').textContent=money(hybridTotal); $('homeCashSaved').textContent=money(cashTotal); $('homeGoldSaved').textContent=money(goldTotal);
+  const debtPaid=debts.reduce((total,d)=>{ const loan=+(d.initial ?? d.balance ?? 0); const outstanding=+(d.balance ?? 0); return total + Math.max(0,loan-outstanding); },0); $('homeDebtPaid').textContent=money(debtPaid); $('homeDebtCount').textContent=`${debts.length} active ${debts.length===1?'debt':'debts'}`; const progress=debtProgressPercent(); $('homeDebtProgress').textContent=`${progress.toFixed(0)}%`; $('homeDebtProgressBar').style.width=`${Math.max(0,Math.min(100,progress))}%`;
+  const investmentCost=sum(investments,'cost');
+  const trackedInvestmentValue=sum(investments,'currentValue');
+  const investmentValue=investments.length ? trackedInvestmentValue : (+state.manualAssets.investments||0);
+  const investmentGain=investmentValue-investmentCost;
+  const investmentReturn=investmentCost>0 ? (investmentGain/investmentCost)*100 : 0;
+
+  $('homeInvestmentCost').textContent=money(investmentCost);
+  $('homeInvestmentValue').textContent=money(investmentValue);
+  $('homeInvestmentGain').textContent=`${investmentGain>=0?'+':''}${money(investmentGain)}`;
+  $('homeInvestmentGain').className='metric-mid '+(investmentGain>=0?'positive':'negative');
+  $('homeInvestmentCount').textContent=investments.length;
+
+  const otherManualAssets=(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0);
+  const totalAssets=hybridTotal+investmentValue+otherManualAssets, netWorth=totalAssets-debtRemaining;
+  $('homeNetWorth').textContent=money(netWorth); $('homeAssets').textContent=money(totalAssets); $('homeLiabilities').textContent=money(debtRemaining);
+  updateMonthlyNetWorthSnapshot(netWorth);
+  drawNetWorthChart();
+
+  const combined=[...incomes.map((x,i)=>({...x,kind:'income',idx:i})),...expenses.map((x,i)=>({...x,kind:'expense',idx:i})),...savings.map((x,i)=>({...x,kind:x.type,idx:i}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
+  $('homeMoves').innerHTML=combined.length ? combined.map(x=>activityMarkup(x,x.kind,x.idx,null)).join('') : '<div class="empty">Your latest money moves will appear here.</div>';
+
+  document.querySelectorAll('[data-transaction-view]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.transactionView===state.transactionView);
+  });
+  document.querySelectorAll('[data-period]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.period===state.transactionPeriod);
+  });
+
+  $('transactionDateFrom').value=state.transactionDateFrom||'';
+  $('transactionDateTo').value=state.transactionDateTo||'';
+  $('transactionDateRange').classList.toggle('open', state.transactionPeriod==='custom');
+
+  const baseTransactions = state.transactionView==='income' ? incomes : expenses;
+  const filteredTransactions = baseTransactions.filter(item=>{
+    if(state.transactionPeriod==='all') return true;
+    if(state.transactionPeriod==='month') return currentMonthFilter(item);
+    if(state.transactionPeriod==='custom'){
+      if(state.transactionDateFrom && (item.date||'') < state.transactionDateFrom) return false;
+      if(state.transactionDateTo && (item.date||'') > state.transactionDateTo) return false;
+      return true;
+    }
+    return true;
+  });
+
+  const filteredTotal=sum(filteredTransactions);
+  const isIncomeView=state.transactionView==='income';
+
+  $('transactionHeading').textContent=isIncomeView ? 'Income' : 'Expenses';
+  $('transactionFilteredTotal').textContent=money(filteredTotal);
+  $('transactionFilteredTotal').className='transaction-total '+(isIncomeView?'positive':'negative');
+  $('transactionCountLabel').textContent=`${filteredTransactions.length} ${filteredTransactions.length===1?'entry':'entries'} in selected period`;
+  $('newTransactionBtn').textContent=isIncomeView ? '+ Add Income' : '+ Add Expense';
+
+  const renderedTransactions=[...filteredTransactions].reverse().map(item=>{
+    const originalIndex=baseTransactions.indexOf(item);
+    return activityMarkup(
+      item,
+      isIncomeView?'income':'expense',
+      originalIndex,
+      isIncomeView?'removeIncome':'removeExpense'
+    );
+  }).join('');
+
+  $('transactionList').innerHTML=renderedTransactions || `<div class="empty">No ${isIncomeView?'income':'expenses'} recorded for this period.</div>`;
+
+
+  const budget=currentBudgetRule(), suggested=incomeTotal*budget[2]/100, suggestedCash=suggested*.60, suggestedGold=suggested*.40;
+  $('ruleName').textContent=budget[3];
+  $('suggestedSavings').textContent=money(suggested);
+  $('suggestedCash').textContent=money(suggestedCash);
+  $('suggestedGold').textContent=money(suggestedGold);
+  $('savingsCash').textContent=money(cashTotal); $('savingsGold').textContent=money(goldTotal); $('savingsHybrid').textContent=money(hybridTotal);
+  $('goalList').innerHTML=state.goals.length ? state.goals.map((g,i)=>{ const pct=g.target>0?Math.max(0,Math.min(100,(g.saved/g.target)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)}${g.targetDate ? ' · Target ' + esc(g.targetDate) : ''}</div></div><div class="goal-name" style="color:var(--gold)">${pct.toFixed(0)}%</div></div><div class="progress"><span style="width:${pct}%"></span></div><div class="goal-meta">${money(Math.max(0,g.target-g.saved))} remaining</div><div class="goal-actions"><button class="text-btn text-green" onclick="openAddMoneyGoal(${i})">+ Add Money</button><button class="text-btn text-muted" onclick="openEditGoal(${i})">Edit</button><button class="text-btn text-red" onclick="removeGoal(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No saving goals yet.</div>';
+  $('savingList').innerHTML=savings.length ? [...savings].reverse().map((x,rev)=>activityMarkup(x,x.type,savings.length-1-rev,'removeSaving')).join('') : '<div class="empty">No savings activity yet.</div>';
+
+  $('investmentCostTotal').textContent=money(investmentCost);
+  $('investmentValueTotal').textContent=money(investmentValue);
+  $('investmentGainTotal').textContent=`${investmentGain>=0?'+':''}${money(investmentGain)}`;
+  $('investmentGainTotal').className='metric-mid '+(investmentGain>=0?'positive':'negative');
+  $('investmentReturnPct').textContent=`${investmentReturn>=0?'+':''}${investmentReturn.toFixed(2)}%`;
+  $('investmentReturnPct').className='subtext '+(investmentReturn>=0?'positive':'negative');
+
+  $('investmentList').innerHTML=investments.length ? investments.map((inv,i)=>{
+    const gain=(+inv.currentValue||0)-(+inv.cost||0);
+    const pct=(+inv.cost||0)>0 ? (gain/(+inv.cost||0))*100 : 0;
+    return `<div class="goal-card">
+      <div class="goal-head">
+        <div>
+          <div class="goal-name">${esc(inv.name)}</div>
+          <div class="goal-meta">${esc(inv.type||'Investment')}${inv.date ? ' · '+esc(inv.date) : ''}</div>
+        </div>
+        <div class="goal-name ${gain>=0?'positive':'negative'}">${gain>=0?'+':''}${money(gain)}</div>
+      </div>
+      <div class="split-2" style="margin-top:12px">
+        <div class="compact-card">
+          <div class="label">Amount Invested</div>
+          <div class="metric-mid">${money(inv.cost)}</div>
+        </div>
+        <div class="compact-card">
+          <div class="label">Current Value</div>
+          <div class="metric-mid goldish">${money(inv.currentValue)}</div>
+        </div>
+      </div>
+      <div class="goal-meta" style="margin-top:10px">${pct>=0?'+':''}${pct.toFixed(2)}% return</div>
+      <div class="goal-actions">
+        <button class="text-btn text-muted" onclick="openEditInvestment(${i})">Edit</button>
+        <button class="text-btn text-red" onclick="removeInvestment(${i})">Delete</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No investments added yet.</div>';
+
+  $('debtTotal').textContent=money(debtRemaining); $('debtMinimums').textContent=money(debtMonthly); $('debtProgress').textContent=`${progress.toFixed(0)}%`;
+
+  const debtStartingTotal = debts.reduce((t,d)=>t+(+(d.initial||d.balance)||0),0);
+  const moreToDebtFree = debtStartingTotal > 0 ? Math.max(0, 100-progress) : 100;
+  $('debtToFreePercent').textContent=`${moreToDebtFree.toFixed(0)}%`;
+  $('debtToFreeAmount').textContent=money(debtRemaining);
+  $('debtToFreeBar').style.width=`${Math.max(0,Math.min(100,moreToDebtFree))}%`;
+
+  $('debtCards').innerHTML=debts.length ? debts.map((d,i)=>{ const base=+(d.initial||d.balance)||0; const prog=base>0?Math.max(0,Math.min(100,((base-(+d.balance||0))/base)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(d.name)}</div><div class="goal-meta">Outstanding ${money(d.balance)} · Payment ${money(d.minimum)}/month${d.rate ? ` · ${Number(d.rate).toFixed(2)}%` : ''}</div></div><div class="goal-name" style="color:var(--gold)">${prog.toFixed(0)}%</div></div><div class="progress"><span style="width:${prog}%"></span></div><div class="goal-actions"><button class="text-btn text-muted" onclick="openEditDebt(${i})">Edit</button><button class="text-btn text-red" onclick="removeDebt(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No debts added yet.</div>';
+
+  const stratList=debtStrategyList('snowball');
+  $('strategyList').innerHTML=stratList.length ? stratList.map((d,idx)=>{
+    const headline=`${money(d.balance)} outstanding`;
+    const subline=`Payment ${money(d.minimum)}/month${d.rate ? ` · ${Number(d.rate).toFixed(2)}%` : ''}`;
+    return `<div class="compact-card">
+      <div class="goal-head">
+        <div>
+          <div class="goal-name">${idx+1}. ${esc(d.name)}</div>
+          <div class="goal-meta">${subline}</div>
+        </div>
+        <div class="goal-name goldish">${headline}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">Add debts to see your snowball payoff order.</div>';
+}
+function openIncomeModal(){ openSheet(sheetHead('Add Income')+`<div class="field"><label>Name</label><input id="mIncomeName" placeholder="Salary"></div><div class="field"><label>Amount (B$)</label><input id="mIncomeAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mIncomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mIncomeDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveIncome()">Add Income</button>`); }
+window.saveIncome=function(){ const amount=+$('mIncomeAmount').value||0; if(amount<=0) return; state.incomes.push({name:$('mIncomeName').value.trim()||'Income', amount, category:$('mIncomeCategory').value, date:$('mIncomeDate').value||today()}); closeSheet(); render(); };
+function openExpenseModal(){ openSheet(sheetHead('Add Expense')+`<div class="field"><label>Name</label><input id="mExpenseName" placeholder="Groceries"></div><div class="field"><label>Amount (B$)</label><input id="mExpenseAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mExpenseCategory"><option>Needs</option><option>Wants</option><option>Bills</option><option>Transport</option><option>Food</option><option>Family</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mExpenseDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveExpense()">Add Expense</button>`); }
+window.saveExpense=function(){ const amount=+$('mExpenseAmount').value||0; if(amount<=0) return; state.expenses.push({name:$('mExpenseName').value.trim()||'Expense', amount, category:$('mExpenseCategory').value, date:$('mExpenseDate').value||today()}); closeSheet(); render(); };
+function openSavingModal(){ openSheet(sheetHead('Add Saving')+`<div class="field"><label>Type</label><select id="mSavingType"><option value="cash">Cash Saving</option><option value="gold">Gold Saving</option></select></div><div class="field"><label>Name</label><input id="mSavingName" placeholder="Emergency Fund / Gold Top Up"></div><div class="field"><label>Amount (B$)</label><input id="mSavingAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Date</label><input id="mSavingDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveSaving()">Add Saving</button>`); }
+window.saveSaving=function(){ const amount=+$('mSavingAmount').value||0; if(amount<=0) return; const type=$('mSavingType').value; state.savings.push({type, name:$('mSavingName').value.trim()||(type==='cash'?'Cash Saving':'Gold Saving'), amount, category:type==='cash'?'Cash Saving':'Gold Saving', date:$('mSavingDate').value||today()}); closeSheet(); render(); };
+function openGoalModal(){ openSheet(sheetHead('New Saving Goal')+`<div class="field"><label>Goal Name</label><input id="mGoalName" placeholder="Emergency Fund"></div><div class="field"><label>Target Amount (B$)</label><input id="mGoalTarget" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Already Saved (B$)</label><input id="mGoalSaved" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div><div class="field"><label>Target Date (Optional)</label><input id="mGoalDate" type="date"></div><button class="primary-btn" onclick="saveGoal()">Create Goal</button>`); }
+window.saveGoal=function(){ const name=$('mGoalName').value.trim(), target=+$('mGoalTarget').value||0, saved=+$('mGoalSaved').value||0; if(!name||target<=0) return; state.goals.push({name,target,saved,targetDate:$('mGoalDate').value||''}); closeSheet(); render(); };
+window.openAddMoneyGoal=function(i){ openSheet(sheetHead('Add Money to Goal')+`<div class="field"><label>Goal</label><input value="${esc(state.goals[i].name)}" disabled></div><div class="field"><label>Amount to Add (B$)</label><input id="mGoalAdd" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveGoalAdd(${i})">Add Money</button>`); };
+window.saveGoalAdd=function(i){ const add=+$('mGoalAdd').value||0; if(add<=0) return; state.goals[i].saved=(+state.goals[i].saved||0)+add; closeSheet(); render(); };
+window.openEditGoal=function(i){ const g=state.goals[i]; openSheet(sheetHead('Edit Goal')+`<div class="field"><label>Goal Name</label><input id="eGoalName" value="${esc(g.name)}"></div><div class="field"><label>Target Amount (B$)</label><input id="eGoalTarget" type="number" value="${g.target}" inputmode="decimal"></div><div class="field"><label>Saved (B$)</label><input id="eGoalSaved" type="number" value="${g.saved}" inputmode="decimal"></div><div class="field"><label>Target Date</label><input id="eGoalDate" type="date" value="${g.targetDate||''}"></div><button class="primary-btn" onclick="saveGoalEdit(${i})">Save Changes</button>`); };
+window.saveGoalEdit=function(i){ state.goals[i]={name:$('eGoalName').value.trim()||state.goals[i].name,target:+$('eGoalTarget').value||0,saved:+$('eGoalSaved').value||0,targetDate:$('eGoalDate').value||''}; closeSheet(); render(); };
+window.removeGoal=function(i){ state.goals.splice(i,1); render(); };
+
+function openInvestmentModal(){
+  openSheet(sheetHead('Add Investment')+`
+    <div class="field">
+      <label>Investment Name</label>
+      <input id="mInvestmentName" placeholder="e.g. S&P 500 ETF">
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="mInvestmentType">
+        <option>Investment Fund</option>
+        <option>ETF / Stock</option>
+        <option>Sukuk / Bond</option>
+        <option>Retirement Investment</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Amount Invested (B$)</label>
+      <input id="mInvestmentCost" type="number" min="0" step="0.01" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Current Value (B$)</label>
+      <input id="mInvestmentValue" type="number" min="0" step="0.01" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Date <span style="font-weight:500;color:var(--muted)">(Optional)</span></label>
+      <input id="mInvestmentDate" type="date" value="${today()}">
+    </div>
+    <button class="primary-btn" onclick="saveInvestment()">Add Investment</button>
+  `);
+}
+
+window.saveInvestment=function(){
+  const name=$('mInvestmentName').value.trim();
+  const cost=parseFloat($('mInvestmentCost').value);
+  const currentValue=parseFloat($('mInvestmentValue').value);
+  if(!name){ alert('Please enter an investment name.'); return; }
+  if(!Number.isFinite(cost) || cost<0){ alert('Please enter a valid amount invested.'); return; }
+  if(!Number.isFinite(currentValue) || currentValue<0){ alert('Please enter a valid current value.'); return; }
+
+  state.investments.push({
+    name,
+    type:$('mInvestmentType').value,
+    cost:Number(cost.toFixed(2)),
+    currentValue:Number(currentValue.toFixed(2)),
+    date:$('mInvestmentDate').value||''
+  });
+  saveState();
+  closeSheet();
+  render();
+};
+
+window.openEditInvestment=function(i){
+  const inv=state.investments[i];
+  openSheet(sheetHead('Edit Investment')+`
+    <div class="field">
+      <label>Investment Name</label>
+      <input id="eInvestmentName" value="${esc(inv.name)}">
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="eInvestmentType">
+        ${['Investment Fund','ETF / Stock','Sukuk / Bond','Retirement Investment','Other'].map(x=>`<option ${inv.type===x?'selected':''}>${x}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field">
+      <label>Amount Invested (B$)</label>
+      <input id="eInvestmentCost" type="number" min="0" step="0.01" inputmode="decimal" value="${(+inv.cost||0).toFixed(2)}">
+    </div>
+    <div class="field">
+      <label>Current Value (B$)</label>
+      <input id="eInvestmentValue" type="number" min="0" step="0.01" inputmode="decimal" value="${(+inv.currentValue||0).toFixed(2)}">
+    </div>
+    <div class="field">
+      <label>Date <span style="font-weight:500;color:var(--muted)">(Optional)</span></label>
+      <input id="eInvestmentDate" type="date" value="${inv.date||''}">
+    </div>
+    <button class="primary-btn" onclick="saveInvestmentEdit(${i})">Save Changes</button>
+  `);
+};
+
+window.saveInvestmentEdit=function(i){
+  const name=$('eInvestmentName').value.trim()||state.investments[i].name;
+  const cost=parseFloat($('eInvestmentCost').value);
+  const currentValue=parseFloat($('eInvestmentValue').value);
+  if(!Number.isFinite(cost) || cost<0){ alert('Please enter a valid amount invested.'); return; }
+  if(!Number.isFinite(currentValue) || currentValue<0){ alert('Please enter a valid current value.'); return; }
+
+  state.investments[i]={
+    name,
+    type:$('eInvestmentType').value,
+    cost:Number(cost.toFixed(2)),
+    currentValue:Number(currentValue.toFixed(2)),
+    date:$('eInvestmentDate').value||''
+  };
+  saveState();
+  closeSheet();
+  render();
+};
+
+window.removeInvestment=function(i){
+  state.investments.splice(i,1);
+  saveState();
+  render();
+};
+
+function openDebtModal(){ openSheet(sheetHead('Add Debt')+`<div class="field"><label>Debt Name</label><input id="mDebtName" placeholder="Car Loan"></div><div class="field"><label>Loan Amount (B$)</label><input id="mDebtInitial" type="number" min="0" step="0.01" placeholder="Original amount borrowed" inputmode="decimal"></div><div class="field"><label>Outstanding Balance (B$)</label><input id="mDebtBalance" type="number" min="0" step="0.01" placeholder="Amount still owed" inputmode="decimal"></div><div class="field"><label>Debt Payment (B$)</label><input id="mDebtMinimum" type="number" min="0" step="0.01" placeholder="Regular monthly payment" inputmode="decimal"></div><div class="field"><label>Interest / Profit Rate (%) <span style="font-weight:500;color:var(--muted)">(Optional)</span></label><input id="mDebtRate" type="number" min="0" step="0.01" inputmode="decimal"></div><button class="primary-btn" onclick="saveDebt()">Add Debt</button>`); }
+window.saveDebt=function(){
+  const name=$('mDebtName').value.trim();
+  const initial=parseFloat($('mDebtInitial').value);
+  const balance=parseFloat($('mDebtBalance').value);
+  const minimum=parseFloat($('mDebtMinimum').value);
+  const rate=parseFloat($('mDebtRate').value);
+
+  if(!name){ alert('Please enter a debt name.'); return; }
+  if(!Number.isFinite(initial) || initial<=0){ alert('Please enter a valid loan amount.'); return; }
+  if(!Number.isFinite(balance) || balance<0){ alert('Please enter a valid outstanding balance.'); return; }
+  if(balance>initial){ alert('Outstanding balance cannot be higher than the loan amount.'); return; }
+
+  state.debts.push({
+    name,
+    balance:Number(balance.toFixed(2)),
+    initial:Number(initial.toFixed(2)),
+    rate:Number.isFinite(rate) ? Number(rate.toFixed(2)) : 0,
+    minimum:Number.isFinite(minimum) ? Number(minimum.toFixed(2)) : 0
+  });
+  saveState();
+  closeSheet();
+  render();
+};
+window.openEditDebt=function(i){ const d=state.debts[i]; openSheet(sheetHead('Edit Debt')+`<div class="field"><label>Debt Name</label><input id="eDebtName" value="${esc(d.name)}"></div><div class="field"><label>Loan Amount (B$)</label><input id="eDebtInitial" type="number" min="0" step="0.01" value="${d.initial||d.balance}" inputmode="decimal"></div><div class="field"><label>Outstanding Balance (B$)</label><input id="eDebtBalance" type="number" min="0" step="0.01" value="${d.balance}" inputmode="decimal"></div><div class="field"><label>Debt Payment (B$)</label><input id="eDebtMinimum" type="number" min="0" step="0.01" value="${d.minimum||0}" inputmode="decimal"></div><div class="field"><label>Interest / Profit Rate (%) <span style="font-weight:500;color:var(--muted)">(Optional)</span></label><input id="eDebtRate" type="number" min="0" step="0.01" value="${d.rate||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveDebtEdit(${i})">Save Changes</button>`); };
+window.saveDebtEdit=function(i){
+  const name=$('eDebtName').value.trim()||state.debts[i].name;
+  const initial=parseFloat($('eDebtInitial').value);
+  const balance=parseFloat($('eDebtBalance').value);
+  const minimum=parseFloat($('eDebtMinimum').value);
+  const rate=parseFloat($('eDebtRate').value);
+
+  if(!Number.isFinite(initial) || initial<=0){ alert('Please enter a valid loan amount.'); return; }
+  if(!Number.isFinite(balance) || balance<0){ alert('Please enter a valid outstanding balance.'); return; }
+  if(balance>initial){ alert('Outstanding balance cannot be higher than the loan amount.'); return; }
+
+  state.debts[i]={
+    name,
+    balance:Number(balance.toFixed(2)),
+    initial:Number(initial.toFixed(2)),
+    rate:Number.isFinite(rate) ? Number(rate.toFixed(2)) : 0,
+    minimum:Number.isFinite(minimum) ? Number(minimum.toFixed(2)) : 0
+  };
+  saveState();
+  closeSheet();
+  render();
+};
+window.removeDebt=function(i){ state.debts.splice(i,1); saveState(); render(); };
+function openRuleModal(){ openSheet(sheetHead('Change Budget Rule')+`<div class="rule-grid"><button class="rule-btn ${state.budgetRule==='50,30,20'?'active':''}" onclick="selectRule('50,30,20')"><strong>50 / 30 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='70,20,10'?'active':''}" onclick="selectRule('70,20,10')"><strong>70 / 20 / 10</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='60,20,20'?'active':''}" onclick="selectRule('60,20,20')"><strong>60 / 20 / 20</strong><div class="subtext">Needs · Wants · Savings</div></button><button class="rule-btn ${state.budgetRule==='custom'?'active':''}" onclick="selectRule('custom')"><strong>Custom</strong><div class="subtext">Set your own percentages</div></button></div><div class="field" style="margin-top:14px"><label>Needs %</label><input id="rNeeds" type="number" value="${state.customNeeds}" inputmode="decimal"></div><div class="field"><label>Wants %</label><input id="rWants" type="number" value="${state.customWants}" inputmode="decimal"></div><div class="field"><label>Savings %</label><input id="rSavings" type="number" value="${state.customSavings}" inputmode="decimal"></div><button class="primary-btn" onclick="saveRule()">Save Rule</button>`); }
+window.selectRule=function(rule){ state.budgetRule=rule; openRuleModal(); };
+window.saveRule=function(){ state.customNeeds=+$('rNeeds').value||0; state.customWants=+$('rWants').value||0; state.customSavings=+$('rSavings').value||0; closeSheet(); render(); };
+function openAssetsModal(){ openSheet(sheetHead('Manage Other Assets')+`<div class="subtext" style="margin-bottom:12px">Cash, gold and investments are already included automatically. Add only assets that are not tracked elsewhere.</div><div class="field"><label>Retirement (B$)</label><input id="aRetire" type="number" min="0" step="0.01" value="${state.manualAssets.retirement||0}" inputmode="decimal"></div><div class="field"><label>Property / Major Assets (B$)</label><input id="aProperty" type="number" min="0" step="0.01" value="${state.manualAssets.property||0}" inputmode="decimal"></div><div class="field"><label>Other Assets (B$)</label><input id="aOther" type="number" min="0" step="0.01" value="${state.manualAssets.other||0}" inputmode="decimal"></div><button class="primary-btn" onclick="saveAssets()">Save Assets</button>`); }
+window.saveAssets=function(){ state.manualAssets={investments:state.manualAssets.investments||0,retirement:+$('aRetire').value||0,property:+$('aProperty').value||0,other:+$('aOther').value||0}; saveState(); closeSheet(); render(); };
+window.removeIncome=i=>{ state.incomes.splice(i,1); render(); }; window.removeExpense=i=>{ state.expenses.splice(i,1); render(); }; window.removeSaving=i=>{ state.savings.splice(i,1); render(); };
+document.querySelectorAll('[data-strategy]').forEach(btn=>btn.addEventListener('click',()=>{ state.strategyView=btn.dataset.strategy; render(); }));
+$('newTransactionBtn').addEventListener('click', ()=>{
+  const startingType=state.transactionView==='expense' ? 'expense' : 'income';
+  openSheet(sheetHead('Add Transaction')+`
+    <div class="transaction-type-toggle">
+      <button class="transaction-type-btn ${startingType==='income'?'active':''}" type="button" data-modal-type="income">Income</button>
+      <button class="transaction-type-btn ${startingType==='expense'?'active':''}" type="button" data-modal-type="expense">Expense</button>
+    </div>
+
+    <input id="mTransactionType" type="hidden" value="${startingType}">
+
+    <div class="field">
+      <label>Amount (B$)</label>
+      <input id="mTransactionAmount" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+    </div>
+
+    <div class="field">
+      <label>Name / Description</label>
+      <input id="mTransactionName" placeholder="Salary, groceries, fuel...">
+    </div>
+
+    <button class="more-details" type="button" id="moreTransactionDetails">+ More details</button>
+
+    <div class="optional-details" id="transactionOptionalDetails">
+      <div class="field">
+        <label>Category</label>
+        <select id="mTransactionCategory">
+          <option value="">No category</option>
+          <option>Salary</option>
+          <option>Side Income</option>
+          <option>Bonus</option>
+          <option>Needs</option>
+          <option>Wants</option>
+          <option>Bills</option>
+          <option>Food</option>
+          <option>Transport</option>
+          <option>Family</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input id="mTransactionDate" type="date" value="${today()}">
+      </div>
+    </div>
+
+    <div class="compact-sheet-note">Date defaults to today. Extra details are optional.</div>
+    <button class="primary-btn" onclick="saveTransaction()">Add Transaction</button>
+  `);
+
+  document.querySelectorAll('[data-modal-type]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('[data-modal-type]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      $('mTransactionType').value=btn.dataset.modalType;
+    });
+  });
+
+  $('moreTransactionDetails').addEventListener('click',()=>{
+    $('transactionOptionalDetails').classList.toggle('open');
+    $('moreTransactionDetails').textContent=
+      $('transactionOptionalDetails').classList.contains('open') ? '− Less details' : '+ More details';
+  });
+}); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newInvestmentBtn').addEventListener('click', openInvestmentModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
+
+function openNetWorthSnapshotModal(){
+  openSheet(sheetHead('Add Past Net Worth Snapshot')+`
+    <div class="subtext" style="margin-bottom:12px">
+      Use this if you already know a previous month's net worth and want it included in the progression chart.
+    </div>
+    <div class="field">
+      <label>Month</label>
+      <input id="snapshotMonth" type="month">
+    </div>
+    <div class="field">
+      <label>Net Worth (B$)</label>
+      <input id="snapshotValue" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
+    </div>
+    <button class="primary-btn" onclick="saveNetWorthSnapshot()">Save Snapshot</button>
+  `);
+}
+window.saveNetWorthSnapshot=function(){
+  const month=$('snapshotMonth').value;
+  const value=+$('snapshotValue').value;
+  if(!month || !Number.isFinite(value)) return;
+
+  const existing=state.netWorthHistory.find(x=>x.month===month);
+  if(existing) existing.value=value;
+  else state.netWorthHistory.push({month,value});
+
+  state.netWorthHistory.sort((a,b)=>a.month.localeCompare(b.month));
+  closeSheet();
+  render();
+};
+$('addNetWorthSnapshotBtn').addEventListener('click', openNetWorthSnapshotModal);
+
+
+window.saveTransaction=function(){
+  const type=$('mTransactionType').value;
+  const amount=+$('mTransactionAmount').value||0;
+  if(amount<=0) return;
+  const categoryEl=$('mTransactionCategory');
+  const dateEl=$('mTransactionDate');
+  const item={
+    name:$('mTransactionName').value.trim()||(type==='income'?'Income':'Expense'),
+    amount,
+    category:(categoryEl && categoryEl.value) ? categoryEl.value : (type==='income'?'Income':'Expense'),
+    date:(dateEl && dateEl.value) ? dateEl.value : today()
+  };
+  if(type==='income') state.incomes.push(item);
+  else state.expenses.push(item);
+  state.transactionView=type;
+  closeSheet();
+  render();
+};
+document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.addEventListener('click',()=>{
+  state.transactionView=btn.dataset.transactionView;
+  render();
+}));
+
+
+
+document.querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',()=>{
+  state.transactionPeriod=btn.dataset.period;
+  saveState();
+  render();
+}));
+
+$('transactionDateFrom').addEventListener('change',()=>{
+  state.transactionDateFrom=$('transactionDateFrom').value;
+  saveState();
+  render();
+});
+$('transactionDateTo').addEventListener('change',()=>{
+  state.transactionDateTo=$('transactionDateTo').value;
+  saveState();
+  render();
+});
+
+window.addEventListener('resize',()=>render());
+
+const calcHelpToggle=$('calcHelpToggle');
+if(calcHelpToggle){
+  calcHelpToggle.addEventListener('click',()=>{
+    const body=$('calcHelpBody');
+    body.classList.toggle('open');
+    calcHelpToggle.textContent=body.classList.contains('open') ? 'Hide calculation guide' : 'How is this calculated?';
+  });
+}
+
+
+const viewAllTransactionsBtn=$('viewAllTransactionsBtn');
+if(viewAllTransactionsBtn){
+  viewAllTransactionsBtn.addEventListener('click',()=>{
+    const txNav=document.querySelector('[data-page="transactions"]');
+    if(txNav) txNav.click();
+  });
+}
+
+
+$('devUnlockBtn').addEventListener('click',tryDevUnlock);
+$('devPasscodeInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') tryDevUnlock();
+});
+$('lockDashboardBtn').addEventListener('click',showDevLock);
+
+if(sessionStorage.getItem(DEV_UNLOCK_KEY)==='1'){
+  $('devLockScreen').classList.add('dev-hidden');
+  $('dashboardApp').classList.remove('dev-hidden');
+  render();
+}else{
+  showDevLock();
+}
+
+</script>
+</body>
+</html>
