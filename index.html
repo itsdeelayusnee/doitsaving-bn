@@ -328,7 +328,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="card"><div class="card-label">Hybrid Total</div><div class="card-value" id="hybridSavedTotal">B$0.00</div></div>
     </div>
 
-    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more.</p></div></div>
+    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Add future savings using Top Up instead of replacing your total.</p></div></div>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Goal name</label><input id="goalName" placeholder="Travel Fund"></div>
@@ -484,7 +484,7 @@ function render(){
     return `<div class="goal">
       <div class="goal-top">
         <div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)} · ${pct.toFixed(0)}%</div></div>
-        <div><button class="secondary" onclick="updateGoal(${i})">Update</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
+        <div><button class="secondary" onclick="topUpGoal(${i})">Top Up</button> <button class="secondary" onclick="editGoal(${i})">Edit Goal</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
       </div>
       <div class="progress"><span style="width:${pct}%"></span></div>
     </div>`;
@@ -542,11 +542,36 @@ $('addGoal').addEventListener('click',()=>{
   state.goals.push({name,target,saved});
   $('goalName').value='';$('goalTarget').value='';$('goalSaved').value='';persist();render();
 });
-window.updateGoal=function(i){
-  const v=prompt(`Update saved amount for ${state.goals[i].name}`,state.goals[i].saved);if(v===null)return;
-  const n=+v;if(isNaN(n)||n<0)return;state.goals[i].saved=n;persist();render();
+window.topUpGoal=function(i){
+  const current=state.goals[i];
+  const v=prompt(`Add a new top-up for ${current.name}`, '0');
+  if(v===null)return;
+  const n=+v;
+  if(isNaN(n)||n<=0)return;
+  current.saved=(+current.saved||0)+n;
+  persist();
+  render();
 }
-window.removeGoal=function(i){state.goals.splice(i,1);persist();render()}
+
+window.editGoal=function(i){
+  const current=state.goals[i];
+  const newName=prompt('Edit goal name', current.name);
+  if(newName===null)return;
+  const newTarget=prompt('Edit target amount', current.target);
+  if(newTarget===null)return;
+  const targetNum=+newTarget;
+  if(!newName.trim() || isNaN(targetNum) || targetNum<=0)return;
+  current.name=newName.trim();
+  current.target=targetNum;
+  persist();
+  render();
+}
+
+window.removeGoal=function(i){
+  state.goals.splice(i,1);
+  persist();
+  render();
+}
 
 $('addDebt').addEventListener('click',()=>{
   const name=$('debtName').value.trim(),balance=+$('debtBalance').value||0;if(!name||balance<=0)return;
