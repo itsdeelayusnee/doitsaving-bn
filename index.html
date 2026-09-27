@@ -271,6 +271,59 @@ body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
   .chart-box canvas{width:170px;height:170px}
 }
 
+
+.networth-chart-panel{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+}
+.networth-chart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.networth-chart-title{
+  font-weight:900;
+  font-size:14px;
+}
+.networth-chart-sub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+.networth-chart-wrap{
+  width:100%;
+  overflow:hidden;
+}
+.networth-chart-wrap canvas{
+  width:100%;
+  height:190px;
+  display:block;
+}
+.networth-chart-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+.networth-empty{
+  height:150px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--line);
+  border-radius:16px;
+}
+@media(max-width:640px){
+  .networth-chart-wrap canvas{height:170px}
+  .networth-chart-head{align-items:flex-start}
+}
+
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--nav-bg);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
 .nav-inner{max-width:780px;margin:0 auto;padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
@@ -404,6 +457,25 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
             <div class="split-2" style="margin-top:14px">
               <div class="compact-card"><div class="label">Total Assets</div><div class="metric-mid" id="homeAssets">B$0.00</div><div class="subtext">Tracked savings plus additional assets.</div></div>
               <div class="compact-card"><div class="label">Total Liabilities</div><div class="metric-mid" id="homeLiabilities">B$0.00</div><div class="subtext">Outstanding debt balances.</div></div>
+            </div>
+
+            <div class="networth-chart-panel">
+              <div class="networth-chart-head">
+                <div>
+                  <div class="networth-chart-title">Net Worth Progress</div>
+                  <div class="networth-chart-sub">Monthly snapshots of your overall financial position.</div>
+                </div>
+                <button class="action-btn" id="addNetWorthSnapshotBtn">+ Add Past Snapshot</button>
+              </div>
+
+              <div class="networth-chart-wrap">
+                <canvas id="netWorthChart"></canvas>
+              </div>
+
+              <div class="networth-chart-meta">
+                <span id="netWorthChartStart">No history yet</span>
+                <span id="netWorthChartChange"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -608,11 +680,12 @@ if(!state.transactionView) state.transactionView = 'income';
 if(!state.transactionPeriod) state.transactionPeriod = 'all';
 if(!state.transactionDateFrom) state.transactionDateFrom = '';
 if(!state.transactionDateTo) state.transactionDateTo = '';
+if(!Array.isArray(state.netWorthHistory)) state.netWorthHistory = [];
 function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
 function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
 function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
 applyTheme(localStorage.getItem(themeKey)||'light');
-$('themeToggle').addEventListener('click',()=>{ const current=document.body.getAttribute('data-theme')||'light'; applyTheme(current==='light'?'dark':'light'); });
+$('themeToggle').addEventListener('click',()=>{ const current=document.body.getAttribute('data-theme')||'light'; applyTheme(current==='light'?'dark':'light'); drawNetWorthChart(); });
 document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.page)));
 document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.nav)));
 function openPage(page){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); $(page).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});}
@@ -700,6 +773,127 @@ function drawHomeIncomeChart(income, expenses, savings, debt, left){
     : 'Expenses + hybrid savings + debt repayment + money left = total income.';
 }
 
+
+function monthKeyFromDate(dateObj=new Date()){
+  return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}`;
+}
+function prettyMonth(key){
+  const [y,m]=key.split('-').map(Number);
+  if(!y || !m) return key;
+  return new Date(y,m-1,1).toLocaleDateString(undefined,{month:'short',year:'numeric'});
+}
+function updateMonthlyNetWorthSnapshot(netWorth){
+  const key=monthKeyFromDate();
+  const existing=state.netWorthHistory.find(x=>x.month===key);
+  if(existing){
+    existing.value=Number(netWorth)||0;
+  }else{
+    state.netWorthHistory.push({month:key,value:Number(netWorth)||0});
+  }
+  state.netWorthHistory.sort((a,b)=>a.month.localeCompare(b.month));
+}
+function drawNetWorthChart(){
+  const canvas=$('netWorthChart');
+  if(!canvas) return;
+
+  const history=[...state.netWorthHistory].sort((a,b)=>a.month.localeCompare(b.month));
+  const wrap=canvas.parentElement;
+  const cssWidth=Math.max(280, wrap.clientWidth || 320);
+  const cssHeight=window.innerWidth<=640 ? 170 : 190;
+  const ratio=window.devicePixelRatio || 1;
+
+  canvas.style.width=cssWidth+'px';
+  canvas.style.height=cssHeight+'px';
+  canvas.width=Math.round(cssWidth*ratio);
+  canvas.height=Math.round(cssHeight*ratio);
+
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  ctx.clearRect(0,0,cssWidth,cssHeight);
+
+  const textColor=getComputedStyle(document.body).getPropertyValue('--muted').trim() || '#777';
+  const lineColor=getComputedStyle(document.body).getPropertyValue('--gold').trim() || '#b58b5c';
+  const gridColor=getComputedStyle(document.body).getPropertyValue('--line').trim() || '#ddd';
+
+  if(history.length===0){
+    ctx.fillStyle=textColor;
+    ctx.font='13px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText('Net worth history will appear here.', cssWidth/2, cssHeight/2);
+    $('netWorthChartStart').textContent='No history yet';
+    $('netWorthChartChange').textContent='';
+    return;
+  }
+
+  const pad={l:18,r:18,t:18,b:34};
+  const plotW=cssWidth-pad.l-pad.r;
+  const plotH=cssHeight-pad.t-pad.b;
+  const vals=history.map(x=>+x.value||0);
+  let min=Math.min(...vals), max=Math.max(...vals);
+  if(min===max){
+    const buffer=Math.max(100,Math.abs(max)*0.1 || 100);
+    min-=buffer; max+=buffer;
+  }else{
+    const buffer=(max-min)*0.12;
+    min-=buffer; max+=buffer;
+  }
+
+  // horizontal guide lines
+  ctx.strokeStyle=gridColor;
+  ctx.lineWidth=1;
+  ctx.globalAlpha=.65;
+  for(let i=0;i<4;i++){
+    const y=pad.t+(plotH*i/3);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(cssWidth-pad.r,y); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
+  const points=history.map((item,i)=>{
+    const x=history.length===1 ? pad.l+plotW/2 : pad.l+(plotW*i/(history.length-1));
+    const y=pad.t+((max-(+item.value||0))/(max-min))*plotH;
+    return {x,y,...item};
+  });
+
+  // line
+  if(points.length>1){
+    ctx.beginPath();
+    points.forEach((p,i)=> i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle=lineColor;
+    ctx.lineWidth=3;
+    ctx.lineJoin='round';
+    ctx.lineCap='round';
+    ctx.stroke();
+  }
+
+  // points
+  points.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,4.5,0,Math.PI*2);
+    ctx.fillStyle=lineColor;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--panel').trim() || '#fff';
+    ctx.fill();
+  });
+
+  // x labels: first and last, plus middle if enough room
+  ctx.fillStyle=textColor;
+  ctx.font='11px system-ui';
+  ctx.textAlign='center';
+  const labelIndexes = history.length<=2 ? history.map((_,i)=>i) : [0, Math.floor((history.length-1)/2), history.length-1];
+  [...new Set(labelIndexes)].forEach(i=>{
+    ctx.fillText(prettyMonth(history[i].month), points[i].x, cssHeight-10);
+  });
+
+  const first=history[0], last=history[history.length-1];
+  $('netWorthChartStart').textContent=`${prettyMonth(first.month)}: ${money(first.value)}`;
+  const change=(+last.value||0)-(+first.value||0);
+  $('netWorthChartChange').textContent=history.length>1
+    ? `${change>=0?'+':''}${money(change)} since first snapshot`
+    : 'Current month';
+}
+
 function render(){
   saveState();
   const incomes=state.incomes, expenses=state.expenses, savings=state.savings, debts=state.debts;
@@ -716,6 +910,8 @@ function render(){
   $('homeDebtRemaining').textContent=money(debtRemaining); $('homeDebtMonthly').textContent=money(debtMonthly); $('homeDebtCount').textContent=`${debts.length} active ${debts.length===1?'debt':'debts'}`; const progress=debtProgressPercent(); $('homeDebtProgress').textContent=`${progress.toFixed(0)}%`;
   const manualAssets=(+state.manualAssets.investments||0)+(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0), totalAssets=hybridTotal+manualAssets, netWorth=totalAssets-debtRemaining;
   $('homeNetWorth').textContent=money(netWorth); $('homeAssets').textContent=money(totalAssets); $('homeLiabilities').textContent=money(debtRemaining);
+  updateMonthlyNetWorthSnapshot(netWorth);
+  drawNetWorthChart();
 
   const combined=[...incomes.map((x,i)=>({...x,kind:'income',idx:i})),...expenses.map((x,i)=>({...x,kind:'expense',idx:i})),...savings.map((x,i)=>({...x,kind:x.type,idx:i}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
   $('homeMoves').innerHTML=combined.length ? combined.map(x=>activityMarkup(x,x.kind,x.idx,null)).join('') : '<div class="empty">Your latest money moves will appear here.</div>';
@@ -869,6 +1065,38 @@ $('newTransactionBtn').addEventListener('click', ()=>{
       $('transactionOptionalDetails').classList.contains('open') ? '− Less details' : '+ More details';
   });
 }); $('newSavingBtn').addEventListener('click', openSavingModal); $('newGoalBtn').addEventListener('click', openGoalModal); $('newDebtBtn').addEventListener('click', openDebtModal); $('changeRuleBtn').addEventListener('click', openRuleModal); $('manageAssetsBtn').addEventListener('click', openAssetsModal);
+
+function openNetWorthSnapshotModal(){
+  openSheet(sheetHead('Add Past Net Worth Snapshot')+`
+    <div class="subtext" style="margin-bottom:12px">
+      Use this if you already know a previous month's net worth and want it included in the progression chart.
+    </div>
+    <div class="field">
+      <label>Month</label>
+      <input id="snapshotMonth" type="month">
+    </div>
+    <div class="field">
+      <label>Net Worth (B$)</label>
+      <input id="snapshotValue" type="number" step="0.01" placeholder="0.00">
+    </div>
+    <button class="primary-btn" onclick="saveNetWorthSnapshot()">Save Snapshot</button>
+  `);
+}
+window.saveNetWorthSnapshot=function(){
+  const month=$('snapshotMonth').value;
+  const value=+$('snapshotValue').value;
+  if(!month || !Number.isFinite(value)) return;
+
+  const existing=state.netWorthHistory.find(x=>x.month===month);
+  if(existing) existing.value=value;
+  else state.netWorthHistory.push({month,value});
+
+  state.netWorthHistory.sort((a,b)=>a.month.localeCompare(b.month));
+  closeSheet();
+  render();
+};
+$('addNetWorthSnapshotBtn').addEventListener('click', openNetWorthSnapshotModal);
+
 
 window.saveTransaction=function(){
   const type=$('mTransactionType').value;
