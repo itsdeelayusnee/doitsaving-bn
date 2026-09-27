@@ -996,6 +996,179 @@ button,
 }
 </style>
 
+
+<style>
+/* Mobile header layout — intentionally stacked to prevent cramped text */
+.mobile-label,
+.mobile-feature-line{
+  display:none;
+}
+
+@media (max-width:700px){
+  .wrap{
+    padding:12px 14px 18px!important;
+  }
+
+  .topbar{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:10px!important;
+    margin-bottom:12px!important;
+  }
+
+  .brand-wrap{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:48px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:11px!important;
+  }
+
+  .ds-logo-img{
+    width:48px!important;
+    height:48px!important;
+    border-radius:13px!important;
+  }
+
+  .brand-stack{
+    min-width:0!important;
+    gap:1px!important;
+  }
+
+  .eyebrow{
+    font-size:10.5px!important;
+    line-height:1.2!important;
+  }
+
+  .brand-title{
+    font-size:17px!important;
+    line-height:1.08!important;
+    white-space:nowrap!important;
+  }
+
+  .brand-sub{
+    margin-top:4px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:1px!important;
+    font-size:10.5px!important;
+    line-height:1.35!important;
+  }
+
+  .brand-sub > span{
+    display:block!important;
+  }
+
+  .mobile-feature-line{
+    display:block!important;
+  }
+
+  .demo-mode-badge{
+    margin-top:5px!important;
+  }
+
+  .top-actions{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    align-items:stretch!important;
+  }
+
+  .lock-btn,
+  .theme-toggle{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    font-size:10.5px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  .desktop-label{
+    display:none!important;
+  }
+
+  .mobile-label{
+    display:inline!important;
+  }
+
+  .brand-strip{
+    padding:13px 14px!important;
+    margin:0 0 14px!important;
+  }
+
+  .brand-strip-title{
+    font-size:9.5px!important;
+    line-height:1.25!important;
+  }
+
+  .brand-strip-main{
+    font-size:16px!important;
+    line-height:1.2!important;
+    margin-top:5px!important;
+  }
+
+  .brand-strip-note{
+    font-size:11.5px!important;
+    line-height:1.45!important;
+    margin-top:5px!important;
+  }
+
+  .demo-example-card{
+    padding:11px 12px!important;
+    margin-bottom:12px!important;
+  }
+
+  .demo-example-card strong,
+  .demo-example-card span{
+    font-size:10.5px!important;
+    line-height:1.4!important;
+  }
+
+  .hero-top{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:start!important;
+    gap:10px!important;
+  }
+
+  .hero-sub{
+    font-size:11.5px!important;
+    line-height:1.45!important;
+  }
+
+  #leftoverStatus{
+    margin-top:0!important;
+  }
+
+  .section-head{
+    align-items:flex-start!important;
+  }
+
+  .section-head > div{
+    min-width:0!important;
+  }
+
+  .section-head p{
+    line-height:1.4!important;
+  }
+
+  .link-inline{
+    flex-shrink:0!important;
+    max-width:110px!important;
+    text-align:right!important;
+    line-height:1.25!important;
+  }
+}
+</style>
+
 </head>
 <body data-theme="light">
 
@@ -1039,12 +1212,18 @@ button,
         <div class="brand-stack">
           <div class="eyebrow">doitsaving.bn</div>
           <div class="brand-title">Hybrid Finance</div>
-          <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
+          <div class="brand-sub">
+            <span>Cash • Gold • Investments</span>
+            <span class="mobile-feature-line">Debt • Net Worth</span>
+          </div>
           <div class="demo-mode-badge dev-hidden" id="demoModeBadge">Demo Mode</div>
         </div>
       </div>
       <div class="top-actions">
-        <button class="lock-btn" id="lockDashboardBtn" type="button">Back to Access Screen</button>
+        <button class="lock-btn" id="lockDashboardBtn" type="button">
+          <span class="desktop-label">Back to Access Screen</span>
+          <span class="mobile-label">Back</span>
+        </button>
         <button class="theme-toggle" id="themeToggle">Dark Mode</button>
       </div>
     </header>
