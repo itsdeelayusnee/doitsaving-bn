@@ -3,999 +3,724 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>doitsaving.bn — Hybrid Saving Dashboard</title>
+<title>doitsaving.bn — Hybrid Finance Dashboard</title>
 <style>
 :root{
-  --bg:#f4efe7;
-  --paper:#fffaf3;
-  --ink:#2f261f;
-  --muted:#7c7066;
-  --line:#ded3c5;
-  --gold:#b78f5b;
-  --gold-soft:#ead9c3;
-  --sage:#879a7b;
-  --sage-soft:#dfe7da;
-  --clay:#b86f57;
-  --clay-soft:#f0ddd6;
-  --brown:#5c4635;
-  --shadow:0 10px 30px rgba(72,52,35,.07);
+  --bg:#0d1217;
+  --panel:#151d26;
+  --panel2:#1a232e;
+  --line:#273340;
+  --text:#f7f7f5;
+  --muted:#96a3b3;
+  --gold:#d9b98e;
+  --gold2:#b89568;
+  --green:#49d782;
+  --red:#ff6f75;
+  --blue:#84aef4;
+  --chip:#202b36;
 }
 *{box-sizing:border-box}
+html{background:var(--bg)}
 body{
-  margin:0;background:var(--bg);color:var(--ink);
-  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 button,input,select{font:inherit}
 button{cursor:pointer}
-.wrapper{max-width:1180px;margin:0 auto;padding:20px 20px 110px}
-.brandbar{
-  display:flex;align-items:center;justify-content:space-between;gap:18px;
-  padding:8px 0 20px;
+.app{min-height:100vh;padding-bottom:94px}
+.topbar{
+  max-width:1100px;margin:0 auto;
+  padding:22px 18px 14px;
+  display:flex;align-items:center;gap:14px;
 }
-.brand-left{display:flex;align-items:center;gap:14px}
-.mark{
-  width:54px;height:54px;border-radius:18px;background:var(--brown);color:#fff;
-  display:grid;place-items:center;font-weight:900;letter-spacing:.04em
+.logo{
+  width:58px;height:58px;border-radius:18px;
+  background:linear-gradient(145deg,#e3c59c,#b99165);
+  color:#111820;display:grid;place-items:center;font-weight:900;font-size:20px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);
 }
-.brand-eyebrow{font-size:13px;color:var(--muted);font-weight:700}
-.brand-title{font-size:25px;font-weight:900;margin-top:2px}
-.brand-note{
-  padding:10px 14px;border-radius:999px;background:var(--sage-soft);color:#42513d;
-  font-weight:800;font-size:13px;border:1px solid #cfd9ca
+.brand{flex:1}
+.eyebrow{color:var(--muted);font-weight:700;font-size:14px;letter-spacing:.02em}
+.brand h1{margin:2px 0 0;font-size:24px;line-height:1.05}
+.icon-actions{display:flex;gap:8px}
+.icon-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--line);background:#111820;color:var(--text)
 }
+.main{max-width:1100px;margin:0 auto;padding:8px 18px 28px}
 .page{display:none}.page.active{display:block}
-.hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}
 .hero{
-  background:linear-gradient(145deg,#fffaf2,#f5e8d5);
-  border:1px solid var(--line);border-radius:30px;padding:28px;box-shadow:var(--shadow)
+  background:
+    radial-gradient(circle at 90% 15%,rgba(217,185,142,.10),transparent 30%),
+    linear-gradient(145deg,#1b2026,#251f1b);
+  border:1px solid #5a4e41;
+  border-radius:30px;padding:26px;
 }
-.hero-kicker{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:800}
-.hero h1{font-size:46px;line-height:1.02;margin:12px 0 10px;letter-spacing:-.04em}
-.hero p{color:var(--muted);margin:0;max-width:620px}
-.hybrid-card{
-  background:var(--brown);color:#fff;border-radius:30px;padding:24px;box-shadow:var(--shadow)
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.hero-label{font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#e5e9ee}
+.hero-value{font-size:46px;font-weight:900;letter-spacing:-.035em;margin:18px 0 8px}
+.hero-sub{color:#c5cbd2;font-weight:600}
+.status{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);
+  color:#fff;padding:10px 14px;border-radius:999px;font-weight:800;white-space:nowrap
 }
-.hybrid-card .eyebrow{color:#d9c8b5;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
-.hybrid-value{font-size:34px;font-weight:900;margin:14px 0 6px}
-.hybrid-sub{font-size:13px;color:#d5c9bd}
-.grid{display:grid;gap:16px}
-.summary-grid{grid-template-columns:repeat(4,1fr);margin-top:16px}
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(2,1fr);margin-top:16px}
 .card{
-  background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow)
+  background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;
 }
-.card-label{font-size:13px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.07em}
-.card-value{font-size:30px;font-weight:900;margin:12px 0 4px}
-.card-foot{font-size:13px;color:var(--muted)}
-.sage{background:var(--sage-soft);border-color:#ccd8c6}
-.gold{background:var(--gold-soft);border-color:#ddc8a9}
-.clay{background:var(--clay-soft);border-color:#e2c7bd}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:30px 2px 12px}
-.section-head h2{margin:0;font-size:24px}
-.section-head p{margin:0;color:var(--muted);font-size:13px}
-.flow-card{
-  display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center
+.card h3{margin:0 0 12px;font-size:18px}
+.stat-label{font-weight:800;color:#c3cad4}
+.stat-value{font-size:30px;font-weight:900;margin:14px 0 4px}
+.green{color:var(--green)} .red{color:var(--red)} .gold{color:var(--gold)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.section-title{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  margin:28px 2px 12px
 }
-.flow-step{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
-.flow-arrow{font-size:24px;color:var(--gold);font-weight:900}
-.flow-step b{display:block;font-size:18px;margin-bottom:4px}
-.activity-list{display:grid;gap:10px}
+.section-title h2{margin:0;font-size:24px}
+.pill{background:var(--chip);border:1px solid var(--line);padding:9px 13px;border-radius:999px;color:var(--gold);font-weight:800}
+.activity-list{display:grid;gap:12px}
 .activity{
-  display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;
-  background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:14px
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:16px;
+  display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:center
 }
-.activity-icon{
-  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
-  background:#efe6db;font-weight:900;color:var(--brown)
-}
-.activity-title{font-weight:850}
-.activity-meta{font-size:12px;color:var(--muted);margin-top:3px}
-.activity-amount{font-weight:900}
-.positive{color:#57724f}.negative{color:#a95f4d}.neutral{color:var(--brown)}
-.page-title{font-size:34px;margin:6px 0 4px}
+.activity-icon{width:48px;height:48px;border-radius:16px;background:#222d39;display:grid;place-items:center;font-size:20px}
+.activity-title{font-weight:850;font-size:17px}
+.activity-meta{color:var(--muted);margin-top:3px;font-size:13px}
+.activity-amount{font-weight:900;font-size:18px;text-align:right}
+.page-title{margin:6px 0 4px;font-size:30px}
 .page-sub{margin:0 0 18px;color:var(--muted)}
-.form-card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.form-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;margin-bottom:16px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field{margin-bottom:12px}
-label{display:block;font-weight:800;margin-bottom:7px}
+.field{margin-bottom:13px}
+label{display:block;font-weight:800;margin-bottom:7px;color:#d9dee5}
 input,select{
-  width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:14px;
-  background:#fff;color:var(--ink);outline:none
+  width:100%;padding:13px 14px;background:#0f161d;color:var(--text);
+  border:1px solid var(--line);border-radius:14px;outline:none
 }
 input:focus,select:focus{border-color:var(--gold)}
 .primary{
-  border:0;background:var(--brown);color:#fff;padding:13px 16px;border-radius:14px;font-weight:900
+  border:0;background:var(--gold);color:#10151b;padding:13px 16px;
+  border-radius:14px;font-weight:900
 }
 .secondary{
-  border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 12px;border-radius:12px;font-weight:800
+  border:1px solid var(--line);background:#111820;color:var(--text);
+  padding:11px 13px;border-radius:12px;font-weight:800
 }
-.danger{color:var(--clay)}
+.danger{color:var(--red)}
+.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.summary-box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.summary-box strong{display:block;font-size:24px;margin-top:8px}
 .rule-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .rule{
-  border:1px solid var(--line);background:#fff;padding:14px;border-radius:16px;text-align:left
+  border:1px solid var(--line);background:#111820;color:var(--text);
+  border-radius:17px;padding:14px;text-align:left
 }
-.rule.active{border:2px solid var(--brown);background:#f7efe5}
-.rule b{display:block;font-size:18px;margin-bottom:4px}
-.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.split-box{border-radius:22px;padding:20px}
-.split-box h3{margin:0 0 8px}
-.split-box strong{font-size:28px}
+.rule.active{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.rule b{display:block;font-size:17px;margin-bottom:5px}
+.hybrid-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hybrid-box{background:#111820;border:1px solid var(--line);border-radius:20px;padding:18px}
+.hybrid-box strong{display:block;font-size:28px;margin-top:6px}
+.progress{height:9px;background:#0f161d;border-radius:999px;overflow:hidden;margin-top:11px}
+.progress > span{display:block;height:100%;background:var(--gold)}
 .goal-list{display:grid;gap:12px}
-.goal{
-  background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px
-}
-.goal-top{display:flex;justify-content:space-between;gap:12px}
+.goal{background:#111820;border:1px solid var(--line);border-radius:18px;padding:15px}
+.goal-head{display:flex;justify-content:space-between;gap:12px}
 .goal-name{font-weight:900}
-.goal-meta{font-size:13px;color:var(--muted);margin-top:4px}
-.progress{height:9px;background:#eee4d8;border-radius:999px;overflow:hidden;margin-top:12px}
-.progress span{display:block;height:100%;background:var(--gold)}
-.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.method{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:18px}
-.method h3{margin:0 0 6px}
+.goal-meta{color:var(--muted);font-size:13px;margin-top:4px}
+.debt-methods{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.debt-method{background:#111820;border:1px solid var(--line);border-radius:20px;padding:18px}
+.debt-list{display:grid;gap:9px;margin-top:12px}
 .debt-row{padding:11px 0;border-top:1px solid var(--line)}
-.dock{
-  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
-  width:min(92%,760px);background:#2f261f;border-radius:24px;padding:8px;
-  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;box-shadow:0 18px 40px rgba(47,38,31,.26);z-index:30
+.bottom-nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;max-width:1100px;
+  background:rgba(13,18,23,.96);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);
+  padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+  z-index:20
 }
-.dock button{
-  border:0;background:transparent;color:#d6cabf;padding:10px 6px;border-radius:16px;
-  display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:800
+.nav-btn{
+  border:0;background:transparent;color:var(--muted);padding:7px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:11px
 }
-.dock button.active{background:#f4efe7;color:var(--brown)}
-.dock span:first-child{font-size:20px}
-.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
-.history-list{display:grid;gap:10px}
-.goal-history-toggle{
-  margin-top:10px;
-  border:0;
-  background:transparent;
-  color:var(--brown);
-  font-weight:800;
-  padding:0;
-  text-decoration:underline;
-  text-underline-offset:3px;
+.nav-btn span:first-child{font-size:22px}
+.nav-btn.active{color:var(--gold)}
+.empty{color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:18px}
+.note{background:#171c20;border:1px solid #3b332a;color:#ddd3c6;border-radius:18px;padding:15px;margin-top:14px}
+
+.action-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.add-btn{
+  border:0;background:var(--gold);color:#111820;padding:12px 18px;border-radius:18px;
+  font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.18)
 }
-.goal-history-panel{display:none;margin-top:10px}
-.goal-history-panel.open{display:grid;gap:8px}
-.goal-history-row{
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  align-items:center;
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:#fffaf5;
+.link-btn{
+  border:0;background:transparent;color:var(--green);font-weight:900;padding:6px 8px
 }
-.goal-history-row .history-title{font-size:14px}
-.goal-history-row .history-meta{font-size:11px}
-.goal-history-row .history-amount{font-size:14px}
-.goal-history-row .secondary{padding:7px 9px;font-size:12px}
-.history-item{
-  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
-  background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px
+.goal-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px
 }
-.history-title{font-weight:850}
-.history-meta{font-size:12px;color:var(--muted);margin-top:3px}
-.history-amount{font-weight:900;text-align:right}
-.asset-list{display:grid;gap:8px;margin-top:10px}
-.asset-row{
-  display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
-  padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff
+.goal-card .goal-name{font-size:22px}
+.goal-card .goal-percent{color:var(--gold);font-weight:900;font-size:20px}
+.goal-card .goal-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:14px}
+.goal-card .goal-actions{display:flex;gap:8px;flex-wrap:wrap}
+.goal-card .goal-actions button{border:0;background:transparent;font-weight:900;padding:6px 4px}
+.goal-card .goal-actions .addmoney{color:var(--green)}
+.goal-card .goal-actions .edit{color:#cbd3df}
+.goal-card .goal-actions .delete{color:var(--red)}
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:flex-end;
+  justify-content:center;z-index:50;padding:0
 }
-.asset-name{font-weight:800}
-.asset-amount{font-weight:900}
-.networth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.networth-card{
-  background:linear-gradient(145deg,#f3eadf,#ead9c3);
-  border:1px solid #d9c4a7;border-radius:26px;padding:22px;box-shadow:var(--shadow)
+.modal-backdrop.open{display:flex}
+.sheet{
+  width:100%;max-width:700px;background:var(--panel);border:1px solid var(--line);
+  border-radius:28px 28px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));
+  max-height:88vh;overflow:auto
 }
-.networth-card .card-value{font-size:36px}
-.note{margin-top:14px;padding:15px 16px;border-radius:18px;background:var(--sage-soft);border:1px solid #cad7c4;color:#43513e}
-@media(max-width:850px){
-  .networth-grid{grid-template-columns:1fr}
-  .hero-grid{grid-template-columns:1fr}
-  .summary-grid{grid-template-columns:repeat(2,1fr)}
-  .flow-card{grid-template-columns:1fr;gap:8px}
-  .flow-arrow{transform:rotate(90deg);text-align:center}
-  .rule-grid{grid-template-columns:1fr 1fr}
-  .form-grid,.method-grid{grid-template-columns:1fr}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.sheet-head h3{margin:0;font-size:24px}
+.close-btn{border:1px solid var(--line);background:#111820;color:var(--text);width:40px;height:40px;border-radius:50%;font-size:20px}
+.compact-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.compact-box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.compact-box strong{display:block;font-size:22px;margin-top:7px}
+.goal-section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 2px 12px}
+.goal-section-head h2{margin:0;font-size:24px}
+.goal-section-meta{color:var(--muted);font-weight:700;font-size:14px;margin-top:4px}
+.rule-card{
+  background:linear-gradient(145deg,#191f26,#1d2024);border:1px solid #4c4034;border-radius:24px;padding:20px
 }
-@media(max-width:560px){
-  .wrapper{padding:14px 14px 108px}
-  .brand-note{display:none}
+.rule-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.rule-name{font-weight:900;font-size:20px}
+.rule-amount{font-size:30px;font-weight:900;color:var(--gold);margin-top:8px}
+@media(max-width:620px){.compact-summary{grid-template-columns:1fr 1fr}.compact-summary .compact-box:last-child{grid-column:1/-1}}
+
+@media(min-width:760px){
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media(max-width:620px){
+  .topbar{padding-top:18px}
+  .logo{width:54px;height:54px}
+  .brand h1{font-size:22px}
+  .icon-actions{display:none}
   .hero{padding:22px}
-  .hero h1{font-size:38px}
-  .summary-grid,.split-grid{grid-template-columns:1fr 1fr}
-  .card-value{font-size:27px}
-  .dock{bottom:10px;width:94%}
+  .hero-value{font-size:40px}
+  .hero-top{align-items:flex-start}
+  .status{font-size:12px;padding:8px 10px}
+  .form-grid,.summary-row,.rule-grid,.debt-methods{grid-template-columns:1fr}
+  .hybrid-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <header class="brandbar">
-    <div class="brand-left">
-      <div class="mark">DS</div>
-      <div>
-        <div class="brand-eyebrow">doitsaving.bn</div>
-        <div class="brand-title">Hybrid Money System</div>
-      </div>
+<div class="app">
+  <header class="topbar">
+    <div class="logo">DS</div>
+    <div class="brand">
+      <div class="eyebrow">Hello, doitsaving.bn</div>
+      <h1>Hybrid Finance</h1>
     </div>
-    <div class="brand-note">Cash + Gold + Debt Progress</div>
+    <div class="icon-actions">
+      <button class="icon-btn" title="Theme">◐</button>
+      <button class="icon-btn" title="Settings">⚙</button>
+    </div>
   </header>
 
-  
-  <section id="home" class="page active">
-
-    <div class="networth-card" style="margin-top:4px">
-      <div class="card-label">Net Worth</div>
-      <div class="card-value" id="netWorthValue">B$0.00</div>
-      <div class="card-foot">Total assets minus debt remaining</div>
-
-      <div class="grid summary-grid" style="grid-template-columns:repeat(2,1fr);margin-top:16px">
-        <div class="card" style="box-shadow:none">
-          <div class="card-label">Total Assets</div>
-          <div class="card-value" id="totalAssetsValue">B$0.00</div>
-          <div class="card-foot">Cash + gold + other assets</div>
-        </div>
-        <div class="card" style="box-shadow:none">
-          <div class="card-label">Total Liabilities</div>
-          <div class="card-value" id="debtTotalHome">B$0.00</div>
-          <div class="card-foot" id="debtCountHome">0 active debts</div>
-        </div>
-      </div>
-
-      <button class="secondary" id="toggleAssets" type="button" style="margin-top:14px">Edit Assets</button>
-
-      <div id="assetManager" style="display:none;margin-top:14px">
-        <div class="form-grid">
-          <div class="field">
-            <label>Asset name</label>
-            <input id="assetName" placeholder="Investment / Retirement / Property">
+  <main class="main">
+    <section id="home" class="page active">
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-label">Money left this month</div>
+            <div class="hero-value" id="homeNet">B$0.00</div>
+            <div class="hero-sub">Money in minus money out</div>
           </div>
-          <div class="field">
-            <label>Current value (B$)</label>
-            <input id="assetValue" type="number" min="0" step="0.01" placeholder="0.00">
+          <div class="status" id="homeStatus">Start tracking</div>
+        </div>
+      </div>
+
+      <div class="grid stats">
+        <div class="card">
+          <div class="stat-label">Money In</div>
+          <div class="stat-value green" id="homeIncome">B$0.00</div>
+          <div class="muted small" id="homeIncomeCount">0 entries</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Money Out</div>
+          <div class="stat-value red" id="homeExpense">B$0.00</div>
+          <div class="muted small" id="homeExpenseCount">0 entries</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Hybrid Saved</div>
+          <div class="stat-value gold" id="homeHybrid">B$0.00</div>
+          <div class="muted small">Cash + gold</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Debt Remaining</div>
+          <div class="stat-value gold" id="homeDebt">B$0.00</div>
+          <div class="muted small" id="homeDebtCount">0 active debts</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>Hybrid Savings</h2>
+        <span class="pill">Cash + Gold</span>
+      </div>
+      <div class="hybrid-grid">
+        <div class="card">
+          <div class="stat-label">Cash Saved</div>
+          <div class="stat-value" id="homeCashSaved">B$0.00</div>
+          <div class="muted small">Recorded cash saving entries</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Gold Saved</div>
+          <div class="stat-value" id="homeGoldSaved">B$0.00</div>
+          <div class="muted small">Recorded gold saving value</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>Recent Activity</h2>
+        <span class="pill">Latest</span>
+      </div>
+      <div id="recentList" class="activity-list"></div>
+    </section>
+
+    
+    <section id="income" class="page">
+      <h2 class="page-title">Income</h2>
+      <p class="page-sub">Track salary, side income and other money in.</p>
+
+      <div class="summary-row">
+        <div class="summary-box"><span class="muted">Total income</span><strong class="green" id="incomeTotal">B$0.00</strong></div>
+        <div class="summary-box"><span class="muted">Entries</span><strong id="incomeEntries">0</strong></div>
+        <div class="summary-box"><span class="muted">Latest</span><strong id="incomeLatest">—</strong></div>
+      </div>
+
+      <div class="section-title">
+        <h2>Income Activity</h2>
+        <button class="add-btn" id="newIncomeBtn">+ Add Income</button>
+      </div>
+      <div id="incomeList" class="activity-list"></div>
+    </section>
+
+
+    
+    <section id="expenses" class="page">
+      <h2 class="page-title">Expenses</h2>
+      <p class="page-sub">Track daily spending and monthly commitments.</p>
+
+      <div class="summary-row">
+        <div class="summary-box"><span class="muted">Total spent</span><strong class="red" id="expenseTotal">B$0.00</strong></div>
+        <div class="summary-box"><span class="muted">Entries</span><strong id="expenseEntries">0</strong></div>
+        <div class="summary-box"><span class="muted">Latest</span><strong id="expenseLatest">—</strong></div>
+      </div>
+
+      <div class="section-title">
+        <h2>Expense Activity</h2>
+        <button class="add-btn" id="newExpenseBtn">+ Add Expense</button>
+      </div>
+      <div id="expenseList" class="activity-list"></div>
+    </section>
+
+
+    
+    <section id="savings" class="page">
+      <h2 class="page-title">Savings</h2>
+      <p class="page-sub">Your hybrid saving system: cash + gold.</p>
+
+      <div class="compact-summary">
+        <div class="compact-box"><span class="muted">Cash Saved</span><strong id="cashSavedTotal">B$0.00</strong></div>
+        <div class="compact-box"><span class="muted">Gold Saved</span><strong id="goldSavedTotal">B$0.00</strong></div>
+        <div class="compact-box"><span class="muted">Hybrid Total</span><strong class="gold" id="hybridSavedTotal">B$0.00</strong></div>
+      </div>
+
+      <div class="rule-card" style="margin-top:16px">
+        <div class="rule-card-top">
+          <div>
+            <div class="muted small">Current budget guide</div>
+            <div class="rule-name" id="ruleDisplayName">50 / 30 / 20</div>
+            <div class="rule-amount" id="suggestedSavings">B$0.00</div>
+            <div class="muted small">Suggested savings this month</div>
+          </div>
+          <button class="secondary" id="changeRuleBtn">Change</button>
+        </div>
+        <div class="hybrid-grid" style="margin-top:14px">
+          <div class="hybrid-box">
+            <span class="muted small">Cash example · 60%</span>
+            <strong id="suggestedCash">B$0.00</strong>
+          </div>
+          <div class="hybrid-box">
+            <span class="muted small">Gold example · 40%</span>
+            <strong id="suggestedGold">B$0.00</strong>
           </div>
         </div>
-        <button class="primary" id="addAsset">Add asset</button>
-        <div id="assetList" class="asset-list"></div>
-        <div class="note"><b>Avoid double counting:</b> saving goals are not added separately if their money is already included in cash or gold savings.</div>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <div><h2>Hybrid Savings</h2><p>Cash + gold, shown together.</p></div>
-    </div>
-    <div class="grid summary-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="card sage">
-        <div class="card-label">Cash Saved</div>
-        <div class="card-value" id="cashTotal">B$0.00</div>
-        <div class="card-foot">Actual cash saving entries</div>
-      </div>
-      <div class="card gold">
-        <div class="card-label">Gold Saved</div>
-        <div class="card-value" id="goldTotalHome">B$0.00</div>
-        <div class="card-foot">Actual gold saving value</div>
-      </div>
-      <div class="hybrid-card">
-        <div class="eyebrow">Hybrid Total</div>
-        <div class="hybrid-value" id="hybridTotal">B$0.00</div>
-        <div class="hybrid-sub">Cash + gold savings</div>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <div><h2>Monthly Money Flow</h2><p>Income minus savings, commitments, debt payments and spending.</p></div>
-    </div>
-
-    <div class="hero">
-      <div class="hero-kicker">Money Left This Month</div>
-      <h1 id="netBalance">B$0.00</h1>
-      <p>What remains after paying yourself first, clearing commitments and debt payments, then covering your spending.</p>
-    </div>
-
-    <div class="grid summary-grid">
-      <div class="card sage">
-        <div class="card-label">Money In</div>
-        <div class="card-value" id="moneyIn">B$0.00</div>
-        <div class="card-foot" id="moneyInCount">0 entries</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Saved</div>
-        <div class="card-value" id="homeSavedFlow">B$0.00</div>
-        <div class="card-foot">Cash + gold this month</div>
-      </div>
-      <div class="card clay">
-        <div class="card-label">Commitments + Spending</div>
-        <div class="card-value" id="homeOutflowFlow">B$0.00</div>
-        <div class="card-foot" id="moneyOutCount">0 outflow entries</div>
-      </div>
-      <div class="card gold">
-        <div class="card-label">Debt Payments</div>
-        <div class="card-value" id="homeDebtPayments">B$0.00</div>
-        <div class="card-foot">Monthly minimum payments</div>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <div><h2>Recent Activity</h2><p>Latest income, outflow and saving records.</p></div>
-    </div>
-    <div id="recentList" class="activity-list"></div>
-
-    <div class="section-head">
-      <div><h2>Before Next Payday</h2><p>Move any leftover into the saving bucket you choose.</p></div>
-    </div>
-    <div class="card">
-      <div class="card-label">Available to move</div>
-      <div class="card-value" id="sweepAvailable">B$0.00</div>
-      <div class="card-foot">Choose where to move the leftover before the next payday.</div>
-
-      <div class="field" style="margin-top:14px">
-        <label>Move leftover to</label>
-        <select id="sweepDestination">
-          <option value="cash">Cash Savings</option>
-          <option value="gold">Gold Savings</option>
-        </select>
+        <div class="muted small" id="budgetRuleNote" style="margin-top:12px">Based on your selected rule and current income.</div>
       </div>
 
-      <button class="primary" id="sweepRemaining">Move remaining</button>
-    </div>
-
-  </section>
-
-
-  <section id="income" class="page">
-    <h2 class="page-title">Income</h2>
-    <p class="page-sub">Record salary, side income, bonus or other money coming in.</p>
-
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field"><label>Name</label><input id="incomeName" placeholder="Salary"></div>
-        <div class="field"><label>Amount (B$)</label><input id="incomeAmount" type="number" min="0" step="0.01"></div>
-      </div>
-      <div class="form-grid">
-        <div class="field"><label>Category</label>
-          <select id="incomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select>
+      <div class="goal-section-head">
+        <div>
+          <h2>Savings Goals</h2>
+          <div class="goal-section-meta" id="goalSummary">0 goals · B$0.00 total saved</div>
         </div>
-        <div class="field"><label>Date</label><input id="incomeDate" type="date"></div>
+        <button class="add-btn" id="newGoalBtn">+ New Goal</button>
       </div>
-      <button class="primary" id="addIncome">Add income</button>
-    </div>
-    <div id="incomeList" class="activity-list"></div>
-  </section>
+      <div id="goalList" class="goal-list"></div>
 
-  <section id="expenses" class="page">
-    <h2 class="page-title">Outflow</h2>
-    <p class="page-sub">Separate fixed commitments from day-to-day spending.</p>
-
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field"><label>Name</label><input id="expenseName" placeholder="Groceries"></div>
-        <div class="field"><label>Amount (B$)</label><input id="expenseAmount" type="number" min="0" step="0.01"></div>
-      </div>
-      <div class="form-grid">
-        <div class="field"><label>Type</label>
-          <select id="expenseType"><option value="commitment">Commitment</option><option value="spending">Spending</option></select>
+      <div class="goal-section-head" style="margin-top:30px">
+        <div>
+          <h2>Savings Activity</h2>
+          <div class="goal-section-meta">Cash and gold top-ups</div>
         </div>
-        <div class="field"><label>Category</label>
-          <select id="expenseCategory"><option>Bills</option><option>Insurance</option><option>Utilities</option><option>Subscriptions</option><option>Transport</option><option>Food</option><option>Family</option><option>Wants</option><option>Other</option></select>
+        <button class="add-btn" id="newSavingBtn">+ Add Saving</button>
+      </div>
+      <div id="savingActivityList" class="activity-list"></div>
+
+      <div class="note"><b>Hybrid saving reminder:</b> cash supports liquidity and near-term needs; gold can form part of longer-term savings. The 60/40 example is a guide, not a fixed rule.</div>
+    </section>
+
+
+    
+    <section id="debt" class="page">
+      <h2 class="page-title">Debt</h2>
+      <p class="page-sub">Track balances and compare Snowball vs Avalanche.</p>
+
+      <div class="summary-row">
+        <div class="summary-box"><span class="muted">Total debt</span><strong id="debtTotal">B$0.00</strong></div>
+        <div class="summary-box"><span class="muted">Monthly minimums</span><strong id="debtMinimums">B$0.00</strong></div>
+        <div class="summary-box"><span class="muted">Active debts</span><strong id="debtCount">0</strong></div>
+      </div>
+
+      <div class="section-title">
+        <h2>Your Debts</h2>
+        <button class="add-btn" id="newDebtBtn">+ Add Debt</button>
+      </div>
+      <div id="debtCards" class="goal-list"></div>
+
+      <div class="section-title"><h2>Payoff Methods</h2><span class="pill">Compare</span></div>
+      <div class="debt-methods">
+        <div class="debt-method">
+          <h3>Snowball</h3>
+          <p class="muted small">Smallest balance first.</p>
+          <div id="snowballOrder" class="debt-list"></div>
+        </div>
+        <div class="debt-method">
+          <h3>Avalanche</h3>
+          <p class="muted small">Highest rate first.</p>
+          <div id="avalancheOrder" class="debt-list"></div>
         </div>
       </div>
-      <div class="field"><label>Date</label><input id="expenseDate" type="date"></div>
-      <button class="primary" id="addExpense">Add expense</button>
-    </div>
-    <div id="expenseList" class="activity-list"></div>
-  </section>
+    </section>
 
-  <section id="savings" class="page">
-    <h2 class="page-title">Savings</h2>
-    <p class="page-sub">Use a simple rule, then see your hybrid cash + gold breakdown instantly.</p>
-
-    <div class="form-card">
-      <h3>Choose a budget rule</h3>
-      <div class="rule-grid">
-        <button class="rule active" data-rule="50,30,20"><b>50 / 30 / 20</b><span class="card-foot">Needs · Wants · Savings</span></button>
-        <button class="rule" data-rule="70,20,10"><b>70 / 20 / 10</b><span class="card-foot">Needs · Wants · Savings</span></button>
-        <button class="rule" data-rule="60,20,20"><b>60 / 20 / 20</b><span class="card-foot">Needs · Wants · Savings</span></button>
-        <button class="rule" data-rule="custom"><b>Custom</b><span class="card-foot">Set your own percentages</span></button>
-      </div>
-      <div id="customRule" class="form-grid" style="display:none;margin-top:14px">
-        <div class="field"><label>Needs %</label><input id="customNeeds" type="number" min="0" max="100" value="50"></div>
-        <div class="field"><label>Wants %</label><input id="customWants" type="number" min="0" max="100" value="30"></div>
-        <div class="field"><label>Savings %</label><input id="customSavings" type="number" min="0" max="100" value="20"></div>
-      </div>
-    </div>
-
-    <div class="split-grid">
-      <div class="split-box sage">
-        <h3>Suggested Cash</h3>
-        <strong id="suggestCash">B$0.00</strong>
-        <div class="card-foot">60% of suggested savings</div>
-      </div>
-      <div class="split-box gold">
-        <h3>Suggested Gold</h3>
-        <strong id="suggestGold">B$0.00</strong>
-        <div class="card-foot">40% of suggested savings</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:14px">
-      <div class="card-label">Suggested total savings</div>
-      <div class="card-value" id="suggestTotal">B$0.00</div>
-      <div class="card-foot" id="suggestRule">Based on selected rule and recorded income</div>
-    </div>
-
-    <div class="section-head"><div><h2>Add saving</h2><p>Enter it once and let the system update everything automatically.</p></div></div>
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field">
-          <label>Type</label>
-          <select id="savingType">
-            <option value="cash">Cash saving</option>
-            <option value="gold">Gold saving</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Amount (B$)</label>
-          <input id="savingAmount" type="number" min="0" step="0.01" placeholder="0.00">
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Destination</label>
-          <select id="savingDestination">
-            <option value="general">General Savings</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Date</label>
-          <input id="savingDate" type="date">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Name / note</label>
-        <input id="savingName" placeholder="e.g. Emergency Fund Top Up">
-      </div>
-
-      <button class="primary" id="addSaving">Add saving</button>
-    </div>
-
-    <div class="grid summary-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="card sage"><div class="card-label">Cash Saved</div><div class="card-value" id="cashSavedTotal">B$0.00</div></div>
-      <div class="card gold"><div class="card-label">Gold Saved</div><div class="card-value" id="goldSavedTotal">B$0.00</div></div>
-      <div class="card"><div class="card-label">Hybrid Total</div><div class="card-value" id="hybridSavedTotal">B$0.00</div></div>
-    </div>
-
-    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Add savings through the Add Saving form and choose the goal as the destination.</p></div></div>
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field"><label>Goal name</label><input id="goalName" placeholder="Travel Fund"></div>
-        <div class="field"><label>Target (B$)</label><input id="goalTarget" type="number" min="0" step="0.01"></div>
-      </div>
-
-      <button id="toggleStartingBalance" class="secondary" type="button" style="margin-bottom:12px">
-        + Add starting balance
-      </button>
-
-      <div id="startingBalanceWrap" class="field" style="display:none">
-        <label>Starting balance (B$) <span class="card-foot">(optional)</span></label>
-        <input id="goalStartingBalance" type="number" min="0" step="0.01" placeholder="0.00">
-      </div>
-
-      <button class="primary" id="addGoal">Add goal</button>
-    </div>
-    <div id="goalList" class="goal-list"></div>
+  </main>
 
 
-    <div class="section-head"><div><h2>Savings history</h2><p>Delete a mistaken saving or leftover sweep without clearing everything.</p></div></div>
-    <div id="savingHistory" class="history-list"></div>
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="sheet" id="sheetContent"></div>
+  </div>
 
-    <div class="note"><b>Hybrid saving reminder:</b> the 60% cash / 40% gold split is only an illustration. Users can choose a mix that fits their emergency needs, short-term goals and longer-term plans.</div>
-  </section>
-
-  <section id="debt" class="page">
-    <h2 class="page-title">Debt</h2>
-    <p class="page-sub">Track what you owe and compare payoff approaches.</p>
-
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field"><label>Debt name</label><input id="debtName" placeholder="Car Loan"></div>
-        <div class="field"><label>Current balance (B$)</label><input id="debtBalance" type="number" min="0" step="0.01"></div>
-      </div>
-      <div class="form-grid">
-        <div class="field"><label>Interest / profit rate (%)</label><input id="debtRate" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Minimum monthly payment (B$)</label><input id="debtMinimum" type="number" min="0" step="0.01"></div>
-      </div>
-      <button class="primary" id="addDebt">Add debt</button>
-    </div>
-
-    <div class="grid summary-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="card"><div class="card-label">Total Debt</div><div class="card-value" id="debtTotal">B$0.00</div></div>
-      <div class="card"><div class="card-label">Monthly Minimums</div><div class="card-value" id="debtMinimums">B$0.00</div></div>
-      <div class="card"><div class="card-label">Active Debts</div><div class="card-value" id="debtCount">0</div></div>
-    </div>
-
-    <div id="debtCards" class="goal-list" style="margin-top:16px"></div>
-
-    <div class="section-head"><div><h2>Payoff methods</h2><p>Compare the order without being told which one to choose.</p></div></div>
-    <div class="method-grid">
-      <div class="method">
-        <h3>Snowball</h3>
-        <div class="card-foot">Smallest balance first.</div>
-        <div id="snowballOrder"></div>
-      </div>
-      <div class="method">
-        <h3>Avalanche</h3>
-        <div class="card-foot">Highest rate first.</div>
-        <div id="avalancheOrder"></div>
-      </div>
-    </div>
-  </section>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="home"><span>⌂</span><span>Home</span></button>
+    <button class="nav-btn" data-page="income"><span>↗</span><span>Income</span></button>
+    <button class="nav-btn" data-page="expenses"><span>↘</span><span>Expenses</span></button>
+    <button class="nav-btn" data-page="savings"><span>◉</span><span>Savings</span></button>
+    <button class="nav-btn" data-page="debt"><span>▣</span><span>Debt</span></button>
+  </nav>
 </div>
 
-<nav class="dock">
-  <button class="active" data-page="home"><span>⌂</span><span>Home</span></button>
-  <button data-page="income"><span>＋</span><span>Income</span></button>
-  <button data-page="expenses"><span>−</span><span>Outflow</span></button>
-  <button data-page="savings"><span>◆</span><span>Savings</span></button>
-  <button data-page="debt"><span>▤</span><span>Debt</span></button>
-</nav>
 
 <script>
 const $=id=>document.getElementById(id);
 const money=n=>'B$'+(Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-const key='doitsavingOriginalV1';
+const key='doitsavingDashboardCleanV1';
+
 let state=JSON.parse(localStorage.getItem(key)||'null')||{
-  incomes:[],expenses:[],savings:[],goals:[],debts:[],assets:[],
+  incomes:[],expenses:[],savings:[],goals:[],debts:[],
   budgetRule:'50,30,20',customNeeds:50,customWants:30,customSavings:20
 };
 
 function today(){return new Date().toISOString().slice(0,10)}
-['incomeDate','expenseDate','savingDate'].forEach(id=>{if($(id))$(id).value=today()});
 function persist(){localStorage.setItem(key,JSON.stringify(state))}
 function sum(arr,key='amount'){return arr.reduce((a,b)=>a+(+b[key]||0),0)}
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 
-function currentRule(){
-  if(state.budgetRule==='custom') return [+state.customNeeds||0,+state.customWants||0,+state.customSavings||0,'Custom'];
-  const a=state.budgetRule.split(',').map(Number);
-  return [a[0],a[1],a[2],state.budgetRule.replaceAll(',',' / ')];
+function openSheet(content){
+  $('sheetContent').innerHTML=content;
+  $('modalBackdrop').classList.add('open');
 }
+function closeSheet(){
+  $('modalBackdrop').classList.remove('open');
+  $('sheetContent').innerHTML='';
+}
+$('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeSheet()});
 
-function activityHTML(item,kind,index,withDelete=true){
-  const sign=kind==='income'?'+':kind==='expense'?'-':'+';
-  const cls=kind==='income'?'positive':kind==='expense'?'negative':'neutral';
-  const icon={income:'↗',expense:'↘',cash:'C',gold:'G'}[kind]||'•';
+function activityIcon(type){return {income:'▲',expense:'▼',cash:'💵',gold:'◈'}[type]||'•'}
+function activityColor(type){return type==='income'?'green':type==='expense'?'red':'gold'}
+
+function activityItem(item,kind,index,deleteFn){
+  const sign=kind==='expense'?'-':'+';
   return `<div class="activity">
-    <div class="activity-icon">${icon}</div>
-    <div><div class="activity-title">${esc(item.name||item.category||kind)}</div>
-    <div class="activity-meta">${esc(item.type?((item.type==='commitment'?'Commitment':'Spending')+' · '+(item.category||'')):(item.category||kind))} · ${esc(item.date||'')}</div></div>
-    <div style="text-align:right"><div class="activity-amount ${cls}">${sign}${money(item.amount)}</div>
-    ${withDelete?`<button class="secondary danger" style="margin-top:5px" onclick="removeRecord('${kind}',${index})">Delete</button>`:''}</div>
+    <div class="activity-icon">${activityIcon(kind)}</div>
+    <div>
+      <div class="activity-title">${esc(item.name||item.category||kind)}</div>
+      <div class="activity-meta">${esc(item.category||kind)} · ${esc(item.date||'')}</div>
+    </div>
+    <div>
+      <div class="activity-amount ${activityColor(kind)}">${sign}${money(item.amount)}</div>
+      ${deleteFn?`<button class="secondary danger" style="margin-top:6px" onclick="${deleteFn}(${index})">Delete</button>`:''}
+    </div>
   </div>`;
 }
 
-window.removeSaving=function(index){
-  if(index<0 || index>=state.savings.length)return;
-  const txn=state.savings[index];
-
-  if(txn && txn.destination && String(txn.destination).startsWith('goal:')){
-    const gi=Number(String(txn.destination).split(':')[1]);
-    const goal=state.goals[gi];
-    if(goal){
-      goal.saved=Math.max(0,(+goal.saved||0)-(+txn.amount||0));
-      if(Array.isArray(goal.history)){
-        const hi=goal.history.findIndex(h =>
-          h.savingTxn &&
-          Math.abs((+h.amount||0)-(+txn.amount||0))<0.00001 &&
-          (h.date||'')===(txn.date||'')
-        );
-        if(hi>-1)goal.history.splice(hi,1);
-      }
-    }
-  }
-
-  state.savings.splice(index,1);
-  persist();
-  render();
+function currentRule(){
+  if(state.budgetRule==='custom')return [+state.customNeeds||0,+state.customWants||0,+state.customSavings||0,'Custom'];
+  const p=state.budgetRule.split(',').map(Number);
+  return [p[0],p[1],p[2],state.budgetRule.replaceAll(',',' / ')];
 }
-
-window.removeRecord=function(kind,index){
-  if(kind==='income')state.incomes.splice(index,1);
-  if(kind==='expense')state.expenses.splice(index,1);
-  if(kind==='cash'||kind==='gold'){
-    const matches=state.savings.filter(x=>x.type===kind);
-    const target=matches[index];
-    const real=state.savings.indexOf(target);
-    if(real>-1)state.savings.splice(real,1);
-  }
-  persist();render();
-}
-
-
-
-function refreshSavingDestinations(){
-  const select=$('savingDestination');
-  if(!select)return;
-  const current=select.value;
-  select.innerHTML='<option value="general">General Savings</option>'+
-    state.goals.map((g,i)=>`<option value="goal:${i}">${esc(g.name)}</option>`).join('');
-  if([...select.options].some(o=>o.value===current))select.value=current;
-}
-
-function refreshSweepDestinations(){
-  const select=$('sweepDestination');
-  if(!select)return;
-  const current=select.value;
-  select.innerHTML=
-    '<option value="cash">Cash Savings</option>'+
-    '<option value="gold">Gold Savings</option>'+
-    state.goals.map((g,i)=>`<option value="goal:${i}">${esc(g.name)}</option>`).join('');
-  if([...select.options].some(o=>o.value===current)) select.value=current;
-}
-
 
 function render(){
-  if(!Array.isArray(state.assets))state.assets=[];
-  const income=sum(state.incomes);
-  const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
-  const spending=sum(state.expenses.filter(x=>(x.type||'spending')==='spending'));
-  const expenses=commitments+spending;
-  const cash=sum(state.savings.filter(x=>x.type==='cash'));
-  const gold=sum(state.savings.filter(x=>x.type==='gold'));
-  const hybrid=cash+gold;
-  const debt=sum(state.debts,'balance');
-  const mins=sum(state.debts,'minimum');
+  const incomeTotal=sum(state.incomes);
+  const expenseTotal=sum(state.expenses);
+  const cashTotal=sum(state.savings.filter(s=>s.type==='cash'));
+  const goldTotal=sum(state.savings.filter(s=>s.type==='gold'));
+  const hybridTotal=cashTotal+goldTotal;
+  const debtTotal=sum(state.debts,'balance');
+  const minTotal=sum(state.debts,'minimum');
+  const net=incomeTotal-expenseTotal;
 
-  const remaining=income-hybrid-commitments-spending-mins;
-  $('netBalance').textContent=money(remaining);
-  $('sweepAvailable').textContent=money(Math.max(0,remaining));
-  $('homeSavedFlow').textContent=money(hybrid);
-  $('homeOutflowFlow').textContent=money(commitments+spending);
-  $('homeDebtPayments').textContent=money(mins);
-  $('hybridTotal').textContent=money(hybrid);
-  $('moneyIn').textContent=money(income);
-    $('cashTotal').textContent=money(cash);
-  $('goldTotalHome').textContent=money(gold);
-  $('debtTotalHome').textContent=money(debt);
+  $('homeNet').textContent=money(net);
+  $('homeStatus').textContent=incomeTotal===0?'Start tracking':net>=0?'In good shape':'Needs review';
+  $('homeIncome').textContent=money(incomeTotal);
+  $('homeExpense').textContent=money(expenseTotal);
+  $('homeHybrid').textContent=money(hybridTotal);
+  $('homeDebt').textContent=money(debtTotal);
+  $('homeIncomeCount').textContent=`${state.incomes.length} ${state.incomes.length===1?'entry':'entries'}`;
+  $('homeExpenseCount').textContent=`${state.expenses.length} ${state.expenses.length===1?'entry':'entries'}`;
+  $('homeDebtCount').textContent=`${state.debts.length} active ${state.debts.length===1?'debt':'debts'}`;
+  $('homeCashSaved').textContent=money(cashTotal);
+  $('homeGoldSaved').textContent=money(goldTotal);
 
-  const otherAssets=sum(state.assets,'value');
-  const totalAssets=hybrid+otherAssets;
-  const netWorth=totalAssets-debt;
-  $('totalAssetsValue').textContent=money(totalAssets);
-  $('netWorthValue').textContent=money(netWorth);
+  $('incomeTotal').textContent=money(incomeTotal);
+  $('incomeEntries').textContent=state.incomes.length;
+  $('incomeLatest').textContent=state.incomes.length?money(state.incomes[state.incomes.length-1].amount):'—';
+  $('expenseTotal').textContent=money(expenseTotal);
+  $('expenseEntries').textContent=state.expenses.length;
+  $('expenseLatest').textContent=state.expenses.length?money(state.expenses[state.expenses.length-1].amount):'—';
 
-  $('assetList').innerHTML=state.assets.length
-    ? state.assets.map((a,i)=>`<div class="asset-row">
-        <div class="asset-name">${esc(a.name)}</div>
-        <div class="asset-amount">${money(a.value)}</div>
-        <button class="secondary danger" onclick="removeAsset(${i})">Remove</button>
-      </div>`).join('')
-    : '<div class="empty">No other assets added yet.</div>';
+  $('cashSavedTotal').textContent=money(cashTotal);
+  $('goldSavedTotal').textContent=money(goldTotal);
+  $('hybridSavedTotal').textContent=money(hybridTotal);
 
-  $('moneyInCount').textContent=`${state.incomes.length} entries`;
-  $('moneyOutCount').textContent=`${state.expenses.length} outflow entries`;
-  $('debtCountHome').textContent=`${state.debts.length} active debts`;
+  const [needs,wants,savingsPct,label]=currentRule();
+  const suggested=incomeTotal*savingsPct/100;
+  $('suggestedSavings').textContent=money(suggested);
+  $('suggestedCash').textContent=money(suggested*.60);
+  $('suggestedGold').textContent=money(suggested*.40);
+  $('ruleDisplayName').textContent=label;
+  $('budgetRuleNote').textContent=`Based on ${label} and total recorded income.`;
 
-  $('cashSavedTotal').textContent=money(cash);
-  $('goldSavedTotal').textContent=money(gold);
-  $('hybridSavedTotal').textContent=money(hybrid);
+  const totalGoalSaved=sum(state.goals,'saved');
+  $('goalSummary').textContent=`${state.goals.length} ${state.goals.length===1?'goal':'goals'} · ${money(totalGoalSaved)} total saved`;
 
-  const [n,w,s,label]=currentRule();
-  const suggested=income*s/100;
-  $('suggestCash').textContent=money(suggested*.60);
-  $('suggestGold').textContent=money(suggested*.40);
-  $('suggestTotal').textContent=money(suggested);
-  $('suggestRule').textContent=`Based on ${label} and your recorded income.`;
+  $('goalList').innerHTML=state.goals.length?state.goals.map((g,i)=>{
+    const pct=g.target>0?Math.min(100,(g.saved/g.target)*100):0;
+    return `<div class="goal-card">
+      <div class="goal-head">
+        <div>
+          <div class="goal-name">${esc(g.name)}</div>
+          <div class="goal-meta">Saved: ${money(g.saved)} of ${money(g.target)}</div>
+          ${g.targetDate?`<div class="goal-meta">Target: ${esc(g.targetDate)}</div>`:''}
+        </div>
+        <div class="goal-percent">${pct.toFixed(0)}%</div>
+      </div>
+      <div class="progress" style="margin-top:16px"><span style="width:${pct}%"></span></div>
+      <div class="goal-foot">
+        <div class="goal-meta">${money(Math.max(0,g.target-g.saved))} remaining</div>
+        <div class="goal-actions">
+          <button class="addmoney" onclick="openAddMoney(${i})">+ Add Money</button>
+          <button class="edit" onclick="openEditGoal(${i})">Edit</button>
+          <button class="delete" onclick="removeGoal(${i})">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty">No saving goals yet. Tap + New Goal to create one.</div>';
 
-  document.querySelectorAll('.rule').forEach(b=>b.classList.toggle('active',b.dataset.rule===state.budgetRule));
-  $('customRule').style.display=state.budgetRule==='custom'?'grid':'none';
-  $('customNeeds').value=state.customNeeds;$('customWants').value=state.customWants;$('customSavings').value=state.customSavings;
+  $('savingActivityList').innerHTML=state.savings.length
+    ?[...state.savings].reverse().map((x,rev)=>activityItem(x,x.type,state.savings.length-1-rev,'removeSaving')).join('')
+    :'<div class="empty">No cash or gold saving activity yet.</div>';
 
-  $('incomeList').innerHTML=state.incomes.length?[...state.incomes].reverse().map((x,ri)=>activityHTML(x,'income',state.incomes.length-1-ri)).join(''):'<div class="empty">No income recorded yet.</div>';
-  $('expenseList').innerHTML=state.expenses.length?[...state.expenses].reverse().map((x,ri)=>activityHTML(x,'expense',state.expenses.length-1-ri)).join(''):'<div class="empty">No expenses recorded yet.</div>';
+  $('incomeList').innerHTML=state.incomes.length
+    ?[...state.incomes].reverse().map((x,rev)=>activityItem(x,'income',state.incomes.length-1-rev,'removeIncome')).join('')
+    :'<div class="empty">No income recorded yet.</div>';
+  $('expenseList').innerHTML=state.expenses.length
+    ?[...state.expenses].reverse().map((x,rev)=>activityItem(x,'expense',state.expenses.length-1-rev,'removeExpense')).join('')
+    :'<div class="empty">No expenses recorded yet.</div>';
 
-  const recent=[
+  const all=[
     ...state.incomes.map(x=>({...x,kind:'income'})),
     ...state.expenses.map(x=>({...x,kind:'expense'})),
     ...state.savings.map(x=>({...x,kind:x.type}))
   ].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
-  $('recentList').innerHTML=recent.length?recent.map(x=>activityHTML(x,x.kind,0,false)).join(''):'<div class="empty">Your recent activity will appear here.</div>';
+  $('recentList').innerHTML=all.length?all.map(x=>activityItem(x,x.kind,0,null)).join(''):'<div class="empty">Your latest activity will appear here.</div>';
 
-  $('goalList').innerHTML=state.goals.length?state.goals.map((g,i)=>{
-    const pct=g.target>0?Math.min(100,g.saved/g.target*100):0;
-    const history=Array.isArray(g.history)?g.history:[];
-    const historyHtml=history.length
-      ? `<button class="goal-history-toggle" onclick="toggleGoalHistory(${i})">History (${history.length})</button>
-         <div id="goalHistory${i}" class="goal-history-panel">
-           ${history.map((h,hi)=>`<div class="goal-history-row">
-             <div>
-               <div class="history-title">${esc(h.label||'Top Up')}</div>
-               <div class="history-meta">${esc(h.date||'')}</div>
-             </div>
-             <div style="text-align:right">
-               <div class="history-amount">+${money(h.amount)}</div>
-               <button class="secondary danger" onclick="removeGoalTopup(${i},${hi})">Delete</button>
-             </div>
-           </div>`).join('')}
-         </div>`
-      : '';
-    return `<div class="goal">
-      <div class="goal-top">
-        <div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)} · ${pct.toFixed(0)}%</div></div>
-        <div><button class="secondary" onclick="editGoal(${i})">Edit Goal</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
+  $('debtTotal').textContent=money(debtTotal);
+  $('debtMinimums').textContent=money(minTotal);
+  $('debtCount').textContent=state.debts.length;
+  $('debtCards').innerHTML=state.debts.length?state.debts.map((d,i)=>`
+    <div class="goal-card">
+      <div class="goal-head">
+        <div><div class="goal-name">${esc(d.name)}</div><div class="goal-meta">${money(d.balance)} remaining · ${d.rate||0}% · ${money(d.minimum)}/month</div></div>
+        <div class="goal-actions">
+          <button class="edit" onclick="openEditDebt(${i})">Edit</button>
+          <button class="delete" onclick="removeDebt(${i})">Delete</button>
+        </div>
       </div>
-      <div class="progress"><span style="width:${pct}%"></span></div>
-      ${historyHtml}
-    </div>`;
-  }).join(''):'<div class="empty">No saving goals yet.</div>';
-
-  const savingsHistory=[...state.savings].map((s,i)=>({...s,_index:i})).reverse();
-  $('savingHistory').innerHTML=savingsHistory.length
-    ? savingsHistory.map(s=>`<div class="history-item">
-        <div>
-          <div class="history-title">${esc(s.name||'Saving')}</div>
-          <div class="history-meta">${esc(s.type==='gold'?'Gold Saving':'Cash Saving')} · ${esc(s.destination&&String(s.destination).startsWith('goal:') && state.goals[Number(String(s.destination).split(':')[1])] ? state.goals[Number(String(s.destination).split(':')[1])].name : 'General Savings')} · ${esc(s.date||'')}</div>
-        </div>
-        <div>
-          <div class="history-amount">+${money(s.amount)}</div>
-          <button class="secondary danger" style="margin-top:5px" onclick="removeSaving(${s._index})">Delete</button>
-        </div>
-      </div>`).join('')
-    : '<div class="empty">No saving records yet.</div>';
-
-  refreshSavingDestinations();
-  refreshSweepDestinations();
-
-  $('debtTotal').textContent=money(debt);$('debtMinimums').textContent=money(mins);$('debtCount').textContent=state.debts.length;
-  $('debtCards').innerHTML=state.debts.length?state.debts.map((d,i)=>`<div class="goal">
-    <div class="goal-top">
-      <div><div class="goal-name">${esc(d.name)}</div><div class="goal-meta">${money(d.balance)} remaining · ${d.rate||0}% · ${money(d.minimum)}/month</div></div>
-      <div><button class="secondary" onclick="updateDebt(${i})">Update</button> <button class="secondary danger" onclick="removeDebt(${i})">Remove</button></div>
-    </div></div>`).join(''):'<div class="empty">No debts added yet.</div>';
+    </div>`).join(''):'<div class="empty">No debts added yet.</div>';
 
   const snow=[...state.debts].sort((a,b)=>a.balance-b.balance);
   const ava=[...state.debts].sort((a,b)=>b.rate-a.rate);
-  $('snowballOrder').innerHTML=snow.length?snow.map((d,i)=>`<div class="debt-row"><b>${i+1}. ${esc(d.name)}</b><br><span class="card-foot">${money(d.balance)} · ${d.rate||0}%</span></div>`).join(''):'<div class="empty">Add debts to see the order.</div>';
-  $('avalancheOrder').innerHTML=ava.length?ava.map((d,i)=>`<div class="debt-row"><b>${i+1}. ${esc(d.name)}</b><br><span class="card-foot">${d.rate||0}% · ${money(d.balance)}</span></div>`).join(''):'<div class="empty">Add debts to see the order.</div>';
+  $('snowballOrder').innerHTML=snow.length?snow.map((d,i)=>`<div class="debt-row"><b>${i+1}. ${esc(d.name)}</b><br><span class="muted small">${money(d.balance)} · ${d.rate||0}%</span></div>`).join(''):'<div class="muted small">Add debts to see the order.</div>';
+  $('avalancheOrder').innerHTML=ava.length?ava.map((d,i)=>`<div class="debt-row"><b>${i+1}. ${esc(d.name)}</b><br><span class="muted small">${d.rate||0}% · ${money(d.balance)}</span></div>`).join(''):'<div class="muted small">Add debts to see the order.</div>';
 }
 
-document.querySelectorAll('.dock button').forEach(btn=>btn.addEventListener('click',()=>{
-  document.querySelectorAll('.dock button').forEach(b=>b.classList.remove('active'));
+function sheetHead(title){
+  return `<div class="sheet-head"><h3>${title}</h3><button class="close-btn" onclick="closeSheet()">×</button></div>`;
+}
+window.closeSheet=closeSheet;
+
+$('newIncomeBtn').onclick=()=>openSheet(sheetHead('Add Income')+`
+  <div class="field"><label>Name</label><input id="mIncomeName" placeholder="Salary"></div>
+  <div class="field"><label>Amount (B$)</label><input id="mIncomeAmount" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Category</label><select id="mIncomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select></div>
+  <div class="field"><label>Date</label><input id="mIncomeDate" type="date" value="${today()}"></div>
+  <button class="primary" onclick="saveIncome()">Add Income</button>`);
+
+window.saveIncome=()=>{
+  const amount=+$('mIncomeAmount').value||0;if(amount<=0)return;
+  state.incomes.push({name:$('mIncomeName').value.trim()||'Income',amount,category:$('mIncomeCategory').value,date:$('mIncomeDate').value||today()});
+  persist();closeSheet();render();
+};
+
+$('newExpenseBtn').onclick=()=>openSheet(sheetHead('Add Expense')+`
+  <div class="field"><label>Name</label><input id="mExpenseName" placeholder="Groceries"></div>
+  <div class="field"><label>Amount (B$)</label><input id="mExpenseAmount" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Category</label><select id="mExpenseCategory"><option>Needs</option><option>Wants</option><option>Bills</option><option>Transport</option><option>Food</option><option>Family</option><option>Other</option></select></div>
+  <div class="field"><label>Date</label><input id="mExpenseDate" type="date" value="${today()}"></div>
+  <button class="primary" onclick="saveExpense()">Add Expense</button>`);
+window.saveExpense=()=>{
+  const amount=+$('mExpenseAmount').value||0;if(amount<=0)return;
+  state.expenses.push({name:$('mExpenseName').value.trim()||'Expense',amount,category:$('mExpenseCategory').value,date:$('mExpenseDate').value||today()});
+  persist();closeSheet();render();
+};
+
+$('newSavingBtn').onclick=()=>openSheet(sheetHead('Add Saving')+`
+  <div class="field"><label>Type</label><select id="mSavingType"><option value="cash">Cash Saving</option><option value="gold">Gold Saving</option></select></div>
+  <div class="field"><label>Name</label><input id="mSavingName" placeholder="Emergency Fund / Gold Top Up"></div>
+  <div class="field"><label>Amount (B$)</label><input id="mSavingAmount" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Date</label><input id="mSavingDate" type="date" value="${today()}"></div>
+  <button class="primary" onclick="saveSaving()">Add Saving</button>`);
+window.saveSaving=()=>{
+  const amount=+$('mSavingAmount').value||0;if(amount<=0)return;
+  const type=$('mSavingType').value;
+  state.savings.push({type,name:$('mSavingName').value.trim()||(type==='cash'?'Cash Saving':'Gold Saving'),amount,category:type==='cash'?'Cash Saving':'Gold Saving',date:$('mSavingDate').value||today()});
+  persist();closeSheet();render();
+};
+
+$('newGoalBtn').onclick=()=>openSheet(sheetHead('New Saving Goal')+`
+  <div class="field"><label>Goal name</label><input id="mGoalName" placeholder="Travel / Emergency Fund"></div>
+  <div class="field"><label>Target amount (B$)</label><input id="mGoalTarget" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Already saved (B$)</label><input id="mGoalSaved" type="number" min="0" step="0.01" value="0"></div>
+  <div class="field"><label>Target date (optional)</label><input id="mGoalDate" type="date"></div>
+  <button class="primary" onclick="saveGoal()">Create Goal</button>`);
+window.saveGoal=()=>{
+  const name=$('mGoalName').value.trim(),target=+$('mGoalTarget').value||0,saved=+$('mGoalSaved').value||0;
+  if(!name||target<=0)return;
+  state.goals.push({name,target,saved,targetDate:$('mGoalDate').value||''});
+  persist();closeSheet();render();
+};
+window.openAddMoney=i=>openSheet(sheetHead('Add Money')+`
+  <div class="muted" style="margin-bottom:14px">${esc(state.goals[i].name)}</div>
+  <div class="field"><label>Amount to add (B$)</label><input id="mGoalAdd" type="number" min="0" step="0.01"></div>
+  <button class="primary" onclick="addMoneyGoal(${i})">Add Money</button>`);
+window.addMoneyGoal=i=>{
+  const n=+$('mGoalAdd').value||0;if(n<=0)return;
+  state.goals[i].saved=(+state.goals[i].saved||0)+n;persist();closeSheet();render();
+};
+window.openEditGoal=i=>openSheet(sheetHead('Edit Goal')+`
+  <div class="field"><label>Goal name</label><input id="eGoalName" value="${esc(state.goals[i].name)}"></div>
+  <div class="field"><label>Target amount (B$)</label><input id="eGoalTarget" type="number" value="${state.goals[i].target}"></div>
+  <div class="field"><label>Saved (B$)</label><input id="eGoalSaved" type="number" value="${state.goals[i].saved}"></div>
+  <div class="field"><label>Target date</label><input id="eGoalDate" type="date" value="${state.goals[i].targetDate||''}"></div>
+  <button class="primary" onclick="saveGoalEdit(${i})">Save Changes</button>`);
+window.saveGoalEdit=i=>{
+  state.goals[i]={name:$('eGoalName').value.trim()||state.goals[i].name,target:+$('eGoalTarget').value||0,saved:+$('eGoalSaved').value||0,targetDate:$('eGoalDate').value||''};
+  persist();closeSheet();render();
+};
+window.removeGoal=i=>{state.goals.splice(i,1);persist();render()};
+
+$('changeRuleBtn').onclick=()=>openSheet(sheetHead('Budget Guide')+`
+  <div class="field"><label>Choose rule</label>
+    <select id="mRule">
+      <option value="50,30,20" ${state.budgetRule==='50,30,20'?'selected':''}>50 / 30 / 20</option>
+      <option value="70,20,10" ${state.budgetRule==='70,20,10'?'selected':''}>70 / 20 / 10</option>
+      <option value="60,20,20" ${state.budgetRule==='60,20,20'?'selected':''}>60 / 20 / 20</option>
+      <option value="custom" ${state.budgetRule==='custom'?'selected':''}>Custom</option>
+    </select>
+  </div>
+  <div class="form-grid">
+    <div class="field"><label>Needs %</label><input id="mNeeds" type="number" value="${state.customNeeds}"></div>
+    <div class="field"><label>Wants %</label><input id="mWants" type="number" value="${state.customWants}"></div>
+    <div class="field"><label>Savings %</label><input id="mSavings" type="number" value="${state.customSavings}"></div>
+  </div>
+  <button class="primary" onclick="saveRule()">Save Guide</button>`);
+window.saveRule=()=>{
+  state.budgetRule=$('mRule').value;
+  state.customNeeds=+$('mNeeds').value||0;state.customWants=+$('mWants').value||0;state.customSavings=+$('mSavings').value||0;
+  persist();closeSheet();render();
+};
+
+$('newDebtBtn').onclick=()=>openSheet(sheetHead('Add Debt')+`
+  <div class="field"><label>Debt name</label><input id="mDebtName" placeholder="Car Loan"></div>
+  <div class="field"><label>Current balance (B$)</label><input id="mDebtBalance" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Interest / profit rate (%)</label><input id="mDebtRate" type="number" min="0" step="0.01"></div>
+  <div class="field"><label>Minimum monthly payment (B$)</label><input id="mDebtMinimum" type="number" min="0" step="0.01"></div>
+  <button class="primary" onclick="saveDebt()">Add Debt</button>`);
+window.saveDebt=()=>{
+  const name=$('mDebtName').value.trim(),balance=+$('mDebtBalance').value||0;if(!name||balance<=0)return;
+  state.debts.push({name,balance,rate:+$('mDebtRate').value||0,minimum:+$('mDebtMinimum').value||0});
+  persist();closeSheet();render();
+};
+window.openEditDebt=i=>openSheet(sheetHead('Edit Debt')+`
+  <div class="field"><label>Debt name</label><input id="eDebtName" value="${esc(state.debts[i].name)}"></div>
+  <div class="field"><label>Balance (B$)</label><input id="eDebtBalance" type="number" value="${state.debts[i].balance}"></div>
+  <div class="field"><label>Rate (%)</label><input id="eDebtRate" type="number" value="${state.debts[i].rate}"></div>
+  <div class="field"><label>Minimum payment (B$)</label><input id="eDebtMinimum" type="number" value="${state.debts[i].minimum}"></div>
+  <button class="primary" onclick="saveDebtEdit(${i})">Save Changes</button>`);
+window.saveDebtEdit=i=>{
+  state.debts[i]={name:$('eDebtName').value.trim()||state.debts[i].name,balance:+$('eDebtBalance').value||0,rate:+$('eDebtRate').value||0,minimum:+$('eDebtMinimum').value||0};
+  persist();closeSheet();render();
+};
+window.removeDebt=i=>{state.debts.splice(i,1);persist();render()};
+
+window.removeIncome=i=>{state.incomes.splice(i,1);persist();render()}
+window.removeExpense=i=>{state.expenses.splice(i,1);persist();render()}
+window.removeSaving=i=>{state.savings.splice(i,1);persist();render()}
+
+document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   $(btn.dataset.page).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }));
 
-document.querySelectorAll('.rule').forEach(btn=>btn.addEventListener('click',()=>{
-  state.budgetRule=btn.dataset.rule;persist();render();
-}));
-['customNeeds','customWants','customSavings'].forEach(id=>$(id).addEventListener('input',()=>{
-  state.customNeeds=+$('customNeeds').value||0;
-  state.customWants=+$('customWants').value||0;
-  state.customSavings=+$('customSavings').value||0;
-  persist();render();
-}));
-
-$('addIncome').addEventListener('click',()=>{
-  const name=$('incomeName').value.trim()||'Income',amount=+$('incomeAmount').value||0;if(amount<=0)return;
-  state.incomes.push({name,amount,category:$('incomeCategory').value,date:$('incomeDate').value||today()});
-  $('incomeName').value='';$('incomeAmount').value='';persist();render();
-});
-$('addExpense').addEventListener('click',()=>{
-  const name=$('expenseName').value.trim()||'Expense',amount=+$('expenseAmount').value||0;if(amount<=0)return;
-  state.expenses.push({name,amount,type:$('expenseType').value,category:$('expenseCategory').value,date:$('expenseDate').value||today()});
-  $('expenseName').value='';$('expenseAmount').value='';persist();render();
-});
-$('addSaving').addEventListener('click',()=>{
-  const amount=+$('savingAmount').value||0;
-  if(amount<=0)return;
-
-  const type=$('savingType').value;
-  const destination=$('savingDestination').value;
-  const date=$('savingDate').value||today();
-  const customName=$('savingName').value.trim();
-
-  let goalIndex=null;
-  let destinationName='General Savings';
-
-  if(destination.startsWith('goal:')){
-    goalIndex=Number(destination.split(':')[1]);
-    if(state.goals[goalIndex]){
-      destinationName=state.goals[goalIndex].name;
-      state.goals[goalIndex].saved=(+state.goals[goalIndex].saved||0)+amount;
-      if(!Array.isArray(state.goals[goalIndex].history))state.goals[goalIndex].history=[];
-      state.goals[goalIndex].history.push({
-        amount,
-        date,
-        label:customName || (type==='cash'?'Cash Top Up':'Gold Top Up'),
-        savingTxn:true
-      });
-    }
-  }
-
-  state.savings.push({
-    type,
-    name:customName || (destination==='general' ? (type==='cash'?'Cash Saving':'Gold Saving') : destinationName),
-    amount,
-    category:type==='cash'?'Cash Saving':'Gold Saving',
-    date,
-    destination,
-    goalIndex
-  });
-
-  $('savingAmount').value='';
-  $('savingName').value='';
-  $('savingDestination').value='general';
-  persist();
-  render();
-});
-$('toggleStartingBalance').addEventListener('click',()=>{
-  const wrap=$('startingBalanceWrap');
-  const open=wrap.style.display!=='none';
-  wrap.style.display=open?'none':'block';
-  $('toggleStartingBalance').textContent=open?'+ Add starting balance':'− Hide starting balance';
-});
-
-$('addGoal').addEventListener('click',()=>{
-  const name=$('goalName').value.trim();
-  const target=+$('goalTarget').value||0;
-  const saved=+$('goalStartingBalance').value||0;
-  if(!name||target<=0)return;
-  const history=[];
-  if(saved>0)history.push({amount:saved,date:today(),label:'Starting Balance'});
-  state.goals.push({name,target,saved,history});
-  $('goalName').value='';
-  $('goalTarget').value='';
-  $('goalStartingBalance').value='';
-  $('startingBalanceWrap').style.display='none';
-  $('toggleStartingBalance').textContent='+ Add starting balance';
-  persist();
-  render();
-});
-
-
-window.editGoal=function(i){
-  const current=state.goals[i];
-  const newName=prompt('Edit goal name', current.name);
-  if(newName===null)return;
-  const newTarget=prompt('Edit target amount', current.target);
-  if(newTarget===null)return;
-  const targetNum=+newTarget;
-  if(!newName.trim() || isNaN(targetNum) || targetNum<=0)return;
-  current.name=newName.trim();
-  current.target=targetNum;
-  persist();
-  render();
-}
-
-
-window.toggleGoalHistory=function(i){
-  const panel=document.getElementById('goalHistory'+i);
-  if(panel)panel.classList.toggle('open');
-}
-
-window.removeGoalTopup=function(goalIndex,historyIndex){
-  const goal=state.goals[goalIndex];
-  if(!goal || !Array.isArray(goal.history) || !goal.history[historyIndex])return;
-
-  const h=goal.history[historyIndex];
-  const amount=+h.amount||0;
-
-  if(h.savingTxn){
-    const txnIndex=state.savings.findIndex(s =>
-      String(s.destination)==='goal:'+goalIndex &&
-      Math.abs((+s.amount||0)-amount)<0.00001 &&
-      (s.date||'')===(h.date||'')
-    );
-    if(txnIndex>-1)state.savings.splice(txnIndex,1);
-  }
-
-  goal.saved=Math.max(0,(+goal.saved||0)-amount);
-  goal.history.splice(historyIndex,1);
-  persist();
-  render();
-}
-
-window.removeGoal=function(i){
-  state.goals.splice(i,1);
-  persist();
-  render();
-}
-
-$('addDebt').addEventListener('click',()=>{
-  const name=$('debtName').value.trim(),balance=+$('debtBalance').value||0;if(!name||balance<=0)return;
-  state.debts.push({name,balance,rate:+$('debtRate').value||0,minimum:+$('debtMinimum').value||0});
-  $('debtName').value='';$('debtBalance').value='';$('debtRate').value='';$('debtMinimum').value='';persist();render();
-});
-window.updateDebt=function(i){
-  const v=prompt(`Update remaining balance for ${state.debts[i].name}`,state.debts[i].balance);if(v===null)return;
-  const n=+v;if(isNaN(n)||n<0)return;state.debts[i].balance=n;persist();render();
-}
-window.removeDebt=function(i){state.debts.splice(i,1);persist();render()}
-
-
-$('sweepRemaining').addEventListener('click',()=>{
-  const income=sum(state.incomes);
-  const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
-  const spending=sum(state.expenses.filter(x=>(x.type||'spending')==='spending'));
-  const cash=sum(state.savings.filter(x=>x.type==='cash'));
-  const gold=sum(state.savings.filter(x=>x.type==='gold'));
-  const hybrid=cash+gold;
-  const mins=sum(state.debts,'minimum');
-  const remaining=income-hybrid-commitments-spending-mins;
-  if(remaining<=0)return;
-
-  const destination=$('sweepDestination').value;
-  let type='cash';
-  let goalIndex=null;
-  let name='Payday Leftover Sweep';
-
-  if(destination==='gold')type='gold';
-
-  if(destination.startsWith('goal:')){
-    goalIndex=Number(destination.split(':')[1]);
-    if(state.goals[goalIndex]){
-      state.goals[goalIndex].saved=(+state.goals[goalIndex].saved||0)+remaining;
-      if(!Array.isArray(state.goals[goalIndex].history))state.goals[goalIndex].history=[];
-      state.goals[goalIndex].history.push({
-        amount:remaining,
-        date:today(),
-        label:'Payday Leftover Sweep',
-        savingTxn:true
-      });
-      name=state.goals[goalIndex].name+' · Payday Leftover Sweep';
-    }
-  }
-
-  state.savings.push({
-    type,
-    name,
-    amount:remaining,
-    category:type==='cash'?'Cash Saving':'Gold Saving',
-    date:today(),
-    destination,
-    goalIndex
-  });
-
-  persist();
-  render();
-});
-
-
-$('addAsset').addEventListener('click',()=>{
-  const name=$('assetName').value.trim();
-  const value=+$('assetValue').value||0;
-  if(!name || value<=0)return;
-  if(!Array.isArray(state.assets))state.assets=[];
-  state.assets.push({name,value});
-  $('assetName').value='';
-  $('assetValue').value='';
-  persist();
-  render();
-});
-
-window.removeAsset=function(i){
-  if(!Array.isArray(state.assets))return;
-  state.assets.splice(i,1);
-  persist();
-  render();
-}
-
-
-$('toggleAssets').addEventListener('click',()=>{
-  const manager=$('assetManager');
-  const open=manager.style.display!=='none';
-  manager.style.display=open?'none':'block';
-  $('toggleAssets').textContent=open?'Edit Assets':'Hide Assets';
-});
-
 render();
 </script>
+
 </body>
 </html>
