@@ -1426,7 +1426,7 @@ body{
 
 <div class="demo-example-card dev-hidden" id="demoExampleCard">
   <strong>Example data</strong>
-  <span>Sample data only · Demo access is limited to 2 entries per section.</span>
+  <span>Sample data only · Start with 1 example, then add up to 2 more entries per section.</span>
 </div>
 
         <div class="hero">
@@ -1952,27 +1952,21 @@ function monthKeyOffset(offset){
 function createDemoState(){
   return {
     incomes:[
-      {name:'Salary',category:'Main Income',amount:5200,date:demoDate(21)},
-      {name:'Freelance Project',category:'Side Income',amount:450,date:demoDate(12)}
+      {name:'Salary',category:'Main Income',amount:5200,date:demoDate(21)}
     ],
     expenses:[
-      {name:'Household & Groceries',category:'Needs',amount:520,date:demoDate(22)},
-      {name:'Utilities & Internet',category:'Bills',amount:210,date:demoDate(18)}
+      {name:'Household & Groceries',category:'Needs',amount:520,date:demoDate(22)}
     ],
     savings:[
-      {type:'cash',name:'Emergency Fund',category:'Cash Saving',amount:700,date:demoDate(23)},
       {type:'gold',name:'Gold Saving',category:'Gold Saving',amount:350,date:demoDate(23)}
     ],
     goals:[
-      {name:'Emergency Fund',target:12000,saved:9000,date:demoDate(28)},
-      {name:'Travel Fund',target:5000,saved:2200,date:demoDate(28)}
+      {name:'Emergency Fund',target:12000,saved:9000,date:demoDate(28)}
     ],
     investments:[
-      {name:'Global Sukuk Fund',type:'Sukuk/Bond',cost:5000,currentValue:5240,date:demoDate(3)},
-      {name:'S&P 500 ETF',type:'ETF/Stock',cost:4000,currentValue:4380,date:demoDate(3)}
+      {name:'Global Sukuk Fund',type:'Sukuk/Bond',cost:5000,currentValue:5240,date:demoDate(3)}
     ],
     debts:[
-      {name:'Personal Loan',initial:6000,balance:1200,minimum:120,rate:4.50},
       {name:'Car Loan',initial:30000,balance:18450,minimum:585,rate:4.25}
     ],
     budgetRule:'50,30,20',
@@ -1987,7 +1981,6 @@ function createDemoState(){
     transactionDateFrom:'',
     transactionDateTo:'',
     netWorthHistory:[
-      {month:monthKeyOffset(-1),value:24640},
       {month:monthKeyOffset(0),value:26120}
     ]
   };
@@ -2008,19 +2001,19 @@ function updateDemoUI(){
 }
 
 
-const DEMO_MAX_ENTRIES = 2;
+const DEMO_MAX_ENTRIES = 3;
 
-function showDemoLimit(message='This section is limited to 2 entries in Demo Mode.'){
+function showDemoLimit(message='This section is limited to 3 entries in Demo Mode.'){
   openSheet(sheetHead('Demo Limit Reached')+`
     <div class="demo-limit-message">
-      <div class="demo-limit-icon">2</div>
+      <div class="demo-limit-icon">3</div>
       <div>
         <div class="demo-limit-title">Limited Demo Access</div>
         <div class="subtext">${message}</div>
       </div>
     </div>
     <div class="demo-limit-note">
-      Full access will allow unlimited personal entries and complete tracking.
+      You have reached the Demo Mode limit. Full access allows unlimited personal entries and complete tracking.
     </div>
     <button class="primary-btn" onclick="closeSheet()">Got it</button>
   `);
@@ -2028,7 +2021,7 @@ function showDemoLimit(message='This section is limited to 2 entries in Demo Mod
 
 function demoEntryLimitReached(list, label='entries'){
   if(isDemoMode && list.length >= DEMO_MAX_ENTRIES){
-    showDemoLimit(`Demo Mode allows a maximum of 2 ${label}.`);
+    showDemoLimit(`Demo Mode allows a maximum of 3 ${label}.`);
     return true;
   }
   return false;
@@ -2757,7 +2750,7 @@ window.saveNetWorthSnapshot=function(){
   const value=+$('snapshotValue').value;
   const existingSnapshot=state.netWorthHistory.find(x=>x.month===month);
   if(isDemoMode && !existingSnapshot && state.netWorthHistory.length>=DEMO_MAX_ENTRIES){
-    showDemoLimit('Demo Mode allows a maximum of 2 net worth snapshots.');
+    showDemoLimit('Demo Mode allows a maximum of 3 net worth snapshots.');
     return;
   }
   if(!month || !Number.isFinite(value)) return;
