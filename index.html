@@ -229,8 +229,17 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="card" style="margin-top:16px">
       <div class="card-label">Before next payday</div>
       <div class="card-value" id="sweepAvailable">B$0.00</div>
-      <div class="card-foot">Available to move into cash savings if you want to sweep the leftover.</div>
-      <button class="primary" id="sweepRemaining" style="margin-top:14px">Move remaining to savings</button>
+      <div class="card-foot">Choose where to move the leftover before the next payday.</div>
+
+      <div class="field" style="margin-top:14px">
+        <label>Move leftover to</label>
+        <select id="sweepDestination">
+          <option value="cash">Cash Savings</option>
+          <option value="gold">Gold Savings</option>
+        </select>
+      </div>
+
+      <button class="primary" id="sweepRemaining">Move remaining</button>
     </div>
 
     <div class="section-head">
@@ -456,6 +465,19 @@ window.removeRecord=function(kind,index){
   persist();render();
 }
 
+
+function refreshSweepDestinations(){
+  const select=$('sweepDestination');
+  if(!select)return;
+  const current=select.value;
+  select.innerHTML=
+    '<option value="cash">Cash Savings</option>'+
+    '<option value="gold">Gold Savings</option>'+
+    state.goals.map((g,i)=>`<option value="goal:${i}">${esc(g.name)}</option>`).join('');
+  if([...select.options].some(o=>o.value===current)) select.value=current;
+}
+
+
 function render(){
   const income=sum(state.incomes);
   const commitments=sum(state.expenses.filter(x=>(x.type||'spending')==='commitment'));
@@ -514,6 +536,8 @@ function render(){
       <div class="progress"><span style="width:${pct}%"></span></div>
     </div>`;
   }).join(''):'<div class="empty">No saving goals yet.</div>';
+
+  refreshSweepDestinations();
 
   $('debtTotal').textContent=money(debt);$('debtMinimums').textContent=money(mins);$('debtCount').textContent=state.debts.length;
   $('debtCards').innerHTML=state.debts.length?state.debts.map((d,i)=>`<div class="goal">
@@ -636,13 +660,32 @@ $('sweepRemaining').addEventListener('click',()=>{
   const mins=sum(state.debts,'minimum');
   const remaining=income-hybrid-commitments-spending-mins;
   if(remaining<=0)return;
-  state.savings.push({
-    type:'cash',
-    name:'Payday Leftover Sweep',
-    amount:remaining,
-    category:'Cash Saving',
-    date:today()
-  });
+
+  const destination=$('sweepDestination').value;
+
+  if(destination==='cash'){
+    state.savings.push({
+      type:'cash',
+      name:'Payday Leftover Sweep',
+      amount:remaining,
+      category:'Cash Saving',
+      date:today()
+    });
+  } else if(destination==='gold'){
+    state.savings.push({
+      type:'gold',
+      name:'Payday Leftover Sweep',
+      amount:remaining,
+      category:'Gold Saving',
+      date:today()
+    });
+  } else if(destination.startsWith('goal:')){
+    const index=Number(destination.split(':')[1]);
+    if(state.goals[index]){
+      state.goals[index].saved=(+state.goals[index].saved||0)+remaining;
+    }
+  }
+
   persist();
   render();
 });
