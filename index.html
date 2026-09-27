@@ -46,10 +46,8 @@ footer{margin-top:36px;padding:24px 0;color:var(--muted);text-align:center;borde
   <div class="nav" id="nav">
     <button data-tab="home" class="active">Home</button>
     <button data-tab="budget">Budget</button>
-    <button data-tab="cash">Cash</button>
-    <button data-tab="gold">Gold</button>
+    <button data-tab="savings">Savings</button>
     <button data-tab="debt">Debt</button>
-    <button data-tab="calculators">Calculators</button>
     <button data-tab="about">About</button>
   </div>
 
@@ -120,19 +118,72 @@ footer{margin-top:36px;padding:24px 0;color:var(--muted);text-align:center;borde
     <div class="note"><b>Flexible planning, not a fixed rule.</b><br>Each budget rule automatically includes the same 60% cash / 40% gold example so users can see the hybrid-saving breakdown instantly without recalculating. The split is only a general illustration.</div>
   </section>
 
-  <section id="cash" class="page">
-    <p class="intro">Track your cash goals and saving progress.</p>
-    <div class="grid grid-2">
-      <div class="card"><h3>Cash savings goal</h3><div class="field"><label>Goal amount (B$)</label><input id="cashGoal" type="number" min="0" step="0.01"></div><div class="field"><label>Amount saved (B$)</label><input id="cashSaved" type="number" min="0" step="0.01"></div></div>
-      <div class="card"><h3>Progress</h3><div class="big" id="cashProgress">0%</div><div class="progress" style="margin-top:14px"><span id="cashBar"></span></div><p class="muted" id="cashRemain">B$0.00 remaining</p></div>
-    </div>
-  </section>
 
-  <section id="gold" class="page">
-    <p class="intro">Track gold as part of your hybrid savings.</p>
-    <div class="grid grid-2">
-      <div class="card"><h3>Gold tracker</h3><div class="field"><label>Total gold (g)</label><input id="goldGrams" type="number" min="0" step="0.0001"></div><div class="field"><label>Reference gold price (RM/g)</label><input id="goldPrice" type="number" min="0" step="0.01"></div><div class="field"><label>Exchange rate (RM per B$1)</label><input id="fxRate" type="number" min="0.0001" step="0.0001"></div></div>
-      <div class="card"><h3>Estimated value</h3><div class="big" id="goldValue">B$0.00</div><p class="muted">Estimated gold value in BND</p></div>
+  <section id="savings" class="page">
+    <p class="intro">Track cash and gold together, then use simple calculators to plan your saving goals.</p>
+
+    <div class="card">
+      <h3>Hybrid savings overview</h3>
+      <div class="grid grid-4">
+        <div>
+          <div class="muted small">Cash saved</div>
+          <div class="big" id="savingsCashTotal">B$0.00</div>
+        </div>
+        <div>
+          <div class="muted small">Gold saved</div>
+          <div class="big" id="savingsGoldGrams">0.0000g</div>
+        </div>
+        <div>
+          <div class="muted small">Estimated gold value</div>
+          <div class="big" id="savingsGoldValue">B$0.00</div>
+        </div>
+        <div>
+          <div class="muted small">Total hybrid savings</div>
+          <div class="big" id="savingsHybridTotal">B$0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h3>Cash savings goal</h3>
+        <div class="field"><label>Goal amount (B$)</label><input id="cashGoal" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Amount saved (B$)</label><input id="cashSaved" type="number" min="0" step="0.01"></div>
+        <div class="big" id="cashProgress">0%</div>
+        <div class="progress" style="margin-top:14px"><span id="cashBar"></span></div>
+        <p class="muted" id="cashRemain">B$0.00 remaining</p>
+      </div>
+
+      <div class="card">
+        <h3>Gold savings tracker</h3>
+        <div class="field"><label>Total gold (g)</label><input id="goldGrams" type="number" min="0" step="0.0001"></div>
+        <div class="field"><label>Reference gold price (RM/g)</label><input id="goldPrice" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Exchange rate (RM per B$1)</label><input id="fxRate" type="number" min="0.0001" step="0.0001"></div>
+        <div class="big" id="goldValue">B$0.00</div>
+        <p class="muted">Estimated gold value in BND</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h3>Monthly savings calculator</h3>
+        <div class="field"><label>Monthly saving (B$)</label><input id="calcMonthly" type="number" min="0"></div>
+        <div class="field"><label>Months</label><input id="calcMonths" type="number" min="0"></div>
+        <div class="big" id="calcSavingsResult">B$0.00</div>
+      </div>
+
+      <div class="card">
+        <h3>Goal calculator</h3>
+        <div class="field"><label>Goal (B$)</label><input id="calcGoal" type="number" min="0"></div>
+        <div class="field"><label>Already saved (B$)</label><input id="calcCurrent" type="number" min="0"></div>
+        <div class="field"><label>Months to goal</label><input id="calcGoalMonths" type="number" min="1"></div>
+        <div class="big" id="calcGoalResult">B$0.00/mo</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Hybrid saving = cash + gold.</b><br>
+      Cash can support short-term needs and emergencies, while gold can form part of longer-term savings. Use the mix that fits your own goals and situation.
     </div>
   </section>
 
@@ -147,14 +198,6 @@ footer{margin-top:36px;padding:24px 0;color:var(--muted);text-align:center;borde
     <div class="grid grid-2" style="margin-top:16px">
       <div class="card"><h3>Snowball order</h3><div id="snowballList" class="muted">Add debt data to compare.</div></div>
       <div class="card"><h3>Avalanche order</h3><div id="avalancheList" class="muted">Add debt data to compare.</div></div>
-    </div>
-  </section>
-
-  <section id="calculators" class="page">
-    <p class="intro">Simple personal finance calculators for savings and goals.</p>
-    <div class="grid grid-2">
-      <div class="card"><h3>Monthly savings calculator</h3><div class="field"><label>Monthly saving (B$)</label><input id="calcMonthly" type="number" min="0"></div><div class="field"><label>Months</label><input id="calcMonths" type="number" min="0"></div><div class="big" id="calcSavingsResult">B$0.00</div></div>
-      <div class="card"><h3>Goal calculator</h3><div class="field"><label>Goal (B$)</label><input id="calcGoal" type="number" min="0"></div><div class="field"><label>Already saved (B$)</label><input id="calcCurrent" type="number" min="0"></div><div class="field"><label>Months to goal</label><input id="calcGoalMonths" type="number" min="1"></div><div class="big" id="calcGoalResult">B$0.00/mo</div></div>
     </div>
   </section>
 
@@ -223,6 +266,7 @@ function update(){
 
   const totalDebt=balances.reduce((a,b)=>a+b,0);
   $('homeCash').textContent=money(saved);$('homeGoldGrams').textContent=grams.toFixed(4)+'g';$('homeGoldValue').textContent=money(gv);$('homeDebt').textContent=money(totalDebt);$('homeHybrid').textContent=money(saved+gv);
+  $('savingsCashTotal').textContent=money(saved);$('savingsGoldGrams').textContent=grams.toFixed(4)+'g';$('savingsGoldValue').textContent=money(gv);$('savingsHybridTotal').textContent=money(saved+gv);
 
   $('calcSavingsResult').textContent=money((+$('calcMonthly').value||0)*(+$('calcMonths').value||0));
   const gm=+$('calcGoalMonths').value||0,remain=Math.max(0,(+$('calcGoal').value||0)-(+$('calcCurrent').value||0));
