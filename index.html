@@ -340,6 +340,32 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
 
         <div class="section">
           <div class="section-head">
+            <div>
+              <h2>Where Your Income Went</h2>
+              <p>This month’s income allocation at a glance.</p>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-wrap">
+              <div class="chart-box">
+                <canvas id="homeIncomePie" width="380" height="380"></canvas>
+                <div class="chart-center">
+                  <div>
+                    <strong id="homeChartIncome">B$0.00</strong>
+                    <span>Total Income</span>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend" id="homeIncomeLegend"></div>
+            </div>
+            <div class="small-note" id="homeChartNote">
+              Expenses + hybrid savings + debt repayment + money left = total income.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
             <div><h2>Hybrid Savings</h2><p>Your cash + gold saving system.</p></div>
             <button class="link-inline" data-nav="savings">Open Savings</button>
           </div>
@@ -423,22 +449,6 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
           <div class="field">
             <label>To</label>
             <input type="date" id="transactionDateTo">
-          </div>
-        </div>
-
-        <div class="transaction-section-label">Category Breakdown</div>
-        <div class="chart-panel">
-          <div class="chart-wrap">
-            <div class="chart-box">
-              <canvas id="transactionPie" width="380" height="380"></canvas>
-              <div class="chart-center">
-                <div>
-                  <strong id="chartCenterTotal">B$0.00</strong>
-                  <span id="chartCenterLabel">Income</span>
-                </div>
-              </div>
-            </div>
-            <div class="chart-legend" id="transactionChartLegend"></div>
           </div>
         </div>
 
@@ -621,15 +631,16 @@ function activityIcon(kind){ return {income:'▲', expense:'▼', cash:'💵', g
 function activityClass(kind){ return kind==='income' ? 'positive' : kind==='expense' ? 'negative' : 'goldish'; }
 function activityMarkup(item, kind, index, deleteFn){ const sign = kind==='expense' ? '-' : '+'; return `<div class="list-item"><div class="icon">${activityIcon(kind)}</div><div><div class="item-title">${esc(item.name || item.category || kind)}</div><div class="item-meta">${esc(item.category || kind)} · ${esc(item.date || '')}</div></div><div><div class="item-amount ${activityClass(kind)}">${sign}${money(item.amount)}</div>${deleteFn ? `<button class="text-btn text-red" style="margin-top:6px" onclick="${deleteFn}(${index})">Delete</button>` : ''}</div></div>`; }
 
-const chartPalette = ['#b58b5c','#6f8f72','#b96c6c','#6f82a8','#9a7aa0','#c6a14a','#6b9aa0','#8f7b68','#7f8b55','#a56f52'];
+const chartPalette = ['#b58b5c','#6f8f72','#b96c6c','#6f82a8'];
 
-function drawTransactionChart(entries, view){
-  const canvas=$('transactionPie');
+function drawHomeIncomeChart(income, expenses, savings, debt, left){
+  const canvas=$('homeIncomePie');
   if(!canvas) return;
 
   const ctx=canvas.getContext('2d');
   const ratio=window.devicePixelRatio || 1;
   const cssSize=window.innerWidth <= 640 ? 170 : 190;
+
   canvas.style.width=cssSize+'px';
   canvas.style.height=cssSize+'px';
   canvas.width=Math.round(cssSize*ratio*2);
@@ -640,49 +651,53 @@ function drawTransactionChart(entries, view){
   const cx=size/2, cy=size/2;
   const outer=size*0.44;
   const inner=size*0.26;
+  const safeLeft=Math.max(0,left);
 
-  const groups={};
-  entries.forEach(item=>{
-    const key=(item.category||'Uncategorised').trim() || 'Uncategorised';
-    groups[key]=(groups[key]||0)+(+item.amount||0);
-  });
-
-  const ordered=Object.entries(groups).sort((a,b)=>b[1]-a[1]);
-  const total=ordered.reduce((a,x)=>a+x[1],0);
+  const data=[
+    ['Expenses', Math.max(0,expenses)],
+    ['Hybrid Savings', Math.max(0,savings)],
+    ['Debt Repayment', Math.max(0,debt)],
+    ['Money Left', safeLeft]
+  ];
+  const total=data.reduce((a,x)=>a+x[1],0);
 
   ctx.clearRect(0,0,size,size);
 
-  if(total<=0){
+  if(income<=0 || total<=0){
     ctx.beginPath();
     ctx.arc(cx,cy,outer,0,Math.PI*2);
     ctx.arc(cx,cy,inner,0,Math.PI*2,true);
     ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--surface-2').trim() || '#eee';
     ctx.fill('evenodd');
-    $('transactionChartLegend').innerHTML='<div class="empty">No category data for this period.</div>';
+    $('homeIncomeLegend').innerHTML='<div class="empty">Add income and monthly activity to see your allocation.</div>';
   }else{
     let angle=-Math.PI/2;
-    ordered.forEach(([name,value],i)=>{
+    data.forEach(([name,value],i)=>{
+      if(value<=0) return;
       const slice=(value/total)*Math.PI*2;
       ctx.beginPath();
       ctx.arc(cx,cy,outer,angle,angle+slice);
       ctx.arc(cx,cy,inner,angle+slice,angle,true);
       ctx.closePath();
-      ctx.fillStyle=chartPalette[i%chartPalette.length];
+      ctx.fillStyle=chartPalette[i];
       ctx.fill();
       angle+=slice;
     });
 
-    $('transactionChartLegend').innerHTML=ordered.map(([name,value],i)=>`
+    $('homeIncomeLegend').innerHTML=data.map(([name,value],i)=>`
       <div class="legend-row">
-        <span class="legend-dot" style="background:${chartPalette[i%chartPalette.length]}"></span>
-        <span class="legend-name">${esc(name)}</span>
+        <span class="legend-dot" style="background:${chartPalette[i]}"></span>
+        <span class="legend-name">${name}</span>
         <span class="legend-amount">${money(value)}</span>
       </div>
     `).join('');
   }
 
-  $('chartCenterTotal').textContent=money(total);
-  $('chartCenterLabel').textContent=view==='income' ? 'Income' : 'Expenses';
+  $('homeChartIncome').textContent=money(Math.max(0,income));
+
+  $('homeChartNote').textContent = left < 0
+    ? `Your recorded expenses, savings and debt repayments exceed this month's income by ${money(Math.abs(left))}.`
+    : 'Expenses + hybrid savings + debt repayment + money left = total income.';
 }
 
 function render(){
@@ -694,6 +709,7 @@ function render(){
   const debtRemaining=sum(debts,'balance'), debtMonthly=sum(debts,'minimum');
   const monthLeft=sum(monthIncome)-sum(monthExpense)-monthHybrid-debtMonthly;
   $('homeLeftover').textContent=money(monthLeft); $('leftoverStatus').textContent=monthIncome.length===0 ? 'Start tracking' : monthLeft>=0 ? 'On Track' : 'Review Spending';
+  drawHomeIncomeChart(sum(monthIncome), sum(monthExpense), monthHybrid, debtMonthly, monthLeft);
   const alloc=state.leftoverAlloc; $('allocCarry').value=alloc.carry||0; $('allocCash').value=alloc.cash||0; $('allocGold').value=alloc.gold||0; $('allocDebt').value=alloc.debt||0; $('allocGoal').value=alloc.goal||0;
   const allocated=(+alloc.carry||0)+(+alloc.cash||0)+(+alloc.gold||0)+(+alloc.debt||0)+(+alloc.goal||0); $('allocTotal').textContent=money(allocated); $('allocRemaining').textContent=money(monthLeft-allocated);
   $('homeHybridTotal').textContent=money(hybridTotal); $('homeCash').textContent=money(cashTotal); $('homeGold').textContent=money(goldTotal);
@@ -735,8 +751,6 @@ function render(){
   $('transactionFilteredTotal').className='transaction-total '+(isIncomeView?'positive':'negative');
   $('transactionCountLabel').textContent=`${filteredTransactions.length} ${filteredTransactions.length===1?'entry':'entries'} in selected period`;
   $('newTransactionBtn').textContent=isIncomeView ? '+ Add Income' : '+ Add Expense';
-
-  drawTransactionChart(filteredTransactions, state.transactionView);
 
   const renderedTransactions=[...filteredTransactions].reverse().map(item=>{
     const originalIndex=baseTransactions.indexOf(item);
@@ -898,9 +912,7 @@ $('transactionDateTo').addEventListener('change',()=>{
   render();
 });
 
-window.addEventListener('resize',()=>{
-  if($('transactions') && $('transactions').classList.contains('active')) render();
-});
+window.addEventListener('resize',()=>render());
 
 const calcHelpToggle=$('calcHelpToggle');
 if(calcHelpToggle){
