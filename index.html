@@ -145,6 +145,32 @@ input:focus,select:focus{border-color:var(--gold)}
 .dock span:first-child{font-size:20px}
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
 .history-list{display:grid;gap:10px}
+.goal-history-toggle{
+  margin-top:10px;
+  border:0;
+  background:transparent;
+  color:var(--brown);
+  font-weight:800;
+  padding:0;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.goal-history-panel{display:none;margin-top:10px}
+.goal-history-panel.open{display:grid;gap:8px}
+.goal-history-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fffaf5;
+}
+.goal-history-row .history-title{font-size:14px}
+.goal-history-row .history-meta{font-size:11px}
+.goal-history-row .history-amount{font-size:14px}
+.goal-history-row .secondary{padding:7px 9px;font-size:12px}
 .history-item{
   display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
   background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px
@@ -601,10 +627,19 @@ function render(){
     const pct=g.target>0?Math.min(100,g.saved/g.target*100):0;
     const history=Array.isArray(g.history)?g.history:[];
     const historyHtml=history.length
-      ? `<div style="margin-top:12px"><div class="goal-meta" style="margin-bottom:6px">Top-up history</div>${history.map((h,hi)=>`<div class="history-item">
-          <div><div class="history-title">${esc(h.label||'Top Up')}</div><div class="history-meta">${esc(h.date||'')}</div></div>
-          <div><div class="history-amount">+${money(h.amount)}</div><button class="secondary danger" style="margin-top:5px" onclick="removeGoalTopup(${i},${hi})">Delete</button></div>
-        </div>`).join('')}</div>`
+      ? `<button class="goal-history-toggle" onclick="toggleGoalHistory(${i})">History (${history.length})</button>
+         <div id="goalHistory${i}" class="goal-history-panel">
+           ${history.map((h,hi)=>`<div class="goal-history-row">
+             <div>
+               <div class="history-title">${esc(h.label||'Top Up')}</div>
+               <div class="history-meta">${esc(h.date||'')}</div>
+             </div>
+             <div style="text-align:right">
+               <div class="history-amount">+${money(h.amount)}</div>
+               <button class="secondary danger" onclick="removeGoalTopup(${i},${hi})">Delete</button>
+             </div>
+           </div>`).join('')}
+         </div>`
       : '';
     return `<div class="goal">
       <div class="goal-top">
@@ -754,6 +789,12 @@ window.editGoal=function(i){
   current.target=targetNum;
   persist();
   render();
+}
+
+
+window.toggleGoalHistory=function(i){
+  const panel=document.getElementById('goalHistory'+i);
+  if(panel)panel.classList.toggle('open');
 }
 
 window.removeGoalTopup=function(goalIndex,historyIndex){
