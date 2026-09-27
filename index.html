@@ -852,6 +852,69 @@ button,
 }
 </style>
 
+
+<style>
+/* Demo mode */
+.demo-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:10px 0;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+.demo-divider::before,.demo-divider::after{
+  content:"";
+  height:1px;
+  background:var(--line);
+  flex:1;
+}
+.demo-open-btn{
+  width:100%;
+  justify-content:center;
+}
+.demo-mode-badge{
+  display:inline-flex;
+  align-items:center;
+  margin-top:5px;
+  width:max-content;
+  border:1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  color:var(--gold-2);
+  background:color-mix(in srgb, var(--gold) 10%, transparent);
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+}
+.demo-mode-badge.dev-hidden{display:none!important}
+</style>
+
+
+<style>
+.demo-example-card{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin:0 0 12px;
+  padding:10px 12px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  background:var(--surface);
+}
+.demo-example-card strong{
+  font-size:11px;
+  font-weight:800;
+}
+.demo-example-card span{
+  font-size:11px;
+  line-height:1.35;
+  color:var(--muted);
+}
+.demo-example-card.dev-hidden{display:none!important}
+</style>
+
 </head>
 <body data-theme="light">
 
@@ -877,6 +940,8 @@ button,
     <div class="dev-lock-message" id="devPasscodeMessage"></div>
 
     <button class="primary-btn dev-lock-submit" id="devUnlockBtn" type="button">Unlock Dashboard</button>
+    <div class="demo-divider"><span>or</span></div>
+    <button class="secondary-btn demo-open-btn" id="demoModeBtn" type="button">Explore Demo</button>
 
     <div class="dev-lock-note">
       Temporary development access only.<br>
@@ -894,6 +959,7 @@ button,
           <div class="eyebrow">doitsaving.bn</div>
           <div class="brand-title">Hybrid Finance</div>
           <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
+          <div class="demo-mode-badge dev-hidden" id="demoModeBadge">Demo Mode</div>
         </div>
       </div>
       <div class="top-actions">
@@ -910,6 +976,12 @@ button,
 
     <main>
       <section class="page active" id="home">
+
+<div class="demo-example-card dev-hidden" id="demoExampleCard">
+  <strong>Example data</strong>
+  <span>This demo uses sample income, spending, savings, investments and debt so you can see how the dashboard works.</span>
+</div>
+
         <div class="hero">
           <div class="hero-top">
             <div>
@@ -1328,6 +1400,13 @@ const DEV_UNLOCK_KEY = 'doitsavingDevUnlocked';
 
 function showDevLock(){
   sessionStorage.removeItem(DEV_UNLOCK_KEY);
+  if(isDemoMode){
+    const stored = JSON.parse(localStorage.getItem(storeKey)||'null');
+    state = stored || personalState;
+    personalState = state;
+    isDemoMode = false;
+    updateDemoUI();
+  }
   $('dashboardApp').classList.add('dev-hidden');
   $('devLockScreen').classList.remove('dev-hidden');
   $('devPasscodeInput').value='';
@@ -1336,6 +1415,8 @@ function showDevLock(){
 }
 
 function showDashboardAfterUnlock(){
+  isDemoMode=false;
+  updateDemoUI();
   sessionStorage.setItem(DEV_UNLOCK_KEY,'1');
   $('devLockScreen').classList.add('dev-hidden');
   $('dashboardApp').classList.remove('dev-hidden');
@@ -1373,7 +1454,100 @@ if(!state.transactionPeriod) state.transactionPeriod = 'all';
 if(!state.transactionDateFrom) state.transactionDateFrom = '';
 if(!state.transactionDateTo) state.transactionDateTo = '';
 if(!Array.isArray(state.netWorthHistory)) state.netWorthHistory = [];
-function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
+let isDemoMode = false;
+let personalState = state;
+
+function saveState(){
+  if(!isDemoMode){
+    personalState = state;
+    localStorage.setItem(storeKey, JSON.stringify(state));
+  }
+}
+
+function demoDate(day){
+  const now=new Date();
+  const y=now.getFullYear();
+  const m=String(now.getMonth()+1).padStart(2,'0');
+  const safeDay=Math.max(1,Math.min(day,28));
+  return `${y}-${m}-${String(safeDay).padStart(2,'0')}`;
+}
+
+function monthKeyOffset(offset){
+  const d=new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth()+offset);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function createDemoState(){
+  return {
+    incomes:[
+      {name:'Salary',category:'Main Income',amount:5200,date:demoDate(21)},
+      {name:'Freelance Project',category:'Side Income',amount:450,date:demoDate(12)}
+    ],
+    expenses:[
+      {name:'Household & Groceries',category:'Needs',amount:520,date:demoDate(22)},
+      {name:'Utilities & Internet',category:'Bills',amount:210,date:demoDate(18)},
+      {name:'Transport & Fuel',category:'Transport',amount:240,date:demoDate(16)},
+      {name:'Dining & Coffee',category:'Lifestyle',amount:180,date:demoDate(14)},
+      {name:'Personal Spending',category:'Wants',amount:150,date:demoDate(10)},
+      {name:'Subscriptions',category:'Bills',amount:60,date:demoDate(5)}
+    ],
+    savings:[
+      {type:'cash',name:'Emergency Fund',category:'Cash Saving',amount:700,date:demoDate(23)},
+      {type:'gold',name:'Gold Saving',category:'Gold Saving',amount:350,date:demoDate(23)},
+      {type:'cash',name:'Travel Fund',category:'Cash Saving',amount:250,date:demoDate(9)}
+    ],
+    goals:[
+      {name:'Emergency Fund',target:12000,saved:9000,date:demoDate(28)},
+      {name:'Travel Fund',target:5000,saved:2200,date:demoDate(28)}
+    ],
+    investments:[
+      {name:'Global Sukuk Fund',type:'Sukuk/Bond',cost:5000,currentValue:5240,date:demoDate(3)},
+      {name:'S&P 500 ETF',type:'ETF/Stock',cost:4000,currentValue:4380,date:demoDate(3)}
+    ],
+    debts:[
+      {name:'Car Loan',initial:30000,balance:18450,minimum:585,rate:4.25}
+    ],
+    budgetRule:'50,30,20',
+    customNeeds:50,
+    customWants:30,
+    customSavings:20,
+    manualAssets:{investments:0,retirement:18000,property:0,other:3000},
+    leftoverAlloc:{carry:300,cash:250,gold:100,debt:200,goal:150},
+    strategyView:'snowball',
+    transactionView:'income',
+    transactionPeriod:'month',
+    transactionDateFrom:'',
+    transactionDateTo:'',
+    netWorthHistory:[
+      {month:monthKeyOffset(-5),value:18450},
+      {month:monthKeyOffset(-4),value:19680},
+      {month:monthKeyOffset(-3),value:21120},
+      {month:monthKeyOffset(-2),value:22950},
+      {month:monthKeyOffset(-1),value:24640},
+      {month:monthKeyOffset(0),value:26120}
+    ]
+  };
+}
+
+function updateDemoUI(){
+  const badge=$('demoModeBadge');
+  if(badge) badge.classList.toggle('dev-hidden', !isDemoMode);
+  const exampleCard=$('demoExampleCard');
+  if(exampleCard) exampleCard.classList.toggle('dev-hidden', !isDemoMode);
+  if($('lockDashboardBtn')) $('lockDashboardBtn').textContent=isDemoMode ? 'Exit Demo' : 'Lock';
+}
+
+function startDemoMode(){
+  isDemoMode=true;
+  state=createDemoState();
+  $('devLockScreen').classList.add('dev-hidden');
+  $('dashboardApp').classList.remove('dev-hidden');
+  updateDemoUI();
+  openPage('home');
+  render();
+}
 function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
 function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
 applyTheme(localStorage.getItem(themeKey)||'light');
@@ -2068,10 +2242,12 @@ if(viewAllTransactionsBtn){
 
 
 $('devUnlockBtn').addEventListener('click',tryDevUnlock);
+$('demoModeBtn').addEventListener('click',startDemoMode);
 $('devPasscodeInput').addEventListener('keydown',e=>{
   if(e.key==='Enter') tryDevUnlock();
 });
 $('lockDashboardBtn').addEventListener('click',showDevLock);
+updateDemoUI();
 
 if(sessionStorage.getItem(DEV_UNLOCK_KEY)==='1'){
   $('devLockScreen').classList.add('dev-hidden');
