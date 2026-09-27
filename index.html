@@ -225,18 +225,75 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="brand-note">Cash + Gold + Debt Progress</div>
   </header>
 
+  
   <section id="home" class="page active">
-    <div class="hero-grid">
-      <div class="hero">
-        <div class="hero-kicker">Monthly money flow</div>
-        <h1 id="netBalance">B$0.00</h1>
-        <p>What remains after paying yourself first, clearing commitments and debt payments, then covering your spending.</p>
+
+    <div class="networth-card" style="margin-top:4px">
+      <div class="card-label">Net Worth</div>
+      <div class="card-value" id="netWorthValue">B$0.00</div>
+      <div class="card-foot">Total assets minus debt remaining</div>
+
+      <div class="grid summary-grid" style="grid-template-columns:repeat(2,1fr);margin-top:16px">
+        <div class="card" style="box-shadow:none">
+          <div class="card-label">Total Assets</div>
+          <div class="card-value" id="totalAssetsValue">B$0.00</div>
+          <div class="card-foot">Cash + gold + other assets</div>
+        </div>
+        <div class="card" style="box-shadow:none">
+          <div class="card-label">Total Liabilities</div>
+          <div class="card-value" id="debtTotalHome">B$0.00</div>
+          <div class="card-foot" id="debtCountHome">0 active debts</div>
+        </div>
+      </div>
+
+      <button class="secondary" id="toggleAssets" type="button" style="margin-top:14px">Edit Assets</button>
+
+      <div id="assetManager" style="display:none;margin-top:14px">
+        <div class="form-grid">
+          <div class="field">
+            <label>Asset name</label>
+            <input id="assetName" placeholder="Investment / Retirement / Property">
+          </div>
+          <div class="field">
+            <label>Current value (B$)</label>
+            <input id="assetValue" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+        <button class="primary" id="addAsset">Add asset</button>
+        <div id="assetList" class="asset-list"></div>
+        <div class="note"><b>Avoid double counting:</b> saving goals are not added separately if their money is already included in cash or gold savings.</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div><h2>Hybrid Savings</h2><p>Cash + gold, shown together.</p></div>
+    </div>
+    <div class="grid summary-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card sage">
+        <div class="card-label">Cash Saved</div>
+        <div class="card-value" id="cashTotal">B$0.00</div>
+        <div class="card-foot">Actual cash saving entries</div>
+      </div>
+      <div class="card gold">
+        <div class="card-label">Gold Saved</div>
+        <div class="card-value" id="goldTotalHome">B$0.00</div>
+        <div class="card-foot">Actual gold saving value</div>
       </div>
       <div class="hybrid-card">
-        <div class="eyebrow">Hybrid savings total</div>
+        <div class="eyebrow">Hybrid Total</div>
         <div class="hybrid-value" id="hybridTotal">B$0.00</div>
-        <div class="hybrid-sub">Cash savings + gold saving value</div>
+        <div class="hybrid-sub">Cash + gold savings</div>
       </div>
+    </div>
+
+    <div class="section-head">
+      <div><h2>Monthly Money Flow</h2><p>Income minus savings, commitments, debt payments and spending.</p></div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-kicker">Money Left This Month</div>
+      <h1 id="netBalance">B$0.00</h1>
+      <p>What remains after paying yourself first, clearing commitments and debt payments, then covering your spending.</p>
     </div>
 
     <div class="grid summary-grid">
@@ -245,70 +302,33 @@ input:focus,select:focus{border-color:var(--gold)}
         <div class="card-value" id="moneyIn">B$0.00</div>
         <div class="card-foot" id="moneyInCount">0 entries</div>
       </div>
+      <div class="card">
+        <div class="card-label">Saved</div>
+        <div class="card-value" id="homeSavedFlow">B$0.00</div>
+        <div class="card-foot">Cash + gold this month</div>
+      </div>
       <div class="card clay">
-        <div class="card-label">Money Out</div>
-        <div class="card-value" id="moneyOut">B$0.00</div>
-        <div class="card-foot" id="moneyOutCount">0 entries</div>
+        <div class="card-label">Commitments + Spending</div>
+        <div class="card-value" id="homeOutflowFlow">B$0.00</div>
+        <div class="card-foot" id="moneyOutCount">0 outflow entries</div>
       </div>
       <div class="card gold">
-        <div class="card-label">Cash Saved</div>
-        <div class="card-value" id="cashTotal">B$0.00</div>
-        <div class="card-foot">Actual cash saving entries</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Debt Remaining</div>
-        <div class="card-value" id="debtTotalHome">B$0.00</div>
-        <div class="card-foot" id="debtCountHome">0 active debts</div>
-      </div>
-    </div>
-
-
-    <div class="networth-grid">
-      <div class="networth-card">
-        <div class="card-label">Net Worth</div>
-        <div class="card-value" id="netWorthValue">B$0.00</div>
-        <div class="card-foot">Total assets minus debt remaining</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Total Assets</div>
-        <div class="card-value" id="totalAssetsValue">B$0.00</div>
-        <div class="card-foot">Cash + gold + other assets</div>
+        <div class="card-label">Debt Payments</div>
+        <div class="card-value" id="homeDebtPayments">B$0.00</div>
+        <div class="card-foot">Monthly minimum payments</div>
       </div>
     </div>
 
     <div class="section-head">
-      <div><h2>Other assets</h2><p>Add assets that are not already included in cash or gold savings.</p></div>
+      <div><h2>Recent Activity</h2><p>Latest income, outflow and saving records.</p></div>
     </div>
-    <div class="form-card">
-      <div class="form-grid">
-        <div class="field">
-          <label>Asset name</label>
-          <input id="assetName" placeholder="Investment / Retirement / Property">
-        </div>
-        <div class="field">
-          <label>Current value (B$)</label>
-          <input id="assetValue" type="number" min="0" step="0.01" placeholder="0.00">
-        </div>
-      </div>
-      <button class="primary" id="addAsset">Add asset</button>
-      <div id="assetList" class="asset-list"></div>
-      <div class="note"><b>Avoid double counting:</b> saving goals are not added separately here if the money is already included in your cash or gold savings.</div>
-    </div>
+    <div id="recentList" class="activity-list"></div>
 
     <div class="section-head">
-      <div><h2>Your system</h2><p>Simple, practical and built around your hybrid approach.</p></div>
+      <div><h2>Before Next Payday</h2><p>Move any leftover into the saving bucket you choose.</p></div>
     </div>
-    <div class="card flow-card">
-      <div class="flow-step"><b>1. Pay Yourself First</b><span class="card-foot">Cash + gold savings</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step"><b>2. Clear Commitments</b><span class="card-foot">Bills + debt payments</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step"><b>3. Spend the Rest</b><span class="card-foot">Use what remains for expenses</span></div>
-    </div>
-
-
-    <div class="card" style="margin-top:16px">
-      <div class="card-label">Before next payday</div>
+    <div class="card">
+      <div class="card-label">Available to move</div>
       <div class="card-value" id="sweepAvailable">B$0.00</div>
       <div class="card-foot">Choose where to move the leftover before the next payday.</div>
 
@@ -323,11 +343,8 @@ input:focus,select:focus{border-color:var(--gold)}
       <button class="primary" id="sweepRemaining">Move remaining</button>
     </div>
 
-    <div class="section-head">
-      <div><h2>Recent records</h2><p>Latest activity across income, outflow and savings.</p></div>
-    </div>
-    <div id="recentList" class="activity-list"></div>
   </section>
+
 
   <section id="income" class="page">
     <h2 class="page-title">Income</h2>
@@ -637,10 +654,13 @@ function render(){
   const remaining=income-hybrid-commitments-spending-mins;
   $('netBalance').textContent=money(remaining);
   $('sweepAvailable').textContent=money(Math.max(0,remaining));
+  $('homeSavedFlow').textContent=money(hybrid);
+  $('homeOutflowFlow').textContent=money(commitments+spending);
+  $('homeDebtPayments').textContent=money(mins);
   $('hybridTotal').textContent=money(hybrid);
   $('moneyIn').textContent=money(income);
-  $('moneyOut').textContent=money(commitments+spending+mins);
-  $('cashTotal').textContent=money(cash);
+    $('cashTotal').textContent=money(cash);
+  $('goldTotalHome').textContent=money(gold);
   $('debtTotalHome').textContent=money(debt);
 
   const otherAssets=sum(state.assets,'value');
@@ -658,7 +678,7 @@ function render(){
     : '<div class="empty">No other assets added yet.</div>';
 
   $('moneyInCount').textContent=`${state.incomes.length} entries`;
-  $('moneyOutCount').textContent=`${state.expenses.length} outflow entries + ${state.debts.length} debt payments`;
+  $('moneyOutCount').textContent=`${state.expenses.length} outflow entries`;
   $('debtCountHome').textContent=`${state.debts.length} active debts`;
 
   $('cashSavedTotal').textContent=money(cash);
@@ -966,6 +986,14 @@ window.removeAsset=function(i){
   persist();
   render();
 }
+
+
+$('toggleAssets').addEventListener('click',()=>{
+  const manager=$('assetManager');
+  const open=manager.style.display!=='none';
+  manager.style.display=open?'none':'block';
+  $('toggleAssets').textContent=open?'Edit Assets':'Hide Assets';
+});
 
 render();
 </script>
