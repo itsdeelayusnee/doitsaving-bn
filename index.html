@@ -182,7 +182,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="hero">
         <div class="hero-kicker">Monthly money flow</div>
         <h1 id="netBalance">B$0.00</h1>
-        <p>What remains after your recorded income and expenses. Savings and debt are shown separately so you can see the full picture clearly.</p>
+        <p>What remains after your recorded income, expenses, actual savings and monthly debt payments.</p>
       </div>
       <div class="hybrid-card">
         <div class="eyebrow">Hybrid savings total</div>
@@ -453,7 +453,7 @@ function render(){
   const debt=sum(state.debts,'balance');
   const mins=sum(state.debts,'minimum');
 
-  $('netBalance').textContent=money(income-expenses);
+  $('netBalance').textContent=money(income-expenses-hybrid-mins);
   $('hybridTotal').textContent=money(hybrid);
   $('moneyIn').textContent=money(income);
   $('moneyOut').textContent=money(expenses);
