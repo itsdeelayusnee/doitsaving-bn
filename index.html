@@ -459,6 +459,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
               <h2>Where Your Income Went</h2>
               <p>This month’s income allocation at a glance.</p>
             </div>
+            <button class="link-inline" data-nav="transactions">View Transactions</button>
           </div>
           <div class="chart-panel">
             <div class="chart-wrap">
@@ -515,6 +516,7 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         <div class="section">
           <div class="section-head">
             <div><h2>Hybrid Savings</h2><p>Your cash + gold saving system.</p></div>
+            <button class="link-inline" data-nav="savings">View Savings</button>
           </div>
           <div class="home-compact-summary">
             <div class="home-compact-top">
@@ -539,18 +541,29 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
 
         <div class="section">
           <div class="section-head">
-            <div><h2>Debt-Free Journey</h2><p>Track debt reduction and repayment direction.</p></div>
-            <button class="link-inline" data-nav="debt">View Debt</button>
+            <div><h2>Debt-Free Journey</h2><p>A quick snapshot of your debt payoff progress.</p></div>
+            <button class="link-inline" data-nav="debt">View Debt Details</button>
           </div>
-          <div class="home-mini-debt">
-            <div class="panel panel-tight"><div class="label">Debt Remaining</div><div class="metric-mid goldish" id="homeDebtRemaining">B$0.00</div><div class="subtext" id="homeDebtCount">0 active debts</div></div>
-            <div class="panel panel-tight"><div class="label">Monthly Debt Repayment</div><div class="metric-mid goldish" id="homeDebtMonthly">B$0.00</div><div class="subtext">Current minimum commitments.</div></div>
-            <div class="panel panel-tight"><div class="label">Debt Progress</div><div class="metric-mid goldish" id="homeDebtProgress">0%</div><div class="subtext">Paid down against recorded starting balances.</div></div>
+          <div class="home-compact-summary">
+            <div class="home-compact-top">
+              <div>
+                <div class="label">Debt Paid</div>
+                <div class="home-compact-value" id="homeDebtPaid">B$0.00</div>
+                <div class="subtext" id="homeDebtCount">0 active debts</div>
+              </div>
+              <div style="text-align:right">
+                <div class="label">Debt Progress</div>
+                <div class="metric-mid goldish" id="homeDebtProgress">0%</div>
+              </div>
+            </div>
+            <div class="progress" style="margin-top:16px">
+              <span id="homeDebtProgressBar" style="width:0%"></span>
+            </div>
           </div>
         </div>
 
         <div class="section">
-          <div class="section-head"><div><h2>Latest Money Moves</h2><p>Your latest recorded financial activity.</p></div></div>
+          <div class="section-head"><div><h2>Latest Money Moves</h2><p>A quick look at your most recent transactions.</p></div></div>
           <div class="list" id="homeMoves"></div>
         
           <div class="latest-moves-footer">
@@ -988,7 +1001,7 @@ function render(){
   const alloc=state.leftoverAlloc; $('allocCarry').value=alloc.carry||0; $('allocCash').value=alloc.cash||0; $('allocGold').value=alloc.gold||0; $('allocDebt').value=alloc.debt||0; $('allocGoal').value=alloc.goal||0;
   const allocated=(+alloc.carry||0)+(+alloc.cash||0)+(+alloc.gold||0)+(+alloc.debt||0)+(+alloc.goal||0); $('allocTotal').textContent=money(allocated); $('allocRemaining').textContent=money(monthLeft-allocated);
   $('homeHybridTotal').textContent=money(hybridTotal); $('homeCash').textContent=money(cashTotal); $('homeGold').textContent=money(goldTotal);
-  $('homeDebtRemaining').textContent=money(debtRemaining); $('homeDebtMonthly').textContent=money(debtMonthly); $('homeDebtCount').textContent=`${debts.length} active ${debts.length===1?'debt':'debts'}`; const progress=debtProgressPercent(); $('homeDebtProgress').textContent=`${progress.toFixed(0)}%`;
+  const debtPaid=debts.reduce((total,d)=>{ const start=+(d.startingBalance ?? d.start ?? d.originalBalance ?? d.balance ?? 0); const current=+(d.balance ?? d.currentBalance ?? 0); return total + Math.max(0,start-current); },0); $('homeDebtPaid').textContent=money(debtPaid); $('homeDebtCount').textContent=`${debts.length} active ${debts.length===1?'debt':'debts'}`; const progress=debtProgressPercent(); $('homeDebtProgress').textContent=`${progress.toFixed(0)}%`; $('homeDebtProgressBar').style.width=`${Math.max(0,Math.min(100,progress))}%`;
   const manualAssets=(+state.manualAssets.investments||0)+(+state.manualAssets.retirement||0)+(+state.manualAssets.property||0)+(+state.manualAssets.other||0), totalAssets=hybridTotal+manualAssets, netWorth=totalAssets-debtRemaining;
   $('homeNetWorth').textContent=money(netWorth); $('homeAssets').textContent=money(totalAssets); $('homeLiabilities').textContent=money(debtRemaining);
   updateMonthlyNetWorthSnapshot(netWorth);
