@@ -431,10 +431,236 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
   .hero{padding:16px}.hero-value{font-size:38px}.hero-sub{font-size:13px}.split-2,.hybrid-summary,.split-3,.allocation-grid,.rule-grid{grid-template-columns:1fr}
   .list-item{grid-template-columns:38px 1fr auto;padding:12px;gap:10px}.icon{width:38px;height:38px;border-radius:12px;font-size:16px}.metric-large{font-size:30px}
 }
+
+.auth-shell{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:24px 16px;
+  background:
+    radial-gradient(circle at top left, rgba(181,139,92,.14), transparent 34%),
+    var(--bg);
+}
+.auth-card{
+  width:min(100%,460px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+.auth-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:22px;
+}
+.auth-brand-copy h1{
+  margin:0;
+  font-size:21px;
+  line-height:1.1;
+}
+.auth-brand-copy p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+.auth-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  border:1px solid var(--line);
+  background:var(--surface-2);
+  padding:4px;
+  border-radius:16px;
+  margin-bottom:18px;
+}
+.auth-tab{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-weight:900;
+  padding:10px 12px;
+  border-radius:12px;
+}
+.auth-tab.active{
+  background:var(--panel);
+  color:var(--text);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+.auth-panel{display:none}
+.auth-panel.active{display:block}
+.auth-title{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+.auth-subtitle{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  margin-bottom:16px;
+}
+.auth-message{
+  display:none;
+  padding:11px 12px;
+  margin-bottom:14px;
+  border-radius:14px;
+  font-size:13px;
+  line-height:1.4;
+  border:1px solid var(--line);
+  background:var(--surface-2);
+}
+.auth-message.show{display:block}
+.auth-message.error{color:var(--red)}
+.auth-message.success{color:var(--green)}
+.auth-submit{
+  width:100%;
+  margin-top:4px;
+}
+.auth-link{
+  width:100%;
+  margin-top:12px;
+  border:0;
+  background:transparent;
+  color:var(--gold-2);
+  font-weight:900;
+  text-align:center;
+}
+.auth-privacy{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+  text-align:center;
+}
+.auth-pending{display:none !important}
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.account-chip{
+  display:none;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:999px;
+  padding:6px 8px 6px 10px;
+  max-width:260px;
+}
+.account-chip.show{display:flex}
+.account-email{
+  min-width:0;
+  max-width:150px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.signout-btn{
+  border:0;
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:999px;
+  padding:7px 9px;
+  font-size:11px;
+  font-weight:900;
+}
+@media(max-width:640px){
+  .auth-card{padding:20px;border-radius:24px}
+  .topbar{align-items:flex-start}
+  .top-actions{flex-direction:column;align-items:flex-end}
+  .account-chip{max-width:170px}
+  .account-email{max-width:90px}
+}
+
 </style>
 </head>
 <body data-theme="light">
-<div class="app">
+
+<div class="auth-shell" id="authShell">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="logo">DS</div>
+      <div class="auth-brand-copy">
+        <div class="eyebrow">doitsaving.bn</div>
+        <h1>Hybrid Finance Dashboard</h1>
+        <p>Cash • Gold • Investments • Debt • Net Worth</p>
+      </div>
+    </div>
+
+    <div class="auth-tabs" id="authTabs">
+      <button class="auth-tab active" type="button" data-auth-view="signin">Sign In</button>
+      <button class="auth-tab" type="button" data-auth-view="signup">Create Account</button>
+    </div>
+
+    <div class="auth-message" id="authMessage"></div>
+
+    <div class="auth-panel active" id="authSignIn">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-subtitle">Sign in to continue to your doitsaving.bn dashboard.</div>
+      <div class="field">
+        <label>Email</label>
+        <input id="signInEmail" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="signInPassword" type="password" autocomplete="current-password" placeholder="Your password">
+      </div>
+      <button class="primary-btn auth-submit" id="signInBtn" type="button">Sign In</button>
+      <button class="auth-link" id="forgotPasswordBtn" type="button">Forgot password?</button>
+    </div>
+
+    <div class="auth-panel" id="authSignUp">
+      <div class="auth-title">Create your account</div>
+      <div class="auth-subtitle">Your account gives you access to your personal Hybrid Finance Dashboard.</div>
+      <div class="field">
+        <label>Name</label>
+        <input id="signUpName" type="text" autocomplete="name" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="signUpEmail" type="email" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="signUpPassword" type="password" autocomplete="new-password" placeholder="Minimum 6 characters">
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input id="signUpConfirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+      </div>
+      <button class="primary-btn auth-submit" id="signUpBtn" type="button">Create My Account</button>
+    </div>
+
+    <div class="auth-panel" id="authReset">
+      <div class="auth-title">Set a new password</div>
+      <div class="auth-subtitle">Enter a new password for your doitsaving.bn account.</div>
+      <div class="field">
+        <label>New Password</label>
+        <input id="resetPassword" type="password" autocomplete="new-password" placeholder="Minimum 6 characters">
+      </div>
+      <div class="field">
+        <label>Confirm New Password</label>
+        <input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+      </div>
+      <button class="primary-btn auth-submit" id="updatePasswordBtn" type="button">Update Password</button>
+    </div>
+
+    <div class="auth-privacy">
+      doitsaving.bn · Hybrid Finance Dashboard<br>
+      Your account sign-in is powered by Supabase Authentication.
+    </div>
+  </div>
+</div>
+
+<div class="app auth-pending" id="dashboardApp">
   <div class="wrap">
     <header class="topbar">
       <div class="brand-wrap">
@@ -445,7 +671,13 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
           <div class="brand-sub">Cash • Gold • Investments • Debt • Net Worth</div>
         </div>
       </div>
-      <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+      <div class="top-actions">
+        <div class="account-chip" id="accountChip">
+          <span class="account-email" id="accountEmail"></span>
+          <button class="signout-btn" id="signOutBtn" type="button">Sign Out</button>
+        </div>
+        <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+      </div>
     </header>
 
     <div class="brand-strip">
@@ -866,31 +1098,249 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
   <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const $ = id => document.getElementById(id);
 const money = n => 'B$' + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
 const today = () => new Date().toISOString().slice(0,10);
 const esc = s => String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const storeKey = 'doitsavingRedesignV1';
+const legacyStoreKey = 'doitsavingRedesignV1';
+let storeKey = legacyStoreKey;
 const themeKey = 'doitsavingRedesignTheme';
-let state = JSON.parse(localStorage.getItem(storeKey)||'null') || {
-  incomes:[], expenses:[], savings:[], goals:[], investments:[], debts:[],
-  budgetRule:'50,30,20', customNeeds:50, customWants:30, customSavings:20,
-  manualAssets:{investments:0, retirement:0, property:0, other:0},
-  leftoverAlloc:{carry:0, cash:0, gold:0, debt:0, goal:0},
-  strategyView:'snowball', transactionView:'income'
-};
-if(!state.manualAssets) state.manualAssets = {investments:0, retirement:0, property:0, other:0};
-if(!Array.isArray(state.investments)) state.investments = [];
-if(!state.leftoverAlloc) state.leftoverAlloc = {carry:0, cash:0, gold:0, debt:0, goal:0};
-if(!state.strategyView) state.strategyView = 'snowball';
-if(!state.transactionView) state.transactionView = 'income';
-if(!state.transactionPeriod) state.transactionPeriod = 'all';
-if(!state.transactionDateFrom) state.transactionDateFrom = '';
-if(!state.transactionDateTo) state.transactionDateTo = '';
-if(!Array.isArray(state.netWorthHistory)) state.netWorthHistory = [];
-function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
+
+const SUPABASE_URL = "https://dazfhjofmbaudhxjmkvl.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Ktd1b73kdAMoTs6RcgJNcg_E4Nq3iPf";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+let currentUser = null;
+
+function defaultState(){
+  return {
+    incomes:[], expenses:[], savings:[], goals:[], investments:[], debts:[],
+    budgetRule:'50,30,20', customNeeds:50, customWants:30, customSavings:20,
+    manualAssets:{investments:0, retirement:0, property:0, other:0},
+    leftoverAlloc:{carry:0, cash:0, gold:0, debt:0, goal:0},
+    strategyView:'snowball', transactionView:'income',
+    transactionPeriod:'all', transactionDateFrom:'', transactionDateTo:'',
+    netWorthHistory:[]
+  };
+}
+
+let state = defaultState();
+
+function normalizeState(){
+  if(!state || typeof state!=='object') state=defaultState();
+  if(!Array.isArray(state.incomes)) state.incomes=[];
+  if(!Array.isArray(state.expenses)) state.expenses=[];
+  if(!Array.isArray(state.savings)) state.savings=[];
+  if(!Array.isArray(state.goals)) state.goals=[];
+  if(!Array.isArray(state.investments)) state.investments=[];
+  if(!Array.isArray(state.debts)) state.debts=[];
+  if(!state.manualAssets) state.manualAssets={investments:0, retirement:0, property:0, other:0};
+  if(!state.leftoverAlloc) state.leftoverAlloc={carry:0, cash:0, gold:0, debt:0, goal:0};
+  if(!state.strategyView) state.strategyView='snowball';
+  if(!state.transactionView) state.transactionView='income';
+  if(!state.transactionPeriod) state.transactionPeriod='all';
+  if(!state.transactionDateFrom) state.transactionDateFrom='';
+  if(!state.transactionDateTo) state.transactionDateTo='';
+  if(!Array.isArray(state.netWorthHistory)) state.netWorthHistory=[];
+}
+
+function loadStateForUser(userId){
+  storeKey = `${legacyStoreKey}:${userId}`;
+  let raw = localStorage.getItem(storeKey);
+
+  // One-time convenience migration: if this account has no saved dashboard yet,
+  // copy the existing pre-login dashboard data on this browser.
+  if(!raw){
+    const legacy = localStorage.getItem(legacyStoreKey);
+    if(legacy) raw = legacy;
+  }
+
+  try {
+    state = raw ? JSON.parse(raw) : defaultState();
+  } catch(e) {
+    state = defaultState();
+  }
+  normalizeState();
+  saveState();
+}
+
+function saveState(){
+  if(!currentUser) return;
+  localStorage.setItem(storeKey, JSON.stringify(state));
+}
 function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
+
+function setAuthMessage(message='', type=''){
+  const box=$('authMessage');
+  box.textContent=message;
+  box.className='auth-message'+(message?' show':'')+(type?` ${type}`:'');
+}
+
+function setAuthView(view){
+  document.querySelectorAll('[data-auth-view]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.authView===view);
+  });
+  $('authTabs').style.display = view==='reset' ? 'none' : 'grid';
+  $('authSignIn').classList.toggle('active', view==='signin');
+  $('authSignUp').classList.toggle('active', view==='signup');
+  $('authReset').classList.toggle('active', view==='reset');
+  if(view!=='reset') setAuthMessage('');
+}
+
+function showSignedOut(){
+  currentUser=null;
+  $('dashboardApp').classList.add('auth-pending');
+  $('authShell').style.display='grid';
+  $('accountChip').classList.remove('show');
+  $('accountEmail').textContent='';
+  setAuthView('signin');
+}
+
+function showDashboard(user){
+  currentUser=user;
+  loadStateForUser(user.id);
+  $('accountEmail').textContent=user.email||'Account';
+  $('accountChip').classList.add('show');
+  $('authShell').style.display='none';
+  $('dashboardApp').classList.remove('auth-pending');
+  render();
+}
+
+async function handleSignIn(){
+  const email=$('signInEmail').value.trim();
+  const password=$('signInPassword').value;
+  if(!email || !password){
+    setAuthMessage('Enter your email and password.','error');
+    return;
+  }
+  setAuthMessage('Signing in...');
+  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error) setAuthMessage(error.message,'error');
+}
+
+async function handleSignUp(){
+  const name=$('signUpName').value.trim();
+  const email=$('signUpEmail').value.trim();
+  const password=$('signUpPassword').value;
+  const confirm=$('signUpConfirm').value;
+
+  if(!name || !email || !password){
+    setAuthMessage('Complete your name, email and password.','error');
+    return;
+  }
+  if(password.length<6){
+    setAuthMessage('Password must be at least 6 characters.','error');
+    return;
+  }
+  if(password!==confirm){
+    setAuthMessage('The passwords do not match.','error');
+    return;
+  }
+
+  setAuthMessage('Creating your account...');
+  const {data,error}=await supabaseClient.auth.signUp({
+    email,
+    password,
+    options:{
+      data:{full_name:name},
+      emailRedirectTo:window.location.origin
+    }
+  });
+
+  if(error){
+    setAuthMessage(error.message,'error');
+    return;
+  }
+
+  if(data.session){
+    setAuthMessage('Account created. Signing you in...','success');
+  }else{
+    setAuthView('signin');
+    $('signInEmail').value=email;
+    setAuthMessage('Account created. Check your email to confirm your account, then sign in.','success');
+  }
+}
+
+async function handleForgotPassword(){
+  const email=$('signInEmail').value.trim();
+  if(!email){
+    setAuthMessage('Enter your email first, then choose Forgot password.','error');
+    return;
+  }
+  setAuthMessage('Sending password reset email...');
+  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{
+    redirectTo:window.location.origin
+  });
+  if(error) setAuthMessage(error.message,'error');
+  else setAuthMessage('Password reset email sent. Check your inbox.','success');
+}
+
+async function handlePasswordUpdate(){
+  const password=$('resetPassword').value;
+  const confirm=$('resetPasswordConfirm').value;
+  if(password.length<6){
+    setAuthMessage('Password must be at least 6 characters.','error');
+    return;
+  }
+  if(password!==confirm){
+    setAuthMessage('The passwords do not match.','error');
+    return;
+  }
+  const {error}=await supabaseClient.auth.updateUser({password});
+  if(error){
+    setAuthMessage(error.message,'error');
+    return;
+  }
+  setAuthMessage('Password updated. Please sign in again.','success');
+  await supabaseClient.auth.signOut();
+}
+
+async function initAuth(){
+  document.querySelectorAll('[data-auth-view]').forEach(btn=>{
+    btn.addEventListener('click',()=>setAuthView(btn.dataset.authView));
+  });
+
+  $('signInBtn').addEventListener('click',handleSignIn);
+  $('signUpBtn').addEventListener('click',handleSignUp);
+  $('forgotPasswordBtn').addEventListener('click',handleForgotPassword);
+  $('updatePasswordBtn').addEventListener('click',handlePasswordUpdate);
+  $('signOutBtn').addEventListener('click',async()=>{
+    await supabaseClient.auth.signOut();
+  });
+
+  $('signInPassword').addEventListener('keydown',e=>{
+    if(e.key==='Enter') handleSignIn();
+  });
+  $('signUpConfirm').addEventListener('keydown',e=>{
+    if(e.key==='Enter') handleSignUp();
+  });
+
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      currentUser=session?.user||null;
+      $('dashboardApp').classList.add('auth-pending');
+      $('authShell').style.display='grid';
+      setAuthView('reset');
+      setAuthMessage('Choose a new password for your account.');
+      return;
+    }
+
+    if(session?.user) showDashboard(session.user);
+    else showSignedOut();
+  });
+
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error){
+    showSignedOut();
+    setAuthMessage(error.message,'error');
+    return;
+  }
+  if(data.session?.user) showDashboard(data.session.user);
+  else showSignedOut();
+}
+
 function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
 applyTheme(localStorage.getItem(themeKey)||'light');
 $('themeToggle').addEventListener('click',()=>{ const current=document.body.getAttribute('data-theme')||'light'; applyTheme(current==='light'?'dark':'light'); drawNetWorthChart(); });
@@ -1248,6 +1698,7 @@ function render(){
       </div>
     </div>`;
   }).join('') : '<div class="empty">Add debts to see your snowball payoff order.</div>';
+  if(currentUser) saveState();
 }
 function openIncomeModal(){ openSheet(sheetHead('Add Income')+`<div class="field"><label>Name</label><input id="mIncomeName" placeholder="Salary"></div><div class="field"><label>Amount (B$)</label><input id="mIncomeAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mIncomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mIncomeDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveIncome()">Add Income</button>`); }
 window.saveIncome=function(){ const amount=+$('mIncomeAmount').value||0; if(amount<=0) return; state.incomes.push({name:$('mIncomeName').value.trim()||'Income', amount, category:$('mIncomeCategory').value, date:$('mIncomeDate').value||today()}); closeSheet(); render(); };
@@ -1582,7 +2033,7 @@ if(viewAllTransactionsBtn){
   });
 }
 
-render();
+initAuth();
 </script>
 </body>
 </html>
