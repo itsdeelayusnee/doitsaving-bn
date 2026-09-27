@@ -142,6 +142,135 @@ body[data-theme='dark'] .calc-example{background:var(--surface-2)}
 }
 .calc-example-line:first-child{border-top:0}
 
+
+.transaction-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  margin:10px 0 12px;
+}
+.transaction-total-label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:800;
+}
+.transaction-total{
+  font-size:30px;
+  font-weight:900;
+  margin-top:3px;
+}
+.period-tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:4px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  border-radius:16px;
+  margin-bottom:12px;
+}
+body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
+.period-btn{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  border-radius:12px;
+  padding:9px 10px;
+  font-weight:900;
+}
+.period-btn.active{
+  background:var(--gold);
+  color:#171818;
+}
+.date-range{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+.date-range.open{display:grid}
+.chart-panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius-xl);
+  padding:16px;
+  margin-bottom:14px;
+}
+.chart-wrap{
+  display:grid;
+  grid-template-columns:190px 1fr;
+  gap:16px;
+  align-items:center;
+}
+.chart-box{
+  width:190px;
+  height:190px;
+  margin:auto;
+  position:relative;
+}
+.chart-box canvas{
+  width:190px;
+  height:190px;
+  display:block;
+}
+.chart-center{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  text-align:center;
+}
+.chart-center strong{
+  display:block;
+  font-size:18px;
+}
+.chart-center span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:2px;
+}
+.chart-legend{
+  display:grid;
+  gap:8px;
+}
+.legend-row{
+  display:grid;
+  grid-template-columns:12px 1fr auto;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+}
+.legend-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+.legend-name{
+  font-weight:800;
+}
+.legend-amount{
+  font-weight:900;
+}
+.transaction-section-label{
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin:16px 0 8px;
+}
+@media(max-width:640px){
+  .transaction-toolbar{align-items:center}
+  .transaction-total{font-size:26px}
+  .date-range{grid-template-columns:1fr}
+  .chart-wrap{grid-template-columns:1fr}
+  .chart-box{width:170px;height:170px}
+  .chart-box canvas{width:170px;height:170px}
+}
+
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--nav-bg);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
 .nav-inner{max-width:780px;margin:0 auto;padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
@@ -260,38 +389,60 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
       </section>
 
       
+      
+      
       <section class="page" id="transactions">
         <h1 class="page-title">Transactions</h1>
-        <p class="page-sub">Track money in and money out in one place.</p>
+        <p class="page-sub">Review and analyse your money in and money out.</p>
 
-        <div class="split-3">
-          <div class="panel panel-tight">
-            <div class="label">Money In</div>
-            <div class="metric-mid positive" id="transactionIncomeTotal">B$0.00</div>
-          </div>
-          <div class="panel panel-tight">
-            <div class="label">Money Out</div>
-            <div class="metric-mid negative" id="transactionExpenseTotal">B$0.00</div>
-          </div>
-          <div class="panel panel-tight">
-            <div class="label">Net Cash Flow</div>
-            <div class="metric-mid goldish" id="transactionNet">B$0.00</div>
-          </div>
-        </div>
-
-        <div class="section-head" style="margin-top:18px">
-          <div>
-            <h2>Activity</h2>
-            <p>Switch between income and expenses.</p>
-          </div>
-          <button class="primary-btn" id="newTransactionBtn">+ Add</button>
-        </div>
-
-        <div class="tab-switch" style="margin-bottom:14px">
+        <div class="tab-switch" style="margin-bottom:12px">
           <button class="tab-btn active" data-transaction-view="income">Income</button>
           <button class="tab-btn" data-transaction-view="expense">Expenses</button>
         </div>
 
+        <div class="transaction-toolbar">
+          <div>
+            <div class="transaction-total-label" id="transactionHeading">Income</div>
+            <div class="transaction-total positive" id="transactionFilteredTotal">B$0.00</div>
+            <div class="subtext" id="transactionCountLabel">0 entries</div>
+          </div>
+          <button class="primary-btn" id="newTransactionBtn">+ Add Income</button>
+        </div>
+
+        <div class="period-tabs">
+          <button class="period-btn active" data-period="all">All Time</button>
+          <button class="period-btn" data-period="month">This Month</button>
+          <button class="period-btn" data-period="custom">Pick Dates</button>
+        </div>
+
+        <div class="date-range" id="transactionDateRange">
+          <div class="field">
+            <label>From</label>
+            <input type="date" id="transactionDateFrom">
+          </div>
+          <div class="field">
+            <label>To</label>
+            <input type="date" id="transactionDateTo">
+          </div>
+        </div>
+
+        <div class="transaction-section-label">Category Breakdown</div>
+        <div class="chart-panel">
+          <div class="chart-wrap">
+            <div class="chart-box">
+              <canvas id="transactionPie" width="380" height="380"></canvas>
+              <div class="chart-center">
+                <div>
+                  <strong id="chartCenterTotal">B$0.00</strong>
+                  <span id="chartCenterLabel">Income</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-legend" id="transactionChartLegend"></div>
+          </div>
+        </div>
+
+        <div class="transaction-section-label">Transaction History</div>
         <div class="list" id="transactionList"></div>
       </section>
 
@@ -444,6 +595,9 @@ if(!state.manualAssets) state.manualAssets = {investments:0, retirement:0, prope
 if(!state.leftoverAlloc) state.leftoverAlloc = {carry:0, cash:0, gold:0, debt:0, goal:0};
 if(!state.strategyView) state.strategyView = 'snowball';
 if(!state.transactionView) state.transactionView = 'income';
+if(!state.transactionPeriod) state.transactionPeriod = 'all';
+if(!state.transactionDateFrom) state.transactionDateFrom = '';
+if(!state.transactionDateTo) state.transactionDateTo = '';
 function saveState(){ localStorage.setItem(storeKey, JSON.stringify(state)); }
 function sum(arr, key='amount'){ return arr.reduce((a,b)=>a+(+b[key]||0),0); }
 function applyTheme(theme){ document.body.setAttribute('data-theme', theme); localStorage.setItem(themeKey, theme); $('themeToggle').textContent = theme==='light' ? 'Dark Mode' : 'Light Mode';}
@@ -466,6 +620,71 @@ function debtStrategyList(type){ const arr=[...state.debts]; if(type==='snowball
 function activityIcon(kind){ return {income:'▲', expense:'▼', cash:'💵', gold:'◈'}[kind] || '•'; }
 function activityClass(kind){ return kind==='income' ? 'positive' : kind==='expense' ? 'negative' : 'goldish'; }
 function activityMarkup(item, kind, index, deleteFn){ const sign = kind==='expense' ? '-' : '+'; return `<div class="list-item"><div class="icon">${activityIcon(kind)}</div><div><div class="item-title">${esc(item.name || item.category || kind)}</div><div class="item-meta">${esc(item.category || kind)} · ${esc(item.date || '')}</div></div><div><div class="item-amount ${activityClass(kind)}">${sign}${money(item.amount)}</div>${deleteFn ? `<button class="text-btn text-red" style="margin-top:6px" onclick="${deleteFn}(${index})">Delete</button>` : ''}</div></div>`; }
+
+const chartPalette = ['#b58b5c','#6f8f72','#b96c6c','#6f82a8','#9a7aa0','#c6a14a','#6b9aa0','#8f7b68','#7f8b55','#a56f52'];
+
+function drawTransactionChart(entries, view){
+  const canvas=$('transactionPie');
+  if(!canvas) return;
+
+  const ctx=canvas.getContext('2d');
+  const ratio=window.devicePixelRatio || 1;
+  const cssSize=window.innerWidth <= 640 ? 170 : 190;
+  canvas.style.width=cssSize+'px';
+  canvas.style.height=cssSize+'px';
+  canvas.width=Math.round(cssSize*ratio*2);
+  canvas.height=Math.round(cssSize*ratio*2);
+  ctx.setTransform(ratio*2,0,0,ratio*2,0,0);
+
+  const size=cssSize;
+  const cx=size/2, cy=size/2;
+  const outer=size*0.44;
+  const inner=size*0.26;
+
+  const groups={};
+  entries.forEach(item=>{
+    const key=(item.category||'Uncategorised').trim() || 'Uncategorised';
+    groups[key]=(groups[key]||0)+(+item.amount||0);
+  });
+
+  const ordered=Object.entries(groups).sort((a,b)=>b[1]-a[1]);
+  const total=ordered.reduce((a,x)=>a+x[1],0);
+
+  ctx.clearRect(0,0,size,size);
+
+  if(total<=0){
+    ctx.beginPath();
+    ctx.arc(cx,cy,outer,0,Math.PI*2);
+    ctx.arc(cx,cy,inner,0,Math.PI*2,true);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--surface-2').trim() || '#eee';
+    ctx.fill('evenodd');
+    $('transactionChartLegend').innerHTML='<div class="empty">No category data for this period.</div>';
+  }else{
+    let angle=-Math.PI/2;
+    ordered.forEach(([name,value],i)=>{
+      const slice=(value/total)*Math.PI*2;
+      ctx.beginPath();
+      ctx.arc(cx,cy,outer,angle,angle+slice);
+      ctx.arc(cx,cy,inner,angle+slice,angle,true);
+      ctx.closePath();
+      ctx.fillStyle=chartPalette[i%chartPalette.length];
+      ctx.fill();
+      angle+=slice;
+    });
+
+    $('transactionChartLegend').innerHTML=ordered.map(([name,value],i)=>`
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${chartPalette[i%chartPalette.length]}"></span>
+        <span class="legend-name">${esc(name)}</span>
+        <span class="legend-amount">${money(value)}</span>
+      </div>
+    `).join('');
+  }
+
+  $('chartCenterTotal').textContent=money(total);
+  $('chartCenterLabel').textContent=view==='income' ? 'Income' : 'Expenses';
+}
+
 function render(){
   saveState();
   const incomes=state.incomes, expenses=state.expenses, savings=state.savings, debts=state.debts;
@@ -485,14 +704,52 @@ function render(){
   const combined=[...incomes.map((x,i)=>({...x,kind:'income',idx:i})),...expenses.map((x,i)=>({...x,kind:'expense',idx:i})),...savings.map((x,i)=>({...x,kind:x.type,idx:i}))].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
   $('homeMoves').innerHTML=combined.length ? combined.map(x=>activityMarkup(x,x.kind,x.idx,null)).join('') : '<div class="empty">Your latest money moves will appear here.</div>';
 
-  $('transactionIncomeTotal').textContent=money(incomeTotal);
-  $('transactionExpenseTotal').textContent=money(expenseTotal);
-  $('transactionNet').textContent=money(incomeTotal-expenseTotal);
-  document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.classList.toggle('active', btn.dataset.transactionView===state.transactionView));
-  const transactionItems = state.transactionView==='income'
-    ? [...incomes].reverse().map((x,rev)=>activityMarkup(x,'income',incomes.length-1-rev,'removeIncome')).join('')
-    : [...expenses].reverse().map((x,rev)=>activityMarkup(x,'expense',expenses.length-1-rev,'removeExpense')).join('');
-  $('transactionList').innerHTML = transactionItems || `<div class="empty">No ${state.transactionView==='income'?'income':'expenses'} recorded yet.</div>`;
+  document.querySelectorAll('[data-transaction-view]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.transactionView===state.transactionView);
+  });
+  document.querySelectorAll('[data-period]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.period===state.transactionPeriod);
+  });
+
+  $('transactionDateFrom').value=state.transactionDateFrom||'';
+  $('transactionDateTo').value=state.transactionDateTo||'';
+  $('transactionDateRange').classList.toggle('open', state.transactionPeriod==='custom');
+
+  const baseTransactions = state.transactionView==='income' ? incomes : expenses;
+  const filteredTransactions = baseTransactions.filter(item=>{
+    if(state.transactionPeriod==='all') return true;
+    if(state.transactionPeriod==='month') return currentMonthFilter(item);
+    if(state.transactionPeriod==='custom'){
+      if(state.transactionDateFrom && (item.date||'') < state.transactionDateFrom) return false;
+      if(state.transactionDateTo && (item.date||'') > state.transactionDateTo) return false;
+      return true;
+    }
+    return true;
+  });
+
+  const filteredTotal=sum(filteredTransactions);
+  const isIncomeView=state.transactionView==='income';
+
+  $('transactionHeading').textContent=isIncomeView ? 'Income' : 'Expenses';
+  $('transactionFilteredTotal').textContent=money(filteredTotal);
+  $('transactionFilteredTotal').className='transaction-total '+(isIncomeView?'positive':'negative');
+  $('transactionCountLabel').textContent=`${filteredTransactions.length} ${filteredTransactions.length===1?'entry':'entries'} in selected period`;
+  $('newTransactionBtn').textContent=isIncomeView ? '+ Add Income' : '+ Add Expense';
+
+  drawTransactionChart(filteredTransactions, state.transactionView);
+
+  const renderedTransactions=[...filteredTransactions].reverse().map(item=>{
+    const originalIndex=baseTransactions.indexOf(item);
+    return activityMarkup(
+      item,
+      isIncomeView?'income':'expense',
+      originalIndex,
+      isIncomeView?'removeIncome':'removeExpense'
+    );
+  }).join('');
+
+  $('transactionList').innerHTML=renderedTransactions || `<div class="empty">No ${isIncomeView?'income':'expenses'} recorded for this period.</div>`;
+
 
   const budget=currentBudgetRule(), suggested=incomeTotal*budget[2]/100, suggestedCash=suggested*.60, suggestedGold=suggested*.40;
   $('ruleName').textContent=budget[3];
@@ -536,13 +793,14 @@ window.saveAssets=function(){ state.manualAssets={investments:+$('aInvest').valu
 window.removeIncome=i=>{ state.incomes.splice(i,1); render(); }; window.removeExpense=i=>{ state.expenses.splice(i,1); render(); }; window.removeSaving=i=>{ state.savings.splice(i,1); render(); };
 document.querySelectorAll('[data-strategy]').forEach(btn=>btn.addEventListener('click',()=>{ state.strategyView=btn.dataset.strategy; render(); }));
 $('newTransactionBtn').addEventListener('click', ()=>{
+  const startingType=state.transactionView==='expense' ? 'expense' : 'income';
   openSheet(sheetHead('Add Transaction')+`
     <div class="transaction-type-toggle">
-      <button class="transaction-type-btn active" type="button" data-modal-type="income">Income</button>
-      <button class="transaction-type-btn" type="button" data-modal-type="expense">Expense</button>
+      <button class="transaction-type-btn ${startingType==='income'?'active':''}" type="button" data-modal-type="income">Income</button>
+      <button class="transaction-type-btn ${startingType==='expense'?'active':''}" type="button" data-modal-type="expense">Expense</button>
     </div>
 
-    <input id="mTransactionType" type="hidden" value="income">
+    <input id="mTransactionType" type="hidden" value="${startingType}">
 
     <div class="field">
       <label>Amount (B$)</label>
@@ -621,6 +879,28 @@ document.querySelectorAll('[data-transaction-view]').forEach(btn=>btn.addEventLi
   render();
 }));
 
+
+
+document.querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',()=>{
+  state.transactionPeriod=btn.dataset.period;
+  saveState();
+  render();
+}));
+
+$('transactionDateFrom').addEventListener('change',()=>{
+  state.transactionDateFrom=$('transactionDateFrom').value;
+  saveState();
+  render();
+});
+$('transactionDateTo').addEventListener('change',()=>{
+  state.transactionDateTo=$('transactionDateTo').value;
+  saveState();
+  render();
+});
+
+window.addEventListener('resize',()=>{
+  if($('transactions') && $('transactions').classList.contains('active')) render();
+});
 
 const calcHelpToggle=$('calcHelpToggle');
 if(calcHelpToggle){
