@@ -273,6 +273,61 @@ body[data-theme='dark'] .period-tabs{background:var(--surface-2)}
 
 
 
+
+.milestone-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.milestone-card{
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius:18px;
+  padding:14px;
+}
+.milestone-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:8px;
+}
+.milestone-pct{
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
+}
+.milestone-badge{
+  font-size:11px;
+  font-weight:900;
+  padding:5px 8px;
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+}
+.milestone-badge.done{
+  background:rgba(44,153,95,.14);
+  color:#2c995f;
+}
+.milestone-amount{
+  font-size:16px;
+  font-weight:900;
+}
+.milestone-note{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+  line-height:1.4;
+}
+.milestone-next{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:12px;
+}
+@media(max-width:640px){
+  .milestone-grid{grid-template-columns:1fr}
+}
+
 .text-action{
   border:0;
   background:transparent;
@@ -725,6 +780,18 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
           <div class="panel panel-tight"><div class="label">Monthly Repayment</div><div class="metric-mid goldish" id="debtMinimums">B$0.00</div></div>
           <div class="panel panel-tight"><div class="label">Overall Progress</div><div class="metric-mid goldish" id="debtProgress">0%</div></div>
         </div>
+
+        <div class="section" style="margin-top:18px">
+          <div class="section-head">
+            <div>
+              <h2>Debt-Free Milestones</h2>
+              <p>Progress checkpoints based on your recorded starting debt.</p>
+            </div>
+          </div>
+          <div class="milestone-grid" id="debtMilestones"></div>
+          <div class="milestone-next" id="debtMilestoneNext"></div>
+        </div>
+
         <div class="section-head" style="margin-top:18px"><div><h2>Your Debts</h2><p>Active balances and updates.</p></div><button class="primary-btn" id="newDebtBtn">+ Add Debt</button></div>
         <div class="stack" id="debtCards"></div>
         <div class="section">
@@ -1065,6 +1132,35 @@ function render(){
   $('savingList').innerHTML=savings.length ? [...savings].reverse().map((x,rev)=>activityMarkup(x,x.type,savings.length-1-rev,'removeSaving')).join('') : '<div class="empty">No savings activity yet.</div>';
 
   $('debtTotal').textContent=money(debtRemaining); $('debtMinimums').textContent=money(debtMonthly); $('debtProgress').textContent=`${progress.toFixed(0)}%`;
+
+  const debtStartingTotal = debts.reduce((t,d)=>t+(+(d.initial||d.balance)||0),0);
+  const debtPaidTotal = Math.max(0, debtStartingTotal - debtRemaining);
+  const milestones = [25,50,75,100];
+
+  $('debtMilestones').innerHTML = debtStartingTotal > 0
+    ? milestones.map(m=>{
+        const targetAmount = debtStartingTotal * (m/100);
+        const amountLeft = Math.max(0, targetAmount - debtPaidTotal);
+        const pctLeft = Math.max(0, m - progress);
+        const done = progress >= m;
+        return `<div class="milestone-card">
+          <div class="milestone-top">
+            <div class="milestone-pct">${m}%</div>
+            <div class="milestone-badge ${done ? 'done' : ''}">${done ? 'Achieved' : 'In Progress'}</div>
+          </div>
+          <div class="milestone-amount">${money(targetAmount)}</div>
+          <div class="milestone-note">${done ? `You have reached the ${m}% payoff milestone.` : `${pctLeft.toFixed(0)}% more to go • ${money(amountLeft)} more to be paid.`}</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty" style="grid-column:1/-1">Add your debt balances and starting balances to see milestone checkpoints.</div>';
+
+  const nextMilestone = milestones.find(m=>progress < m);
+  $('debtMilestoneNext').textContent = debtStartingTotal <= 0
+    ? ''
+    : nextMilestone
+      ? `Next target: ${nextMilestone}% debt payoff milestone.`
+      : 'Congratulations — you have reached your debt-free milestone.';
+
   $('debtCards').innerHTML=debts.length ? debts.map((d,i)=>{ const base=+(d.initial||d.balance)||0; const prog=base>0?Math.max(0,Math.min(100,((base-(+d.balance||0))/base)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(d.name)}</div><div class="goal-meta">${money(d.balance)} remaining · ${d.rate||0}% · ${money(d.minimum)}/month</div></div><div class="goal-name" style="color:var(--gold)">${prog.toFixed(0)}%</div></div><div class="progress"><span style="width:${prog}%"></span></div><div class="goal-actions"><button class="text-btn text-muted" onclick="openEditDebt(${i})">Edit</button><button class="text-btn text-red" onclick="removeDebt(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No debts added yet.</div>';
 
   document.querySelectorAll('[data-strategy]').forEach(btn=>btn.classList.toggle('active', btn.dataset.strategy===state.strategyView));
