@@ -380,7 +380,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="card"><div class="card-label">Hybrid Total</div><div class="card-value" id="hybridSavedTotal">B$0.00</div></div>
     </div>
 
-    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Use Top Up to open the same saving form with this goal selected.</p></div></div>
+    <div class="section-head"><div><h2>Saving goals</h2><p>Emergency fund, travel, car, wedding, gadget and more. Add savings through the Add Saving form and choose the goal as the destination.</p></div></div>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Goal name</label><input id="goalName" placeholder="Travel Fund"></div>
@@ -609,7 +609,7 @@ function render(){
     return `<div class="goal">
       <div class="goal-top">
         <div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)} · ${pct.toFixed(0)}%</div></div>
-        <div><button class="secondary" onclick="topUpGoal(${i})">Top Up</button> <button class="secondary" onclick="editGoal(${i})">Edit Goal</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
+        <div><button class="secondary" onclick="editGoal(${i})">Edit Goal</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
       </div>
       <div class="progress"><span style="width:${pct}%"></span></div>
       ${historyHtml}
@@ -740,17 +740,7 @@ $('addGoal').addEventListener('click',()=>{
   persist();
   render();
 });
-window.topUpGoal=function(i){
-  const goal=state.goals[i];
-  if(!goal)return;
-  document.querySelectorAll('.dock button').forEach(b=>b.classList.toggle('active',b.dataset.page==='savings'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='savings'));
-  refreshSavingDestinations();
-  $('savingDestination').value='goal:'+i;
-  $('savingName').value=goal.name+' Top Up';
-  $('savingAmount').focus();
-  window.scrollTo({top:$('savingAmount').getBoundingClientRect().top + window.scrollY - 140,behavior:'smooth'});
-}
+
 
 window.editGoal=function(i){
   const current=state.goals[i];
