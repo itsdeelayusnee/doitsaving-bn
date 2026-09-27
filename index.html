@@ -240,7 +240,7 @@ input:focus,select:focus{border-color:var(--gold)}
           <div>
             <div class="hero-label">Money Left This Month</div>
             <div class="hero-value" id="homeNet">B$0.00</div>
-            <div class="hero-sub">Money in − expenses − hybrid savings − debt repayment</div>
+            <div class="hero-sub">Remaining balance after expenses, savings and debt repayments.</div>
           </div>
           <div class="status" id="homeStatus">Start tracking</div>
         </div>
@@ -251,18 +251,18 @@ input:focus,select:focus{border-color:var(--gold)}
           <div>
             <div class="stat-label">Net Worth</div>
             <div class="stat-value gold" id="homeNetWorth">B$0.00</div>
-            <div class="muted small">Total assets − total debt</div>
+            <div class="muted small">Your overall financial position after liabilities.</div>
           </div>
           <button class="secondary" id="manageAssetsBtn">Manage Assets</button>
         </div>
         <div class="hybrid-grid" style="margin-top:14px">
           <div class="hybrid-box">
-            <span class="muted small">Total assets</span>
-            <strong id="homeAssets">B$0.00</strong>
+            <span class="muted small">Total Assets</span>
+            <strong id="homeAssets">B$0.00</strong><div class="muted small">Value of tracked assets.</div>
           </div>
           <div class="hybrid-box">
-            <span class="muted small">Total liabilities</span>
-            <strong id="homeLiabilities">B$0.00</strong>
+            <span class="muted small">Total Liabilities</span>
+            <strong id="homeLiabilities">B$0.00</strong><div class="muted small">Outstanding debt balances.</div>
           </div>
         </div>
       </div>
@@ -271,17 +271,17 @@ input:focus,select:focus{border-color:var(--gold)}
         <div class="card">
           <div class="stat-label">Money In</div>
           <div class="stat-value green" id="homeIncome">B$0.00</div>
-          <div class="muted small" id="homeIncomeCount">0 entries this month</div>
+          <div class="muted small" id="homeIncomeCount">No income recorded this month.</div>
         </div>
         <div class="card">
           <div class="stat-label">Money Out</div>
           <div class="stat-value red" id="homeExpense">B$0.00</div>
-          <div class="muted small" id="homeExpenseCount">0 entries this month</div>
+          <div class="muted small" id="homeExpenseCount">No income recorded this month.</div>
         </div>
         <div class="card">
           <div class="stat-label">Debt Repayment</div>
           <div class="stat-value gold" id="homeDebtRepayment">B$0.00</div>
-          <div class="muted small">Monthly minimum payments</div>
+          <div class="muted small">Scheduled monthly debt commitments.</div>
         </div>
       </div>
 
@@ -296,12 +296,12 @@ input:focus,select:focus{border-color:var(--gold)}
           <div class="hybrid-box">
             <span class="muted small">Cash Saved</span>
             <strong id="homeCashSaved">B$0.00</strong>
-            <div class="muted small">This month</div>
+            <div class="muted small">Recorded this month</div>
           </div>
           <div class="hybrid-box">
             <span class="muted small">Gold Saved</span>
             <strong id="homeGoldSaved">B$0.00</strong>
-            <div class="muted small">This month</div>
+            <div class="muted small">Recorded this month</div>
           </div>
         </div>
       </div>
@@ -547,8 +547,8 @@ function render(){
   $('homeExpense').textContent=money(monthExpenseTotal);
   $('homeDebtRepayment').textContent=money(minTotal);
   $('homeHybrid').textContent=money(monthHybridTotal);
-  $('homeIncomeCount').textContent=`${monthIncomes.length} ${monthIncomes.length===1?'entry':'entries'} this month`;
-  $('homeExpenseCount').textContent=`${monthExpenses.length} ${monthExpenses.length===1?'entry':'entries'} this month`;
+  $('homeIncomeCount').textContent=monthIncomes.length?`${monthIncomes.length} ${monthIncomes.length===1?'income entry':'income entries'} recorded this month`:'No income recorded this month.';
+  $('homeExpenseCount').textContent=monthExpenses.length?`${monthExpenses.length} ${monthExpenses.length===1?'expense entry':'expense entries'} recorded this month`:'No expenses recorded this month.';
   $('homeCashSaved').textContent=money(monthCashTotal);
   $('homeGoldSaved').textContent=money(monthGoldTotal);
   $('homeAssets').textContent=money(totalAssets);
