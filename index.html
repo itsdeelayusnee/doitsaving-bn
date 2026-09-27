@@ -1,236 +1,246 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>doitsaving.bn — Personal Finance Toolkit</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>doitsaving.bn</title>
 <style>
 :root{
-  --bg:#f7f4ee;
-  --surface:#fffdf9;
-  --surface2:#f1ece3;
-  --text:#1f1f1c;
-  --muted:#6f6b63;
-  --line:#ded8cd;
-  --accent:#475f55;
-  --accent2:#b79b6a;
-  --danger:#a65348;
-  --shadow:0 10px 30px rgba(42,35,24,.08);
-  --radius:22px;
+  --bg:#f5f0e8;
+  --card:#fffdf8;
+  --text:#1f1f1d;
+  --muted:#77736c;
+  --line:#ddd6ca;
+  --accent:#1f1f1d;
+  --soft:#ece8df;
+  --note:#eef3ef;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.wrap{max-width:980px;margin:0 auto;padding:0 18px 72px}
-.hero{padding:34px 0 18px}
-.brand{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(34px,7vw,62px);line-height:1;margin:10px 0 12px;font-weight:500}
-.hero p{margin:0;max-width:720px;color:var(--muted);font-size:16px;line-height:1.65}
-.tabs-wrap{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 78%,rgba(247,244,238,0));padding:8px 0 16px}
-.tabs{display:flex;gap:10px;overflow:auto;padding:4px 1px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
-.tab{border:1px solid var(--line);background:rgba(255,253,249,.9);color:var(--text);padding:11px 15px;border-radius:999px;white-space:nowrap;font-weight:700;font-size:14px}
-.tab.active{background:var(--text);border-color:var(--text);color:#fff}
-.section{display:none;animation:fade .22s ease}.section.active{display:block}@keyframes fade{from{opacity:.55;transform:translateY(3px)}to{opacity:1;transform:none}}
-.section-head{margin:14px 0 18px}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:800;color:var(--accent)}
-.section h2{font-family:Georgia,"Times New Roman",serif;font-size:32px;font-weight:500;margin:6px 0 8px}.section-head p{margin:0;color:var(--muted);line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-.card{grid-column:span 12;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-@media(min-width:720px){.half{grid-column:span 6}.third{grid-column:span 4}.two-third{grid-column:span 8}.quarter{grid-column:span 3}}
-.card h3{margin:0 0 5px;font-size:15px}.small{font-size:12px;color:var(--muted);line-height:1.5}.value{font-size:30px;font-weight:800;letter-spacing:-.04em;margin-top:8px}.value.sm{font-size:24px}
-.kpi{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.chip{font-size:11px;border-radius:999px;padding:5px 8px;background:var(--surface2);color:var(--muted);font-weight:700}
-.progress{height:9px;background:#e9e3d9;border-radius:999px;overflow:hidden;margin-top:14px}.progress>span{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:.25s}
-.form-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}@media(min-width:600px){.form-row.two{grid-template-columns:1fr 1fr}.form-row.three{grid-template-columns:repeat(3,1fr)}}
-label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px}.field{width:100%;border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px 13px;outline:none}.field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(71,95,85,.1)}
-.btn{border:0;border-radius:14px;padding:12px 15px;font-weight:800;background:var(--text);color:white}.btn.secondary{background:var(--surface2);color:var(--text);border:1px solid var(--line)}.btn.danger{background:#fff1ef;color:var(--danger);border:1px solid #efd0ca}.btn.smallb{padding:8px 11px;font-size:12px;border-radius:10px}
-.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.list{display:grid;gap:9px;margin-top:13px}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.row:first-child{border-top:0;padding-top:0}.row strong{display:block}.row .meta{font-size:12px;color:var(--muted);margin-top:3px}
-.notice{padding:15px 16px;border-radius:16px;background:#eef2ef;border:1px solid #dce5df;color:#405149;font-size:13px;line-height:1.55}.notice.gold{background:#f5efe2;border-color:#e7d8ba;color:#66583e}
-.divider{height:1px;background:var(--line);margin:18px 0}.inline-total{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px dashed var(--line);font-size:14px}.inline-total strong{font-size:15px}
-.pillbar{display:flex;gap:8px;flex-wrap:wrap}.pillbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:700;font-size:12px}.pillbtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.table-wrap{overflow:auto;margin-top:12px}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:11px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}.table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
-.footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
-.reminder-card{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;background:#eef2ef;border:1px solid #dce5df;border-radius:16px;color:#405149;font-size:13px;line-height:1.55}.reminder-card strong{display:block;color:var(--text);margin-bottom:2px}.reminder-icon{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#dfe8e2;font-size:14px;font-weight:800}
-.empty{font-size:13px;color:var(--muted);padding:8px 0}.right{text-align:right}.mono{font-variant-numeric:tabular-nums}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.muted-link{color:var(--muted);text-decoration:underline;font-size:12px;background:none;border:0;padding:0}.tag{display:inline-block;background:#efe8da;color:#6a5b42;font-size:10px;font-weight:800;padding:5px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+.shell{max-width:1180px;margin:0 auto;padding:24px}
+.nav{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;position:sticky;top:0;background:linear-gradient(var(--bg) 82%, rgba(245,240,232,0));z-index:10}
+.nav button{border:1px solid var(--line);background:var(--card);padding:12px 18px;border-radius:999px;font-weight:700;white-space:nowrap;cursor:pointer}
+.nav button.active{background:var(--accent);color:white;border-color:var(--accent)}
+.page{display:none}.page.active{display:block}
+.intro{margin:10px 0 18px;color:var(--muted);font-size:18px}
+.grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,1fr)}.grid-2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
+.card h3{margin:0 0 14px;font-size:18px}.big{font-size:34px;font-weight:800;line-height:1.1}.muted{color:var(--muted)}
+input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:white;font-size:16px;color:var(--text)}
+label{display:block;font-weight:700;margin-bottom:7px}.field{margin-bottom:14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.preset{flex:1 1 180px;border:1px solid var(--line);background:var(--card);padding:16px;border-radius:18px;cursor:pointer;text-align:left}
+.preset.active{border:2px solid var(--accent)}.preset b{display:block;font-size:20px;margin-bottom:5px}
+.kpi{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed var(--line)}.kpi:first-of-type{border-top:0}
+.note{background:var(--note);border-radius:18px;padding:16px 18px;margin-top:16px;color:#445148}.small{font-size:13px}
+.progress{height:10px;background:var(--soft);border-radius:999px;overflow:hidden}.progress > span{display:block;height:100%;background:var(--accent);width:0}
+footer{margin-top:36px;padding:24px 0;color:var(--muted);text-align:center;border-top:1px solid var(--line);font-size:13px}
+@media(max-width:850px){.grid-4,.grid-2,.row{grid-template-columns:1fr}.shell{padding:16px}.big{font-size:30px}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="hero">
-    <div class="brand">doitsaving.bn</div>
-    <h1>Save with intention.</h1>
-    <p>A simple personal finance toolkit built around budgeting, hybrid saving <strong>cash + gold</strong>, and becoming debt-free — one realistic step at a time.</p>
-  </header>
-
-  <div class="tabs-wrap">
-    <nav class="tabs" id="tabs">
-      <button class="tab active" data-tab="home">Home</button>
-      <button class="tab" data-tab="budget">Budget</button>
-      <button class="tab" data-tab="cash">Cash</button>
-      <button class="tab" data-tab="gold">Gold</button>
-      <button class="tab" data-tab="debt">Debt</button>
-      <button class="tab" data-tab="calc">Calculators</button>
-      <button class="tab" data-tab="about">About</button>
-    </nav>
+<div class="shell">
+  <div class="nav" id="nav">
+    <button data-tab="home" class="active">Home</button>
+    <button data-tab="budget">Budget</button>
+    <button data-tab="cash">Cash</button>
+    <button data-tab="gold">Gold</button>
+    <button data-tab="debt">Debt</button>
+    <button data-tab="calculators">Calculators</button>
+    <button data-tab="about">About</button>
   </div>
 
-  <main id="content">
-    <section class="section active" id="home">
-      <div class="section-head"><div class="eyebrow">Your money overview</div><h2>Hybrid savings dashboard</h2><p>Your cash, gold and debt progress in one place.</p></div>
-      <div class="grid">
-        <div class="card quarter"><h3>Cash savings</h3><div class="value mono" id="homeCash">B$0.00</div><div class="small">From saved cash goals</div></div>
-        <div class="card quarter"><h3>Gold savings</h3><div class="value mono" id="homeGoldGrams">0.0000g</div><div class="small">Total grams recorded</div></div>
-        <div class="card quarter"><h3>Gold value</h3><div class="value mono" id="homeGoldValue">B$0.00</div><div class="small">Estimated from your reference price</div></div>
-        <div class="card quarter"><h3>Total debt</h3><div class="value mono" id="homeDebt">B$0.00</div><div class="small">Current remaining balances</div></div>
-        <div class="card">
-          <div class="kpi"><div><h3>Total hybrid savings</h3><div class="value" id="homeHybrid">B$0.00</div></div><span class="chip">cash + gold</span></div>
-          <div class="progress"><span id="hybridBar"></span></div>
-          <div class="small" id="hybridRatioText">Add cash and gold data to see your hybrid saving ratio.</div>
-        </div>
-        <div class="card" style="padding:0;background:transparent;border:0;box-shadow:none">
-          <div class="reminder-card">
-            <div class="reminder-icon">i</div>
-            <div><strong>A simple reminder</strong>Keep enough cash accessible for short-term needs and emergencies, use gold for longer-term saving, and continue reducing debt consistently.</div>
+  <section id="home" class="page active">
+    <p class="intro">Your cash, gold and debt progress in one place.</p>
+    <div class="grid grid-4">
+      <div class="card"><h3>Cash savings</h3><div class="big" id="homeCash">B$0.00</div><p class="muted">From saved cash goals</p></div>
+      <div class="card"><h3>Gold savings</h3><div class="big" id="homeGoldGrams">0.0000g</div><p class="muted">Total grams recorded</p></div>
+      <div class="card"><h3>Gold value</h3><div class="big" id="homeGoldValue">B$0.00</div><p class="muted">Estimated from your reference price</p></div>
+      <div class="card"><h3>Total debt</h3><div class="big" id="homeDebt">B$0.00</div><p class="muted">Current remaining balances</p></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Total hybrid savings</h3>
+      <div class="big" id="homeHybrid">B$0.00</div>
+      <p class="muted">Cash + estimated gold value</p>
+    </div>
+    <div class="note"><b>A simple reminder</b><br>Keep enough cash accessible for short-term needs and emergencies, use gold for longer-term saving, and continue reducing debt consistently.</div>
+  </section>
+
+  <section id="budget" class="page">
+    <p class="intro">Choose a budget rule for easier calculation, then split the savings portion between cash and gold.</p>
+
+    <div class="card">
+      <h3>1. Choose a budget rule</h3>
+      <div class="btns">
+        <button class="preset active" data-rule="50,30,20"><b>50 / 30 / 20</b><span class="muted">50% Needs · 30% Wants · 20% Savings</span></button>
+        <button class="preset" data-rule="70,20,10"><b>70 / 20 / 10</b><span class="muted">70% Needs · 20% Wants · 10% Savings</span></button>
+        <button class="preset" data-rule="60,20,20"><b>60 / 20 / 20</b><span class="muted">60% Needs · 20% Wants · 20% Savings</span></button>
+        <button class="preset" data-rule="custom"><b>Custom</b><span class="muted">Set your own Needs, Wants and Savings percentages</span></button>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h3>2. Enter your income</h3>
+        <div class="field"><label>Monthly income (B$)</label><input id="budgetIncome" type="number" min="0" step="0.01" value="0"></div>
+
+        <div id="customRule" style="display:none">
+          <div class="row">
+            <div class="field"><label>Needs %</label><input id="needPct" type="number" min="0" max="100" value="50"></div>
+            <div class="field"><label>Wants %</label><input id="wantPct" type="number" min="0" max="100" value="30"></div>
           </div>
+          <div class="field"><label>Savings %</label><input id="savePct" type="number" min="0" max="100" value="20"></div>
+          <p class="small muted" id="customTotal">Total: 100%</p>
         </div>
       </div>
-    </section>
 
-    <section class="section" id="budget">
-      <div class="section-head"><div class="eyebrow">Build your own rule</div><h2>Custom budget</h2><p>There is no fixed formula here. Choose the percentages that fit your own income, priorities and saving goals, then adjust them until the total reaches 100%.</p></div>
-      <div class="grid">
-        <div class="card half"><h3>Monthly income</h3><div class="form-row two"><div><label>Salary / main income</label><input class="field budget" id="incomeMain" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Side / other income</label><input class="field budget" id="incomeOther" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="inline-total"><span>Total income</span><strong id="budgetIncome">B$0.00</strong></div></div>
-        <div class="card half"><h3>Your budget rule</h3><div class="value" id="budgetRuleTotal">0%</div><div class="small" id="budgetRuleStatus">Allocate your income across the categories below.</div><div class="progress"><span id="budgetRuleBar"></span></div></div>
-
-        <div class="card"><h3>Choose your percentages</h3><div class="form-row three">
-          <div><label>Needs / essentials (%)</label><input class="field budgetPct" id="pctNeeds" type="number" min="0" max="100" step="1" placeholder="0"></div>
-          <div><label>Wants / lifestyle (%)</label><input class="field budgetPct" id="pctWants" type="number" min="0" max="100" step="1" placeholder="0"></div>
-          <div><label>Cash savings (%)</label><input class="field budgetPct" id="pctCash" type="number" min="0" max="100" step="1" placeholder="0"></div>
-        </div><div class="form-row two">
-          <div><label>Gold savings (%)</label><input class="field budgetPct" id="pctGold" type="number" min="0" max="100" step="1" placeholder="0"></div>
-          <div><label>Other / flexible (%)</label><input class="field budgetPct" id="pctOther" type="number" min="0" max="100" step="1" placeholder="0"></div>
-        </div></div>
-
-        <div class="card"><h3>What your rule looks like in B$</h3><div class="table-wrap"><table class="table"><thead><tr><th>Category</th><th>Your %</th><th>Monthly amount</th></tr></thead><tbody>
-          <tr><td><strong>Needs / essentials</strong></td><td id="ruleNeedsPct">0%</td><td id="ruleNeedsAmt">B$0.00</td></tr>
-          <tr><td><strong>Wants / lifestyle</strong></td><td id="ruleWantsPct">0%</td><td id="ruleWantsAmt">B$0.00</td></tr>
-          <tr><td><strong>Cash savings</strong></td><td id="ruleCashPct">0%</td><td id="ruleCashAmt">B$0.00</td></tr>
-          <tr><td><strong>Gold savings</strong></td><td id="ruleGoldPct">0%</td><td id="ruleGoldAmt">B$0.00</td></tr>
-          <tr><td><strong>Other / flexible</strong></td><td id="ruleOtherPct">0%</td><td id="ruleOtherAmt">B$0.00</td></tr>
-        </tbody></table></div><div class="divider"></div><div class="inline-total"><span>Hybrid savings allocation</span><strong id="budgetHybridAllocation">B$0.00</strong></div><div class="inline-total"><span>Hybrid saving rate</span><strong id="budgetHybridRate">0%</strong></div></div>
-
-        <div class="card"><div class="notice"><strong>No one-size-fits-all rule.</strong> Use this as a planning tool, not a fixed formula. Your allocation can change as your income, commitments and goals change. Debt planning stays separate in the Debt tab.</div></div>
+      <div class="card">
+        <h3>3. Split your savings</h3>
+        <div class="field"><label>Cash share of savings (%)</label><input id="cashSplit" type="number" min="0" max="100" value="60"></div>
+        <div class="field"><label>Gold share of savings (%)</label><input id="goldSplit" type="number" min="0" max="100" value="40"></div>
+        <p class="small muted" id="splitTotal">Total savings split: 100%</p>
       </div>
-    </section>
+    </div>
 
-    <section class="section" id="cash">
-      <div class="section-head"><div class="eyebrow">Accessible savings</div><h2>Cash savings</h2><p>Create savings goals and challenges, then track progress over time.</p></div>
-      <div class="grid">
-        <div class="card half"><h3>Add cash goal</h3><div class="form-row two"><div><label>Goal name</label><input class="field" id="cashName" placeholder="Emergency fund"></div><div><label>Target amount (B$)</label><input class="field" id="cashTarget" type="number" min="0" step="0.01" placeholder="10000"></div></div><div class="form-row two"><div><label>Already saved (B$)</label><input class="field" id="cashSaved" type="number" min="0" step="0.01" placeholder="0"></div><div><label>Type</label><select class="field" id="cashType"><option>Savings Goal</option><option>Saving Challenge</option><option>Emergency Fund</option><option>Sinking Fund</option></select></div></div><div class="actions"><button class="btn" id="addCash">Add goal</button></div></div>
-        <div class="card half"><h3>Cash overview</h3><div class="value" id="cashTotal">B$0.00</div><div class="small">Total saved across all cash goals</div><div class="divider"></div><div class="inline-total"><span>Total target</span><strong id="cashTargetTotal">B$0.00</strong></div><div class="inline-total"><span>Remaining</span><strong id="cashRemainingTotal">B$0.00</strong></div></div>
-        <div class="card"><div class="topline"><div><h3>Your goals</h3><div class="small">Update saved amounts whenever you make progress.</div></div></div><div id="cashList" class="list"><div class="empty">No cash goals yet.</div></div></div>
-      </div>
-    </section>
+    <div class="card" style="margin-top:16px">
+      <h3>Your monthly allocation</h3>
+      <div class="kpi"><span>Needs / essentials</span><strong id="needsAmt">B$0.00</strong></div>
+      <div class="kpi"><span>Wants / lifestyle</span><strong id="wantsAmt">B$0.00</strong></div>
+      <div class="kpi"><span>Total savings</span><strong id="savingsAmt">B$0.00</strong></div>
+      <div class="kpi"><span>↳ Cash savings</span><strong id="cashAmt">B$0.00</strong></div>
+      <div class="kpi"><span>↳ Gold savings</span><strong id="goldAmt">B$0.00</strong></div>
+      <div class="kpi"><span>Unallocated / overallocated</span><strong id="unallocatedAmt">B$0.00</strong></div>
+    </div>
 
-    <section class="section" id="gold">
-      <div class="section-head"><div class="eyebrow">Hybrid saving</div><h2>Gold savings</h2><p>Track gold as part of your overall savings — without turning this page into a second Gold with Elleanor website.</p></div>
-      <div class="grid">
-        <div class="card half"><h3>Gold tracker</h3><div class="form-row two"><div><label>Total gold held (g)</label><input class="field goldInput" id="goldGrams" type="number" min="0" step="0.0001" placeholder="0.0000"></div><div><label>Reference gold price (RM/g)</label><input class="field goldInput" id="goldPriceRM" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="form-row"><div><label>Exchange rate — RM per B$1</label><input class="field goldInput" id="fxRM" type="number" min="0.0001" step="0.0001" placeholder="3.15"></div></div><div class="notice gold" style="margin-top:14px">This uses a reference price you enter. It is for tracking and estimation, not a live buy/sell quotation.</div></div>
-        <div class="card half"><h3>Estimated gold value</h3><div class="value" id="goldValue">B$0.00</div><div class="small" id="goldCalcText">Enter grams, RM/g and the RM-BND exchange rate.</div><div class="divider"></div><div class="inline-total"><span>Gold held</span><strong id="goldHeldSummary">0.0000g</strong></div><div class="inline-total"><span>Share of hybrid savings</span><strong id="goldShare">0%</strong></div></div>
-        <div class="card"><h3>Monthly gold progress</h3><div class="form-row three"><div><label>Month / label</label><input class="field" id="goldMonth" placeholder="September 2026"></div><div><label>Gold added (g)</label><input class="field" id="goldMonthGrams" type="number" min="0" step="0.0001" placeholder="1.0000"></div><div style="display:flex;align-items:end"><button class="btn" id="addGoldMonth" style="width:100%">Add entry</button></div></div><div id="goldMonthList" class="list"><div class="empty">No monthly gold entries yet.</div></div></div>
-      </div>
-    </section>
+    <div class="note"><b>Flexible planning, not a fixed rule.</b><br>These are simple starting templates to make calculation easier. Choose the one that best fits your income, commitments and current goals, or switch to Custom.</div>
+  </section>
 
-    <section class="section" id="debt">
-      <div class="section-head"><div class="eyebrow">Debt-free journey</div><h2>Debt tracker</h2><p>Add multiple debts and compare Snowball and Avalanche payoff orders.</p></div>
-      <div class="grid">
-        <div class="card"><h3>Add debt</h3><div class="form-row three"><div><label>Debt name</label><input class="field" id="debtName" placeholder="Car loan"></div><div><label>Current balance (B$)</label><input class="field" id="debtBalance" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Rate % p.a.</label><input class="field" id="debtRate" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="form-row two"><div><label>Minimum monthly payment (B$)</label><input class="field" id="debtMin" type="number" min="0" step="0.01" placeholder="0.00"></div><div><label>Original balance (optional)</label><input class="field" id="debtOriginal" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="actions"><button class="btn" id="addDebt">Add debt</button></div></div>
-        <div class="card quarter"><h3>Remaining debt</h3><div class="value sm" id="debtTotal">B$0.00</div></div>
-        <div class="card quarter"><h3>Minimum payments</h3><div class="value sm" id="debtMinTotal">B$0.00</div></div>
-        <div class="card quarter"><h3>Paid off</h3><div class="value sm" id="debtPaidTotal">B$0.00</div></div>
-        <div class="card quarter"><h3>Progress</h3><div class="value sm" id="debtProgress">0%</div><div class="progress"><span id="debtProgressBar"></span></div></div>
-        <div class="card"><div class="topline"><div><h3>Your debts</h3><div class="small">Balances are used for both payoff methods.</div></div></div><div id="debtList" class="list"><div class="empty">No debts added yet.</div></div></div>
-        <div class="card half"><div class="topline"><div><span class="tag">Snowball</span><h3 style="margin-top:8px">Smallest balance first</h3></div></div><p class="small">Focus extra money on the smallest balance while making minimum payments on the rest. Roll the freed payment into the next debt.</p><div id="snowballList" class="list"><div class="empty">Add at least one debt to see the order.</div></div></div>
-        <div class="card half"><div class="topline"><div><span class="tag">Avalanche</span><h3 style="margin-top:8px">Highest rate first</h3></div></div><p class="small">Focus extra money on the highest annual rate while making minimum payments on the rest.</p><div id="avalancheList" class="list"><div class="empty">Add at least one debt to see the order.</div></div></div>
-        <div class="card"><h3>Compare payoff methods</h3><div class="form-row"><div><label>Extra amount available each month (B$)</label><input class="field" id="extraDebtPayment" type="number" min="0" step="0.01" placeholder="0.00"></div></div><div class="table-wrap"><table class="table"><thead><tr><th>Method</th><th>Est. months</th><th>Est. total interest</th><th>First target</th></tr></thead><tbody id="debtCompare"><tr><td colspan="4" class="small">Add debts to calculate.</td></tr></tbody></table></div><div class="notice" style="margin-top:14px">This is an estimate using a simplified monthly-interest model. Actual financing terms, fees, rebates and early-settlement rules can differ by lender.</div></div>
-      </div>
-    </section>
+  <section id="cash" class="page">
+    <p class="intro">Track your cash goals and saving progress.</p>
+    <div class="grid grid-2">
+      <div class="card"><h3>Cash savings goal</h3><div class="field"><label>Goal amount (B$)</label><input id="cashGoal" type="number" min="0" step="0.01"></div><div class="field"><label>Amount saved (B$)</label><input id="cashSaved" type="number" min="0" step="0.01"></div></div>
+      <div class="card"><h3>Progress</h3><div class="big" id="cashProgress">0%</div><div class="progress" style="margin-top:14px"><span id="cashBar"></span></div><p class="muted" id="cashRemain">B$0.00 remaining</p></div>
+    </div>
+  </section>
 
-    <section class="section" id="calc">
-      <div class="section-head"><div class="eyebrow">Quick tools</div><h2>Calculators</h2><p>Simple calculators for saving, emergency funds, hybrid savings and debt planning.</p></div>
-      <div class="grid">
-        <div class="card half"><h3>Savings calculator</h3><div class="form-row two"><div><label>Monthly saving (B$)</label><input class="field calcSave" id="saveMonthly" type="number" min="0" step="0.01" placeholder="100"></div><div><label>Months</label><input class="field calcSave" id="saveMonths" type="number" min="0" step="1" placeholder="12"></div></div><div class="value sm" id="saveResult">B$0.00</div><div class="small">Total contributions, excluding returns or price movement.</div></div>
-        <div class="card half"><h3>Emergency fund calculator</h3><div class="form-row two"><div><label>Essential expenses / month (B$)</label><input class="field calcEmergency" id="essentialMonthly" type="number" min="0" step="0.01" placeholder="1500"></div><div><label>Months of coverage</label><select class="field calcEmergency" id="efMonths"><option value="3">3 months</option><option value="6" selected>6 months</option><option value="9">9 months</option><option value="12">12 months</option></select></div></div><div class="value sm" id="efResult">B$0.00</div><div class="small">Emergency funds are usually intended to remain readily accessible.</div></div>
-        <div class="card half"><h3>Hybrid savings calculator</h3><div class="form-row two"><div><label>Cash savings (B$)</label><input class="field calcHybrid" id="hybridCashInput" type="number" min="0" step="0.01" placeholder="5000"></div><div><label>Gold value (B$)</label><input class="field calcHybrid" id="hybridGoldInput" type="number" min="0" step="0.01" placeholder="3000"></div></div><div class="value sm" id="hybridCalcResult">B$0.00</div><div class="small" id="hybridCalcRatio">Cash 0% · Gold 0%</div></div>
-        <div class="card half"><h3>Goal calculator</h3><div class="form-row three"><div><label>Target (B$)</label><input class="field calcGoal" id="goalTarget" type="number" min="0" step="0.01" placeholder="10000"></div><div><label>Already saved (B$)</label><input class="field calcGoal" id="goalSaved" type="number" min="0" step="0.01" placeholder="2500"></div><div><label>Months remaining</label><input class="field calcGoal" id="goalMonths" type="number" min="1" step="1" placeholder="12"></div></div><div class="value sm" id="goalResult">B$0.00 / month</div><div class="small">Required monthly saving based on the remaining gap.</div></div>
-      </div>
-    </section>
+  <section id="gold" class="page">
+    <p class="intro">Track gold as part of your hybrid savings.</p>
+    <div class="grid grid-2">
+      <div class="card"><h3>Gold tracker</h3><div class="field"><label>Total gold (g)</label><input id="goldGrams" type="number" min="0" step="0.0001"></div><div class="field"><label>Reference gold price (RM/g)</label><input id="goldPrice" type="number" min="0" step="0.01"></div><div class="field"><label>Exchange rate (RM per B$1)</label><input id="fxRate" type="number" min="0.0001" step="0.0001"></div></div>
+      <div class="card"><h3>Estimated value</h3><div class="big" id="goldValue">B$0.00</div><p class="muted">Estimated gold value in BND</p></div>
+    </div>
+  </section>
 
-    <section class="section" id="about">
-      <div class="section-head"><div class="eyebrow">About doitsaving.bn</div><h2>Practical money habits, not perfection.</h2><p>doitsaving.bn shares a personal journey around saving, budgeting, debt reduction and hybrid saving through cash + gold.</p></div>
-      <div class="grid"><div class="card half"><h3>The approach</h3><div class="list"><div class="row"><div><strong>Budget with intention</strong><div class="meta">Know what comes in and where it goes.</div></div></div><div class="row"><div><strong>Keep cash accessible</strong><div class="meta">Short-term needs and emergencies need liquidity.</div></div></div><div class="row"><div><strong>Save gold for longer-term goals</strong><div class="meta">Use gold as one part of a broader saving strategy.</div></div></div><div class="row"><div><strong>Reduce debt consistently</strong><div class="meta">Track progress and understand different payoff methods.</div></div></div></div></div><div class="card half"><h3>Important note</h3><div class="notice">The information and tools on this website are for educational and informational purposes only. They do not constitute personalised financial advice. Calculations are estimates and may not reflect actual bank, financing, gold pricing or settlement terms.</div><div class="actions"><button class="btn danger" id="clearAll">Clear all saved data</button></div><div class="small" style="margin-top:8px">Prototype data is stored only in this browser using local storage.</div></div></div>
-    </section>
-  </main>
+  <section id="debt" class="page">
+    <p class="intro">Track debt separately and compare Snowball and Avalanche approaches.</p>
+    <div class="card">
+      <div class="field"><label>Balances (e.g. 1200,4500,12000)</label><input id="debtBalances" type="text"></div>
+      <div class="field"><label>Rates % (same order, e.g. 18,7.5,4.25)</label><input id="debtRates" type="text"></div>
+      <div class="field"><label>Minimum monthly payments (same order)</label><input id="debtMins" type="text"></div>
+      <div class="field"><label>Extra monthly payment (B$)</label><input id="debtExtra" type="number" min="0" step="0.01"></div>
+    </div>
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card"><h3>Snowball order</h3><div id="snowballList" class="muted">Add debt data to compare.</div></div>
+      <div class="card"><h3>Avalanche order</h3><div id="avalancheList" class="muted">Add debt data to compare.</div></div>
+    </div>
+  </section>
 
-  <footer class="footer">doitsaving.bn · Personal finance, hybrid saving & debt-free journey<br>Built as a first working prototype for review.</footer>
+  <section id="calculators" class="page">
+    <p class="intro">Simple personal finance calculators for savings and goals.</p>
+    <div class="grid grid-2">
+      <div class="card"><h3>Monthly savings calculator</h3><div class="field"><label>Monthly saving (B$)</label><input id="calcMonthly" type="number" min="0"></div><div class="field"><label>Months</label><input id="calcMonths" type="number" min="0"></div><div class="big" id="calcSavingsResult">B$0.00</div></div>
+      <div class="card"><h3>Goal calculator</h3><div class="field"><label>Goal (B$)</label><input id="calcGoal" type="number" min="0"></div><div class="field"><label>Already saved (B$)</label><input id="calcCurrent" type="number" min="0"></div><div class="field"><label>Months to goal</label><input id="calcGoalMonths" type="number" min="1"></div><div class="big" id="calcGoalResult">B$0.00/mo</div></div>
+    </div>
+  </section>
+
+  <section id="about" class="page">
+    <p class="intro">About doitsaving.bn</p>
+    <div class="card">
+      <p><b>doitsaving.bn</b> is a personal finance platform focused on practical money management, hybrid saving (cash + gold), debt reduction and better financial habits.</p>
+      <p class="muted">The content and tools on this website are for educational and informational purposes only and do not constitute personalised financial advice.</p>
+      <button id="clearData" class="preset" style="margin-top:10px"><b>Clear all saved data</b><span class="muted">Remove locally stored entries from this browser.</span></button>
+    </div>
+  </section>
+
+  <footer>doitsaving.bn · Personal finance, hybrid saving & debt-free journey</footer>
 </div>
+
 <script>
-const $=id=>document.getElementById(id); const money=n=>'B$'+(Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-const pct=n=>`${Math.max(0,Math.min(100,Number(n)||0)).toFixed(1)}%`; const num=v=>Math.max(0,parseFloat(v)||0);
-let state={cashGoals:[],gold:{grams:0,priceRM:0,fx:0,months:[]},debts:[],budget:{},extraDebt:0};
-try{state={...state,...JSON.parse(localStorage.getItem('doitsavingState')||'{}')}}catch(e){}
-function save(){localStorage.setItem('doitsavingState',JSON.stringify(state));renderAll()}
+const $=id=>document.getElementById(id);
+const money=n=>'B$'+(Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const key='doitsavingPrototypeV4';
+let state=JSON.parse(localStorage.getItem(key)||'{}');
 
-// tabs
-[...document.querySelectorAll('.tab')].forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));$(b.dataset.tab).classList.add('active');document.getElementById('content').scrollIntoView({behavior:'smooth',block:'start'})});
-
-// budget
-const budgetIds=['incomeMain','incomeOther','pctNeeds','pctWants','pctCash','pctGold','pctOther'];
-budgetIds.forEach(id=>{ $(id).value=state.budget[id]??''; $(id).addEventListener('input',()=>{state.budget[id]=num($(id).value);localStorage.setItem('doitsavingState',JSON.stringify(state));renderBudget();renderHome()})});
-function renderBudget(){
-  let income=num(state.budget.incomeMain)+num(state.budget.incomeOther);
-  let parts={needs:num(state.budget.pctNeeds),wants:num(state.budget.pctWants),cash:num(state.budget.pctCash),gold:num(state.budget.pctGold),other:num(state.budget.pctOther)};
-  let total=Object.values(parts).reduce((a,b)=>a+b,0);
-  let amount=k=>income*parts[k]/100;
-  $('budgetIncome').textContent=money(income);
-  $('budgetRuleTotal').textContent=total.toFixed(0)+'%';
-  $('budgetRuleBar').style.width=Math.min(100,total)+'%';
-  $('budgetRuleStatus').textContent=total===100?'Your custom rule is fully allocated.':total<100?`${(100-total).toFixed(0)}% is still unallocated.`:`Reduce the rule by ${(total-100).toFixed(0)}% to return to 100%.`;
-  $('ruleNeedsPct').textContent=parts.needs.toFixed(0)+'%'; $('ruleNeedsAmt').textContent=money(amount('needs'));
-  $('ruleWantsPct').textContent=parts.wants.toFixed(0)+'%'; $('ruleWantsAmt').textContent=money(amount('wants'));
-  $('ruleCashPct').textContent=parts.cash.toFixed(0)+'%'; $('ruleCashAmt').textContent=money(amount('cash'));
-  $('ruleGoldPct').textContent=parts.gold.toFixed(0)+'%'; $('ruleGoldAmt').textContent=money(amount('gold'));
-  $('ruleOtherPct').textContent=parts.other.toFixed(0)+'%'; $('ruleOtherAmt').textContent=money(amount('other'));
-  $('budgetHybridAllocation').textContent=money(amount('cash')+amount('gold'));
-  $('budgetHybridRate').textContent=(parts.cash+parts.gold).toFixed(0)+'%';
+function save(){
+  state={
+    rule:document.querySelector('.preset.active[data-rule]')?.dataset.rule||'50,30,20',
+    budgetIncome:$('budgetIncome').value,needPct:$('needPct').value,wantPct:$('wantPct').value,savePct:$('savePct').value,
+    cashSplit:$('cashSplit').value,goldSplit:$('goldSplit').value,
+    cashGoal:$('cashGoal').value,cashSaved:$('cashSaved').value,
+    goldGrams:$('goldGrams').value,goldPrice:$('goldPrice').value,fxRate:$('fxRate').value,
+    debtBalances:$('debtBalances').value,debtRates:$('debtRates').value,debtMins:$('debtMins').value,debtExtra:$('debtExtra').value,
+    calcMonthly:$('calcMonthly').value,calcMonths:$('calcMonths').value,calcGoal:$('calcGoal').value,calcCurrent:$('calcCurrent').value,calcGoalMonths:$('calcGoalMonths').value
+  };
+  localStorage.setItem(key,JSON.stringify(state));
 }
+function load(){
+  Object.entries(state).forEach(([k,v])=>{if($(k))$(k).value=v});
+  if(state.rule){document.querySelectorAll('.preset[data-rule]').forEach(b=>b.classList.toggle('active',b.dataset.rule===state.rule))}
+}
+function rule(){
+  const active=document.querySelector('.preset.active[data-rule]');
+  if(!active)return[50,30,20];
+  if(active.dataset.rule==='custom'){
+    $('customRule').style.display='block';
+    return[+$('needPct').value||0,+$('wantPct').value||0,+$('savePct').value||0];
+  }
+  $('customRule').style.display='none';
+  return active.dataset.rule.split(',').map(Number);
+}
+function update(){
+  const income=+$('budgetIncome').value||0;
+  const [n,w,s]=rule();
+  const c=+$('cashSplit').value||0,g=+$('goldSplit').value||0;
+  const na=income*n/100,wa=income*w/100,sa=income*s/100;
+  $('customTotal').textContent=`Total: ${(n+w+s).toFixed(0)}%`;
+  $('splitTotal').textContent=`Total savings split: ${(c+g).toFixed(0)}%`;
+  $('needsAmt').textContent=money(na);$('wantsAmt').textContent=money(wa);$('savingsAmt').textContent=money(sa);
+  $('cashAmt').textContent=money(sa*c/100);$('goldAmt').textContent=money(sa*g/100);
+  $('unallocatedAmt').textContent=money(income-income*(n+w+s)/100);
 
-// cash
-$('addCash').onclick=()=>{let name=$('cashName').value.trim(),target=num($('cashTarget').value),saved=num($('cashSaved').value);if(!name||!target)return;state.cashGoals.push({id:Date.now(),name,target,saved,type:$('cashType').value});$('cashName').value='';$('cashTarget').value='';$('cashSaved').value='';save()};
-function renderCash(){let total=0,target=0;$('cashList').innerHTML=state.cashGoals.length?'':'<div class="empty">No cash goals yet.</div>';state.cashGoals.forEach(g=>{total+=num(g.saved);target+=num(g.target);let p=g.target?g.saved/g.target*100:0;let el=document.createElement('div');el.className='row';el.innerHTML=`<div><strong>${escapeHtml(g.name)}</strong><div class="meta">${escapeHtml(g.type)} · ${money(g.saved)} of ${money(g.target)} · ${pct(p)}</div><div class="progress"><span style="width:${Math.min(100,p)}%"></span></div></div><div class="right"><input aria-label="saved amount" class="field" style="width:110px;padding:8px" type="number" min="0" step="0.01" value="${g.saved}"><button class="muted-link" style="display:block;margin-top:7px;margin-left:auto">Remove</button></div>`;let inp=el.querySelector('input');inp.onchange=()=>{g.saved=num(inp.value);save()};el.querySelector('button').onclick=()=>{state.cashGoals=state.cashGoals.filter(x=>x.id!==g.id);save()};$('cashList').appendChild(el)});$('cashTotal').textContent=money(total);$('cashTargetTotal').textContent=money(target);$('cashRemainingTotal').textContent=money(Math.max(0,target-total))}
+  const goal=+$('cashGoal').value||0,saved=+$('cashSaved').value||0,p=goal?Math.min(100,saved/goal*100):0;
+  $('cashProgress').textContent=p.toFixed(0)+'%';$('cashBar').style.width=p+'%';$('cashRemain').textContent=money(Math.max(0,goal-saved))+' remaining';
 
-// gold
-['goldGrams','goldPriceRM','fxRM'].forEach(id=>{let key=id==='goldGrams'?'grams':id==='goldPriceRM'?'priceRM':'fx';$(id).value=state.gold[key]||'';$(id).oninput=()=>{state.gold[key]=num($(id).value);localStorage.setItem('doitsavingState',JSON.stringify(state));renderGold();renderHome()}})
-$('addGoldMonth').onclick=()=>{let label=$('goldMonth').value.trim(),grams=num($('goldMonthGrams').value);if(!label||!grams)return;state.gold.months.push({id:Date.now(),label,grams});$('goldMonth').value='';$('goldMonthGrams').value='';save()};
-function goldValue(){return state.gold.fx?state.gold.grams*state.gold.priceRM/state.gold.fx:0}
-function renderGold(){let v=goldValue();$('goldValue').textContent=money(v);$('goldHeldSummary').textContent=(num(state.gold.grams)).toFixed(4)+'g';$('goldCalcText').textContent=state.gold.fx&&state.gold.priceRM?`${state.gold.grams.toFixed(4)}g × RM${state.gold.priceRM.toFixed(2)} ÷ ${state.gold.fx.toFixed(4)} RM/B$`:'Enter grams, RM/g and the RM-BND exchange rate.';let cash=state.cashGoals.reduce((a,g)=>a+num(g.saved),0),hy=cash+v;$('goldShare').textContent=hy?pct(v/hy*100):'0%';$('goldMonthList').innerHTML=state.gold.months.length?'':'<div class="empty">No monthly gold entries yet.</div>';state.gold.months.forEach(m=>{let el=document.createElement('div');el.className='row';el.innerHTML=`<div><strong>${escapeHtml(m.label)}</strong><div class="meta">${m.grams.toFixed(4)}g added</div></div><button class="muted-link">Remove</button>`;el.querySelector('button').onclick=()=>{state.gold.months=state.gold.months.filter(x=>x.id!==m.id);save()};$('goldMonthList').appendChild(el)})}
+  const grams=+$('goldGrams').value||0,price=+$('goldPrice').value||0,fx=+$('fxRate').value||0,gv=fx?grams*price/fx:0;
+  $('goldValue').textContent=money(gv);
 
-// debt
-$('addDebt').onclick=()=>{let name=$('debtName').value.trim(),balance=num($('debtBalance').value),rate=num($('debtRate').value),min=num($('debtMin').value),orig=num($('debtOriginal').value)||balance;if(!name||!balance||!min)return;state.debts.push({id:Date.now(),name,balance,rate,min,original:Math.max(orig,balance)});['debtName','debtBalance','debtRate','debtMin','debtOriginal'].forEach(id=>$(id).value='');save()};
-$('extraDebtPayment').value=state.extraDebt||'';$('extraDebtPayment').oninput=()=>{state.extraDebt=num($('extraDebtPayment').value);localStorage.setItem('doitsavingState',JSON.stringify(state));renderDebt()};
-function payoff(method){let ds=state.debts.map(d=>({...d,balance:num(d.balance)})).filter(d=>d.balance>0);if(!ds.length)return null;let month=0,interest=0,limit=1200;while(ds.some(d=>d.balance>.005)&&month<limit){month++;ds.forEach(d=>{if(d.balance<=0)return;let i=d.balance*(d.rate/100/12);interest+=i;d.balance+=i});let alive=ds.filter(d=>d.balance>0);alive.forEach(d=>{let p=Math.min(d.min,d.balance);d.balance-=p});let extra=num(state.extraDebt);while(extra>.005){alive=ds.filter(d=>d.balance>.005);if(!alive.length)break;let target=(method==='snowball'?[...alive].sort((a,b)=>a.balance-b.balance):[...alive].sort((a,b)=>b.rate-a.rate||a.balance-b.balance))[0];let p=Math.min(extra,target.balance);target.balance-=p;extra-=p} if(month===limit)break;} let first=(method==='snowball'?[...state.debts].sort((a,b)=>a.balance-b.balance):[...state.debts].sort((a,b)=>b.rate-a.rate||a.balance-b.balance))[0];return{months:month,interest,first:first?.name||'—'}}
-function renderDebt(){let total=0,minTotal=0,orig=0;$('debtList').innerHTML=state.debts.length?'':'<div class="empty">No debts added yet.</div>';state.debts.forEach(d=>{total+=num(d.balance);minTotal+=num(d.min);orig+=num(d.original);let el=document.createElement('div');el.className='row';el.innerHTML=`<div><strong>${escapeHtml(d.name)}</strong><div class="meta">Balance ${money(d.balance)} · ${d.rate.toFixed(2)}% · Min ${money(d.min)}/mo</div></div><div class="right"><input class="field" aria-label="debt balance" style="width:115px;padding:8px" type="number" min="0" step="0.01" value="${d.balance}"><button class="muted-link" style="display:block;margin-top:7px;margin-left:auto">Remove</button></div>`;let inp=el.querySelector('input');inp.onchange=()=>{d.balance=num(inp.value);save()};el.querySelector('button').onclick=()=>{state.debts=state.debts.filter(x=>x.id!==d.id);save()};$('debtList').appendChild(el)});let paid=Math.max(0,orig-total),prog=orig?paid/orig*100:0;$('debtTotal').textContent=money(total);$('debtMinTotal').textContent=money(minTotal);$('debtPaidTotal').textContent=money(paid);$('debtProgress').textContent=pct(prog);$('debtProgressBar').style.width=Math.min(100,prog)+'%';renderOrder('snowballList',[...state.debts].sort((a,b)=>a.balance-b.balance),'balance');renderOrder('avalancheList',[...state.debts].sort((a,b)=>b.rate-a.rate||a.balance-b.balance),'rate');let s=payoff('snowball'),a=payoff('avalanche');$('debtCompare').innerHTML=!s?'<tr><td colspan="4" class="small">Add debts to calculate.</td></tr>':`<tr><td><strong>Snowball</strong></td><td>${s.months}</td><td>${money(s.interest)}</td><td>${escapeHtml(s.first)}</td></tr><tr><td><strong>Avalanche</strong></td><td>${a.months}</td><td>${money(a.interest)}</td><td>${escapeHtml(a.first)}</td></tr>`}
-function renderOrder(id,arr,kind){$(id).innerHTML=arr.length?'':'<div class="empty">Add at least one debt to see the order.</div>';arr.forEach((d,i)=>{let el=document.createElement('div');el.className='row';el.innerHTML=`<div><strong>${i+1}. ${escapeHtml(d.name)}</strong><div class="meta">${kind==='balance'?money(d.balance):d.rate.toFixed(2)+'% p.a.'}</div></div><span class="chip">${kind==='balance'?'balance':'rate'}</span>`;$(id).appendChild(el)})}
+  const balances=($('debtBalances').value||'').split(',').map(x=>+x.trim()).filter(x=>!isNaN(x)&&x>0);
+  const rates=($('debtRates').value||'').split(',').map(x=>+x.trim());
+  const debts=balances.map((b,i)=>({b,r:rates[i]||0,i:i+1}));
+  $('snowballList').innerHTML=debts.length?[...debts].sort((a,b)=>a.b-b.b).map((d,i)=>`${i+1}. Debt ${d.i} — ${money(d.b)} (${d.r}%)`).join('<br>'):'Add debt data to compare.';
+  $('avalancheList').innerHTML=debts.length?[...debts].sort((a,b)=>b.r-a.r).map((d,i)=>`${i+1}. Debt ${d.i} — ${d.r}% (${money(d.b)})`).join('<br>'):'Add debt data to compare.';
 
-// calcs
-function renderCalcs(){let a=num($('saveMonthly').value),m=num($('saveMonths').value);$('saveResult').textContent=money(a*m);let e=num($('essentialMonthly').value),em=num($('efMonths').value);$('efResult').textContent=money(e*em);let hc=num($('hybridCashInput').value),hg=num($('hybridGoldInput').value),ht=hc+hg;$('hybridCalcResult').textContent=money(ht);$('hybridCalcRatio').textContent=ht?`Cash ${pct(hc/ht*100)} · Gold ${pct(hg/ht*100)}`:'Cash 0% · Gold 0%';let gt=num($('goalTarget').value),gs=num($('goalSaved').value),gm=Math.max(1,num($('goalMonths').value));$('goalResult').textContent=money(Math.max(0,gt-gs)/gm)+' / month'}
-document.querySelectorAll('.calcSave,.calcEmergency,.calcHybrid,.calcGoal').forEach(x=>x.oninput=renderCalcs);$('efMonths').onchange=renderCalcs;
+  const totalDebt=balances.reduce((a,b)=>a+b,0);
+  $('homeCash').textContent=money(saved);$('homeGoldGrams').textContent=grams.toFixed(4)+'g';$('homeGoldValue').textContent=money(gv);$('homeDebt').textContent=money(totalDebt);$('homeHybrid').textContent=money(saved+gv);
 
-function renderHome(){let cash=state.cashGoals.reduce((a,g)=>a+num(g.saved),0),gv=goldValue(),hy=cash+gv,debt=state.debts.reduce((a,d)=>a+num(d.balance),0);$('homeCash').textContent=money(cash);$('homeGoldGrams').textContent=num(state.gold.grams).toFixed(4)+'g';$('homeGoldValue').textContent=money(gv);$('homeDebt').textContent=money(debt);$('homeHybrid').textContent=money(hy);if(hy){let cp=cash/hy*100,gp=gv/hy*100;$('hybridRatioText').textContent=`Cash ${pct(cp)} · Gold ${pct(gp)}`;$('hybridBar').style.width=cp+'%'}else{$('hybridRatioText').textContent='Add cash and gold data to see your hybrid saving ratio.';$('hybridBar').style.width='0%'}}
-function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function renderAll(){renderBudget();renderCash();renderGold();renderDebt();renderHome();renderCalcs()}
-$('clearAll').onclick=()=>{if(confirm('Clear all prototype data saved in this browser?')){localStorage.removeItem('doitsavingState');location.reload()}}
-renderAll();
+  $('calcSavingsResult').textContent=money((+$('calcMonthly').value||0)*(+$('calcMonths').value||0));
+  const gm=+$('calcGoalMonths').value||0,remain=Math.max(0,(+$('calcGoal').value||0)-(+$('calcCurrent').value||0));
+  $('calcGoalResult').textContent=gm?money(remain/gm)+'/mo':'B$0.00/mo';
+  save();
+}
+document.querySelectorAll('#nav button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$(btn.dataset.tab).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+document.querySelectorAll('.preset[data-rule]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.preset[data-rule]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  if(btn.dataset.rule!=='custom'){const[a,b,c]=btn.dataset.rule.split(',');$('needPct').value=a;$('wantPct').value=b;$('savePct').value=c}
+  update();
+}));
+document.querySelectorAll('input').forEach(el=>el.addEventListener('input',update));
+$('clearData').addEventListener('click',()=>{localStorage.removeItem(key);location.reload()});
+load();update();
 </script>
 </body>
 </html>
