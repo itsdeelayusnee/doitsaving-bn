@@ -764,12 +764,13 @@ body[data-theme='dark'] .tab-switch{background:var(--surface-2)} .tab-btn{flex:1
         <div class="section-head" style="margin-top:18px"><div><h2>Your Debts</h2><p>Active balances and updates.</p></div><button class="primary-btn" id="newDebtBtn">+ Add Debt</button></div>
         <div class="stack" id="debtCards"></div>
         <div class="section">
-          <div class="section-head"><div><h2>Payoff Strategy</h2><p>Compare your next focus debt.</p></div></div>
-          <div class="panel">
-            <div class="tab-switch" style="margin-bottom:14px">
-              <button class="tab-btn active" data-strategy="snowball">Snowball</button>
-              <button class="tab-btn" data-strategy="avalanche">Avalanche</button>
+          <div class="section-head">
+            <div>
+              <h2>Snowball Method</h2>
+              <p>Focus on the smallest outstanding balance first.</p>
             </div>
+          </div>
+          <div class="panel">
             <div class="stack" id="strategyList"></div>
           </div>
         </div>
@@ -1110,9 +1111,20 @@ function render(){
 
   $('debtCards').innerHTML=debts.length ? debts.map((d,i)=>{ const base=+(d.initial||d.balance)||0; const prog=base>0?Math.max(0,Math.min(100,((base-(+d.balance||0))/base)*100)):0; return `<div class="goal-card"><div class="goal-head"><div><div class="goal-name">${esc(d.name)}</div><div class="goal-meta">Outstanding ${money(d.balance)} · Payment ${money(d.minimum)}/month${d.rate ? ` · ${Number(d.rate).toFixed(2)}%` : ''}</div></div><div class="goal-name" style="color:var(--gold)">${prog.toFixed(0)}%</div></div><div class="progress"><span style="width:${prog}%"></span></div><div class="goal-actions"><button class="text-btn text-muted" onclick="openEditDebt(${i})">Edit</button><button class="text-btn text-red" onclick="removeDebt(${i})">Delete</button></div></div>`; }).join('') : '<div class="empty">No debts added yet.</div>';
 
-  document.querySelectorAll('[data-strategy]').forEach(btn=>btn.classList.toggle('active', btn.dataset.strategy===state.strategyView));
-  const stratList=debtStrategyList(state.strategyView);
-  $('strategyList').innerHTML=stratList.length ? stratList.map((d,idx)=>{ const headline=state.strategyView==='snowball' ? `${money(d.balance)} outstanding` : `${Number(d.rate||0).toFixed(2)}% rate`; const subline=state.strategyView==='snowball' ? `Payment ${money(d.minimum)}/month${d.rate ? ` · ${Number(d.rate).toFixed(2)}%` : ''}` : `Outstanding ${money(d.balance)} · Payment ${money(d.minimum)}/month`; return `<div class="compact-card"><div class="goal-head"><div><div class="goal-name">${idx+1}. ${esc(d.name)}</div><div class="goal-meta">${subline}</div></div><div class="goal-name goldish">${headline}</div></div></div>`; }).join('') : '<div class="empty">Add debts to compare payoff order.</div>';
+  const stratList=debtStrategyList('snowball');
+  $('strategyList').innerHTML=stratList.length ? stratList.map((d,idx)=>{
+    const headline=`${money(d.balance)} outstanding`;
+    const subline=`Payment ${money(d.minimum)}/month${d.rate ? ` · ${Number(d.rate).toFixed(2)}%` : ''}`;
+    return `<div class="compact-card">
+      <div class="goal-head">
+        <div>
+          <div class="goal-name">${idx+1}. ${esc(d.name)}</div>
+          <div class="goal-meta">${subline}</div>
+        </div>
+        <div class="goal-name goldish">${headline}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">Add debts to see your snowball payoff order.</div>';
 }
 function openIncomeModal(){ openSheet(sheetHead('Add Income')+`<div class="field"><label>Name</label><input id="mIncomeName" placeholder="Salary"></div><div class="field"><label>Amount (B$)</label><input id="mIncomeAmount" type="number" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label>Category</label><select id="mIncomeCategory"><option>Salary</option><option>Side Income</option><option>Bonus</option><option>Business</option><option>Other</option></select></div><div class="field"><label>Date</label><input id="mIncomeDate" type="date" value="${today()}"></div><button class="primary-btn" onclick="saveIncome()">Add Income</button>`); }
 window.saveIncome=function(){ const amount=+$('mIncomeAmount').value||0; if(amount<=0) return; state.incomes.push({name:$('mIncomeName').value.trim()||'Income', amount, category:$('mIncomeCategory').value, date:$('mIncomeDate').value||today()}); closeSheet(); render(); };
