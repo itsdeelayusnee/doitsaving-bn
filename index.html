@@ -144,6 +144,14 @@ input:focus,select:focus{border-color:var(--gold)}
 .dock button.active{background:#f4efe7;color:var(--brown)}
 .dock span:first-child{font-size:20px}
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}
+.history-list{display:grid;gap:10px}
+.history-item{
+  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px
+}
+.history-title{font-weight:850}
+.history-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.history-amount{font-weight:900;text-align:right}
 .note{margin-top:14px;padding:15px 16px;border-radius:18px;background:var(--sage-soft);border:1px solid #cad7c4;color:#43513e}
 @media(max-width:850px){
   .hero-grid{grid-template-columns:1fr}
@@ -368,6 +376,10 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
     <div id="goalList" class="goal-list"></div>
 
+
+    <div class="section-head"><div><h2>Savings history</h2><p>Delete a mistaken saving or leftover sweep without clearing everything.</p></div></div>
+    <div id="savingHistory" class="history-list"></div>
+
     <div class="note"><b>Hybrid saving reminder:</b> the 60% cash / 40% gold split is only an illustration. Users can choose a mix that fits their emergency needs, short-term goals and longer-term plans.</div>
   </section>
 
@@ -453,6 +465,13 @@ function activityHTML(item,kind,index,withDelete=true){
   </div>`;
 }
 
+window.removeSaving=function(index){
+  if(index<0 || index>=state.savings.length)return;
+  state.savings.splice(index,1);
+  persist();
+  render();
+}
+
 window.removeRecord=function(kind,index){
   if(kind==='income')state.incomes.splice(index,1);
   if(kind==='expense')state.expenses.splice(index,1);
@@ -528,14 +547,36 @@ function render(){
 
   $('goalList').innerHTML=state.goals.length?state.goals.map((g,i)=>{
     const pct=g.target>0?Math.min(100,g.saved/g.target*100):0;
+    const history=Array.isArray(g.history)?g.history:[];
+    const historyHtml=history.length
+      ? `<div style="margin-top:12px"><div class="goal-meta" style="margin-bottom:6px">Top-up history</div>${history.map((h,hi)=>`<div class="history-item">
+          <div><div class="history-title">${esc(h.label||'Top Up')}</div><div class="history-meta">${esc(h.date||'')}</div></div>
+          <div><div class="history-amount">+${money(h.amount)}</div><button class="secondary danger" style="margin-top:5px" onclick="removeGoalTopup(${i},${hi})">Delete</button></div>
+        </div>`).join('')}</div>`
+      : '';
     return `<div class="goal">
       <div class="goal-top">
         <div><div class="goal-name">${esc(g.name)}</div><div class="goal-meta">${money(g.saved)} of ${money(g.target)} · ${pct.toFixed(0)}%</div></div>
         <div><button class="secondary" onclick="topUpGoal(${i})">Top Up</button> <button class="secondary" onclick="editGoal(${i})">Edit Goal</button> <button class="secondary danger" onclick="removeGoal(${i})">Remove</button></div>
       </div>
       <div class="progress"><span style="width:${pct}%"></span></div>
+      ${historyHtml}
     </div>`;
   }).join(''):'<div class="empty">No saving goals yet.</div>';
+
+  const savingsHistory=[...state.savings].map((s,i)=>({...s,_index:i})).reverse();
+  $('savingHistory').innerHTML=savingsHistory.length
+    ? savingsHistory.map(s=>`<div class="history-item">
+        <div>
+          <div class="history-title">${esc(s.name||'Saving')}</div>
+          <div class="history-meta">${esc(s.type==='gold'?'Gold Saving':'Cash Saving')} · ${esc(s.date||'')}</div>
+        </div>
+        <div>
+          <div class="history-amount">+${money(s.amount)}</div>
+          <button class="secondary danger" style="margin-top:5px" onclick="removeSaving(${s._index})">Delete</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty">No saving records yet.</div>';
 
   refreshSweepDestinations();
 
@@ -598,7 +639,9 @@ $('addGoal').addEventListener('click',()=>{
   const target=+$('goalTarget').value||0;
   const saved=+$('goalStartingBalance').value||0;
   if(!name||target<=0)return;
-  state.goals.push({name,target,saved});
+  const history=[];
+  if(saved>0)history.push({amount:saved,date:today(),label:'Starting Balance'});
+  state.goals.push({name,target,saved,history});
   $('goalName').value='';
   $('goalTarget').value='';
   $('goalStartingBalance').value='';
@@ -614,6 +657,8 @@ window.topUpGoal=function(i){
   const n=+v;
   if(isNaN(n)||n<=0)return;
   current.saved=(+current.saved||0)+n;
+  if(!Array.isArray(current.history))current.history=[];
+  current.history.push({amount:n,date:today(),label:'Top Up'});
   persist();
   render();
 }
@@ -628,6 +673,16 @@ window.editGoal=function(i){
   if(!newName.trim() || isNaN(targetNum) || targetNum<=0)return;
   current.name=newName.trim();
   current.target=targetNum;
+  persist();
+  render();
+}
+
+window.removeGoalTopup=function(goalIndex,historyIndex){
+  const goal=state.goals[goalIndex];
+  if(!goal || !Array.isArray(goal.history) || !goal.history[historyIndex])return;
+  const amount=+goal.history[historyIndex].amount||0;
+  goal.saved=Math.max(0,(+goal.saved||0)-amount);
+  goal.history.splice(historyIndex,1);
   persist();
   render();
 }
@@ -683,6 +738,8 @@ $('sweepRemaining').addEventListener('click',()=>{
     const index=Number(destination.split(':')[1]);
     if(state.goals[index]){
       state.goals[index].saved=(+state.goals[index].saved||0)+remaining;
+      if(!Array.isArray(state.goals[index].history))state.goals[index].history=[];
+      state.goals[index].history.push({amount:remaining,date:today(),label:'Payday Leftover Sweep'});
     }
   }
 
